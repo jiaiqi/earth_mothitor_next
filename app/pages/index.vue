@@ -1,20 +1,20 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: 'home',
-})
+// definePageMeta({
+//   layout: 'home',
+// })
 
 const online = useOnline()
 </script>
 
 <template>
   <div>
-    <Logos mb-6 />
+    <!-- <Logos mb-6 /> -->
     <Suspense>
       <ClientOnly>
-        <PageView v-if="online" />
+        <!-- <PageView v-if="online" />
         <div v-else text-gray:80>
           You're offline
-        </div>
+        </div> -->
       </ClientOnly>
       <template #fallback>
         <div italic op50>
@@ -22,6 +22,6 @@ const online = useOnline()
         </div>
       </template>
     </Suspense>
-    <InputEntry />
+    <!-- <InputEntry /> -->
   </div>
 </template>

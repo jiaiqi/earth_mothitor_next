@@ -7,7 +7,7 @@
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxi dev",
     "dev": "nuxi dev",
     "generate": "nuxi generate",
-    "prepare": "husky",
+    "prepare": "nuxi prepare && husky",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",
     "lint": "eslint .",
@@ -36,7 +36,9 @@
     "husky": "^9.1.5",
     "nuxt": "^3.13.0",
     "pinia": "^2.2.2",
+    "sass": "^1.78.0",
     "typescript": "^5.5.4",
+    "unocss-preset-shadcn": "^0.3.1",
     "vue-tsc": "^2.0.29"
   },
   "resolutions": {

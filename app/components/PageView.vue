@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<!-- <script setup lang="ts">
 const { data } = await useFetch('/api/pageview')
 
 const time = useTimeAgo(() => data.value?.startAt || 0)
@@ -10,4 +10,17 @@ const time = useTimeAgo(() => data.value?.startAt || 0)
     page views since
     <span text-gray>{{ time }}</span>
   </div>
+</template> -->
+
+<script
+  setup
+  lang="ts"
+>
+
+</script>
+
+<template>
+  <div />
 </template>
+
+<style scoped lang="scss"></style>
