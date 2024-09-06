@@ -14,10 +14,10 @@ const notices = [
     </div>
     <div class="scroll-wrap flex-1 overflow-hidden rounded-full">
       <div class="scroll-content flex flex-1 whitespace-nowrap">
-        <div v-for="item in notices" :key="item.id" class="notice-item rounded-full p-x-20px lh-34px">
+        <div v-for="item in notices" :key="item.id" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.message }}
         </div>
-        <div v-for="item in notices" :key="item.id" class="notice-item rounded-full p-x-20px lh-34px">
+        <div v-for="item in notices" :key="item.id" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.message }}
         </div>
       </div>
@@ -25,7 +25,7 @@ const notices = [
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .scroll-container {
   margin: 24px 0;
   height: 68px;
@@ -59,11 +59,11 @@ const notices = [
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-100% + -32px)); /* 32px 是两个 notice-item 之间的间距 */
+    transform: translateX(calc(-100% + -32px)); /* 32px 是两个 list-item 之间的间距 */
   }
 }
 
-.notice-item {
+.list-item {
   background-color: #f1f6ff;
   position: relative;
   display: inline-block;
@@ -92,63 +92,3 @@ const notices = [
   }
 }
 </style>
-<!--
-<template>
-  <div class="m-y-24px h-68px w-full flex overflow-hidden rounded-full px-24px py-16px" style="border: 1px solid #BCD7FF;">
-    <div class="bg-gradient-blue inline-block w-113px rounded-full text-center text-16px lh-35px">
-      <i class="i-ri-volume-vibrate-fill text-20px" /> 通知公告
-    </div>
-    <div class="scroll-wrap flex-1 overflow-hidden">
-      <div class="scroll-content flex flex-1 overflow-hidden whitespace-nowrap">
-        <div v-for="item in notices" :key="item.id" class="notice-item rounded-full p-x-20px lh-34px">
-          {{ item.message }}
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style lang="scss">
-@keyframes scrollLeft {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(-100%);
-  }
-}
-.scroll-content {
-  display: flex;
-  align-items: center;
-  animation: scrollLeft 10s linear infinite;
-}
-
-.notice-item {
-  background-color: #f1f6ff;
-  position: relative;
-  padding-left: 32px;
-  display: inline-block;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-left: 16px;
-  &:hover {
-    // transform: scale(1.05);
-    background-color: var(--color-primary);
-    color: #fff;
-  }
-  &::before {
-    content: '';
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    background-color: #2b94ed;
-    border-radius: 2px;
-    transform-origin: center;
-    margin-right: 8px;
-    position: absolute;
-    top: 50%;
-    left: 16px;
-    transform: translateY(-50%) rotate(45deg);
-  }
-}
-</style> -->

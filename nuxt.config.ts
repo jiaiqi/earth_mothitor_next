@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@element-plus/nuxt',
     '@nuxt/image',
+    'dayjs-nuxt',
   ],
   experimental: {
     // when using generate, payload js assets included in sw precache manifest
