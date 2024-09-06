@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <Container>
-    产品目录
-  </Container>
+  <div>
+    数据目录+新闻动态
+  </div>
 </template>
 
 <style>

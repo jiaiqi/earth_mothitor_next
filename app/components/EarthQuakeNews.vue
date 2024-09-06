@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <Container>
-    产品目录
-  </Container>
+  <div>
+    地震动态
+  </div>
 </template>
 
 <style>

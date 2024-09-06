@@ -25,6 +25,15 @@ export default defineConfig({
       },
     },
   },
+  rules: [
+    [/^bg-gradient-(\w+)$/, ([, color]) => ({
+      'background-image': `linear-gradient(to right, var(--${color}) 0%, var(--${color}) 100%)`,
+    })],
+    [/^min-h-calc-(.*)$/, ([, calc]) => ({
+      'min-height': `calc(${calc})`,
+    })],
+    ['min-h-screen-260', { 'min-height': 'calc(100vh - 260px)' }],
+  ],
   shortcuts: [
     ['btn', 'px-4 py-1 rounded inline-block bg-teal-600 text-white cursor-pointer hover:bg-teal-700 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
     ['icon-btn', 'inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100 hover:text-teal-600'],

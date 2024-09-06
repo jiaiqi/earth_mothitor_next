@@ -3,9 +3,9 @@
 </script>
 
 <template>
-  <Container>
-    产品目录
-  </Container>
+  <div>
+    站点导航
+  </div>
 </template>
 
 <style>

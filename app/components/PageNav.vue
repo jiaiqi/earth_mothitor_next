@@ -1,8 +1,6 @@
-<script
-  lang="ts"
-  setup
->
-const activeNav = ref('/')
+<script lang="ts" setup>
+const route = useRoute()
+const activeNav = computed(() => route.path || '/')
 const navList = [
   {
     name: '首页',
@@ -37,11 +35,11 @@ const navList = [
 
 <template>
   <div class="w-full bg-#FAFAFC">
-    <nav class="m-x-a max-w-1300px w-full flex items-center justify-between p-x-10px 2xl:w-1300px">
+    <nav container xl:max-w-1300px class="m-x-a max-w-1300px w-full flex items-center justify-between p-x-10px 2xl:w-1300px">
       <NuxtLink
         v-for="nav in navList" :key="nav.name" :to="nav.path"
-        :class="{ 'b-#2F77C9 text-#2F77C9': activeNav && activeNav === nav.path, 'b-transparent': !activeNav || activeNav !== nav.path }"
-        class="box-border cursor-pointer b-b-2px b-solid font-bold line-height-58px hover:b-#2F77C9 hover:text-#2F77C9"
+        class="nav-item"
+        :class="{ active: activeNav === nav.path }"
       >
         {{ nav.name }}
       </NuxtLink>
@@ -49,4 +47,19 @@ const navList = [
   </div>
 </template>
 
-<style></style>
+<style lang="scss" scoped>
+.nav-item {
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  font-weight: 700;
+  line-height: 58px;
+  &:hover {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+  &.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+  }
+}
+</style>

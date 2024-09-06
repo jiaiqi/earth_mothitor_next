@@ -1,27 +1,27 @@
-<script setup lang="ts">
-// definePageMeta({
-//   layout: 'home',
-// })
+<script setup>
+import { ref } from 'vue'
 
-const online = useOnline()
+const online = ref(true) // 假设从某个地方获取在线状态
 </script>
 
 <template>
-  <div>
-    <!-- <Logos mb-6 /> -->
-    <Suspense>
-      <ClientOnly>
-        <!-- <PageView v-if="online" />
+  <Suspense>
+    <ClientOnly>
+      <div>
+        <div v-if="online">
+          <Home />
+        </div>
         <div v-else text-gray:80>
           You're offline
-        </div> -->
-      </ClientOnly>
-      <template #fallback>
-        <div italic op50>
-          <span animate-pulse>Loading...</span>
         </div>
-      </template>
-    </Suspense>
-    <!-- <InputEntry /> -->
-  </div>
+      </div>
+    </ClientOnly>
+    <template #fallback>
+      <div italic op50>
+        <div animate-pulse>
+          Loading...
+        </div>
+      </div>
+    </template>
+  </Suspense>
 </template>

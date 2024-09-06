@@ -3,7 +3,9 @@
 </script>
 
 <template>
-  <div>dataSummary</div>
+  <Container>
+    数据目录
+  </Container>
 </template>
 
 <style scoped>

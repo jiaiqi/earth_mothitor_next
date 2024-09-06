@@ -1,5 +1,8 @@
-import { pwa } from './app/config/pwa'
+// import AutoImport from 'unplugin-auto-import/vite'
+// import Components from 'unplugin-vue-components/vite'
+// import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import { appDescription } from './app/constants/index'
+import { pwa } from './app/config/pwa'
 
 export default defineNuxtConfig({
   modules: [
@@ -9,8 +12,9 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@vite-pwa/nuxt',
     '@nuxt/eslint',
+    '@element-plus/nuxt',
+    '@nuxt/image',
   ],
-
   experimental: {
     // when using generate, payload js assets included in sw precache manifest
     // but missing on offline, disabling extraction it until fixed
