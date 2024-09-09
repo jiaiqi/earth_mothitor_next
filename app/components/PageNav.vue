@@ -35,7 +35,7 @@ const navList = [
 
 <template>
   <div class="w-full bg-#FAFAFC">
-    <nav container xl:max-w-1300px class="m-x-a max-w-1300px w-full flex items-center justify-between p-x-10px 2xl:w-1300px">
+    <nav class="m-x-a max-w-1300px w-full flex items-center justify-between p-x-10px container 2xl:w-1300px xl:max-w-1300px">
       <NuxtLink
         v-for="nav in navList" :key="nav.name" :to="nav.path"
         class="nav-item"
@@ -50,11 +50,11 @@ const navList = [
 <style lang="scss" scoped>
 .nav-item {
   cursor: pointer;
-  border-bottom: 2px solid transparent;
+  border-bottom: 4px solid transparent;
   font-weight: 700;
-  line-height: 58px;
+  line-height: 56px;
   &:hover {
-    border-bottom-color: var(--color-primary);
+    // border-bottom-color: var(--color-primary);
     color: var(--color-primary);
   }
   &.active {

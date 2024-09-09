@@ -56,12 +56,9 @@ const newsList = [{
 </script>
 
 <template>
-  <div flex="~ " class="h-490px">
-    <div class="m-r-20px flex-1 rounded-22px bg-#F1F6FF px-20px py-14px">
-      <div class="title text-20px">
-        <span class="title-icon" />
-        数据目录
-      </div>
+  <div flex="~ col md:row" class="m-x-auto container md:h-490px xl:max-w-1300px">
+    <div class="mb-20px flex-1 rounded-22px bg-#F1F6FF px-20px py-14px md:m-r-20px md:mb-0">
+      <PublicTitle title="数据目录" />
       <div flex="~">
         <div class="left">
           <div v-for="item in cateData" :key="item.title" class="content">
@@ -89,25 +86,11 @@ const newsList = [{
         </div>
       </div>
     </div>
-    <div class="w-415px px-20px py-14px" border="1px solid #F1F6FF rounded-22px">
-      <div class="title flex justify-between">
-        <div>
-          <span class="title-icon" />
-          新闻动态
-        </div>
-        <div class="flex cursor-pointer items-center font-500">
-          更多 <i class="i-ri:arrow-right-double-fill" />
-        </div>
-      </div>
-      <div class="content py-20px">
-        <ul>
-          <li v-for="item in newsList" :key="item.title" flex="~ items-center justify-between" class="cursor-pointer py-8px" hover="font-700">
-            <span class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap pr-20px text-#000">{{ item.title }}</span>
-            <span class="text-#666">[{{ $dayjs(item.date).format("MM-DD") }}]</span>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <NewsList :news-list="newsList">
+      <template #title>
+        <PublicTitle title="新闻动态" />
+      </template>
+    </NewsList>
   </div>
 </template>
 

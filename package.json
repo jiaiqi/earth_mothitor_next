@@ -20,6 +20,7 @@
     "@commitlint/config-conventional": "^19.4.1",
     "@element-plus/nuxt": "^1.0.10",
     "@iconify-json/carbon": "^1.1.37",
+    "@iconify-json/fa-solid": "^1.2.0",
     "@iconify-json/ri": "^1.2.0",
     "@iconify-json/twemoji": "^1.1.16",
     "@nuxt/devtools": "^1.4.0",

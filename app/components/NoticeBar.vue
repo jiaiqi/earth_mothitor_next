@@ -8,7 +8,7 @@ const notices = [
 </script>
 
 <template>
-  <div class="m-y-24px h-68px w-full flex overflow-hidden rounded-full px-24px py-16px" style="border: 1px solid #BCD7FF;">
+  <div class="m-x-auto m-y-24px h-68px w-full flex overflow-hidden rounded-full px-24px py-16px container xl:max-w-1300px" style="border: 1px solid #BCD7FF;">
     <div class="bg-gradient-blue inline-block w-113px rounded-full text-center text-16px lh-35px">
       <i class="i-ri-volume-vibrate-fill text-20px" /> 通知公告
     </div>

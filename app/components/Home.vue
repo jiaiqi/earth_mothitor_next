@@ -3,14 +3,14 @@
 
 <template>
   <Banner />
-  <Container class="">
-    <NoticeBar />
-    <MixNews />
-    <EarthQuakeNews />
-    <ProfessionalWebsite />
-    <ImageNavigation />
-    <WebsiteNavigation />
-  </Container>
+  <!-- <Container class=""> -->
+  <NoticeBar />
+  <MixNews />
+  <EarthQuakeNews />
+  <ProfessionalWebsite />
+  <ImageNavigation />
+  <WebsiteNavigation />
+  <!-- </Container> -->
 </template>
 
 <style>

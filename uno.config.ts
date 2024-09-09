@@ -19,13 +19,16 @@ export default defineConfig({
       'xl': '1280px',
       '2xl': '1536px',
     },
-    extend: {
-      colors: {
-
-      },
+    backgroundSize: {
+      'auto': 'auto',
+      'cover': 'cover',
+      'contain': 'contain',
+      '50%': '50%',
+      '100': '100%',
     },
   },
   rules: [
+
     ['min-h-screen-260', { 'min-height': 'calc(100vh - 260px)' }],
     ['bg-gradient-blue', { 'background-image': ' linear-gradient(139.61deg, rgba(47,119,201,1) 4.16%,rgba(62,143,236,1) 122.08%);', 'color': '#fff' }],
   ],

@@ -26,6 +26,9 @@ importers:
       '@iconify-json/carbon':
         specifier: ^1.1.37
         version: 1.1.37
+      '@iconify-json/fa-solid':
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/ri':
         specifier: ^1.2.0
         version: 1.2.0
@@ -1385,6 +1388,9 @@ packages:
 
   '@iconify-json/carbon@1.1.37':
     resolution: {integrity: sha512-Hj9oZtRmN63yt29YovqgqOJQhaoVMNMTkFLT3HKAJm4HjvI405Juez5UfdysYmLjF708U7gJNx4U6K1k5+fTBw==}
+
+  '@iconify-json/fa-solid@1.2.0':
+    resolution: {integrity: sha512-8WV0gViiLN7WK150B9Ub+2nzqOmdmhMAKZAO9JqRDGhO07GEH4T/FYlKXK2zlF51C6HAx8fXV8pDapDX3TBavg==}
 
   '@iconify-json/ri@1.2.0':
     resolution: {integrity: sha512-br8It3uRHylNhEH72aU9VF6gIdL4BAi6JMdcxsCaVbAyWBJ0jd4RxfmsYnil6TmEfP5wxihiCKbtbQmIHZdqKg==}
@@ -7614,6 +7620,10 @@ snapshots:
   '@humanwhocodes/retry@0.3.0': {}
 
   '@iconify-json/carbon@1.1.37':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/fa-solid@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
