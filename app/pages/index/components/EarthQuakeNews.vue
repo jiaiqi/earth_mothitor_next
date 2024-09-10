@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import bg1 from 'public/img/bg1.jpg'
+import SortList from './SortList.vue'
+import NewsListContent from '~/components/NewsListContent.vue'
+import PublicTitle from '~/components/PublicTitle.vue'
 
 const currentTab = ref('first')
 const newsList = [{

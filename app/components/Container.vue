@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="min-h-screen-260 m-auto container xl:max-w-1300px">
+  <div class="m-auto min-h-screen-260 container xl:max-w-1300px">
     <slot name="default" />
   </div>
 </template>
