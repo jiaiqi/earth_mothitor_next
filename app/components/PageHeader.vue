@@ -15,7 +15,7 @@ const headerButtons = ref([
 
 <template>
   <header
-    class="bg-gradient-blue h-100px w-full flex items-center justify-between text-18px text-white"
+    class="h-100px w-full flex items-center justify-between text-18px text-white bg-gradient-blue"
   >
     <div class="hidden flex-1 md:flex" />
     <div container xl:max-w-1300px class="m-x-10px w-full flex flex-col items-center justify-between md:flex-row">

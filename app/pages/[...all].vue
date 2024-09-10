@@ -9,8 +9,8 @@ const router = useRouter()
     </div>
     <div>404 NOT FOUND</div>
     <div>
-      <button text-sm btn m="3 t8" @click="router.back()">
-        Back
+      <button text-sm m="3 t8" @click="router.back()">
+        返回
       </button>
     </div>
   </main>
