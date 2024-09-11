@@ -15,8 +15,7 @@
     "commit": "git-cz"
   },
   "dependencies": {
-    "jsencrypt": "^3.3.2",
-    "naive-ui": "^2.39.0"
+    "jsencrypt": "^3.3.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.27.1",
@@ -45,7 +44,6 @@
     "eslint-plugin-format": "^0.1.2",
     "husky": "^9.1.5",
     "nuxt": "^3.13.1",
-    "nuxtjs-naive-ui": "1.0.2",
     "pinia": "^2.2.2",
     "sass": "^1.78.0",
     "typescript": "^5.5.4",

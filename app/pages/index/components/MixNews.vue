@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { NCarousel } from 'naive-ui'
+// import { NCarousel } from 'naive-ui'
+import { getNewsList } from '~/api/news'
 
 const cateData = [{
   title: '按业务类型分类',
@@ -90,7 +91,7 @@ const currentSubCateList = computed(() => {
   return null
 })
 
-const newsList = [{
+const newsList = ref([{
   title: '来学习！不能打破的交互设计规则',
   date: '2023-03-01',
 }, {
@@ -120,7 +121,21 @@ const newsList = [{
 }, {
   title: '来学习！不能打破的交互设计规则',
   date: '2023-03-01',
-}]
+}])
+// const homeStore = useNewsStore()
+// const dayjs = useDayjs()
+
+// newsList.value = homeStore.getNewsList().map(item={
+//   const obj = {
+//     title: item.message,
+//     date: dayjs(item.date).format('MM-DD')
+//   }
+//   return obj
+// })
+const par = 'pageNum=1&pageSize=10'
+getNewsList(par).then((res) => {
+  newsList.value = [...res.records]
+})
 
 const imgs = [{
   url: '/img/img1.png',
@@ -165,7 +180,7 @@ const imgs = [{
             </ul>
           </div>
         </div>
-        <div class="pos-relative h-full min-h-300px flex-1 xl:ml-20px xl:min-w-500px">
+        <div class="pos-relative h-430px min-h-300px flex-1 xl:ml-20px xl:min-w-500px">
           <div
             v-if="currentSubCateList && currentSubCateList.title"
             class="pos-absolute z-2 h-full w-full flex flex-col rounded-6px bg-#D7E6FA p-15px opacity-75 xl:w-70%"
@@ -190,7 +205,17 @@ const imgs = [{
               </div>
             </div>
           </div>
-          <NCarousel show-arrow>
+          <el-carousel motion-blur h-full height="100%" trigger="click" :autoplay="false">
+            <el-carousel-item v-for="item in imgs" :key="item.title">
+              <div class="img-box min-h-220px xl:h-430px">
+                <img :src="item.url" class="w-full" draggable="false">
+                <div class="bottom-text">
+                  {{ item.title }}
+                </div>
+              </div>
+            </el-carousel-item>
+          </el-carousel>
+          <!-- <NCarousel show-arrow>
             <div v-for="item in imgs" :key="item.title" class="img-box min-h-220px xl:h-430px">
               <img :src="item.url" class="w-full" draggable="false">
               <div class="bottom-text">
@@ -217,28 +242,7 @@ const imgs = [{
                 />
               </ul>
             </template>
-          </NCarousel>
-
-          <!-- <UCarousel v-slot="{ item }" :items="imgs" :ui="{ item: 'basis-full' }" class="overflow-hidden rounded-lg">
-            <div class="img-box min-h-220px xl:h-430px">
-              <img src="/img/img1.png" class="w-full" draggable="false">
-              <div class="bottom-text">
-                {{ item.title }}
-              </div>
-            </div>
-          </UCarousel> -->
-          <!-- <div>
-            <el-carousel trigger="click" :autoplay="false">
-              <el-carousel-item v-for="item in 4" :key="item" class="min-h-220px xl:h-430px">
-                <div class="img-box min-h-220px xl:h-430px">
-                  <el-image fit="fill" src="/img/img1.png" class="h-full" />
-                  <div class="bottom-text">
-                    新疆乌什7.1级地震仪器地震烈度围
-                  </div>
-                </div>
-              </el-carousel-item>
-            </el-carousel>
-          </div> -->
+          </NCarousel> -->
         </div>
       </div>
     </div>
@@ -299,72 +303,12 @@ const imgs = [{
   }
 }
 
-.custom-arrow {
-  display: flex;
-  position: absolute;
-  right: 10px;
-  left: 10px;
-  top: calc(50% - 10px);
-  justify-content: space-between;
-}
-
-.custom-arrow button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  margin-right: 12px;
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-width: 0;
-  border-radius: 8px;
-  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.custom-arrow button:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-.custom-arrow button:active {
-  transform: scale(0.95);
-  transform-origin: center;
-}
-
-.custom-dots {
-  display: flex;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  bottom: 80px;
-  right: 30px;
-}
-
-.custom-dots li {
-  display: inline-block;
-  width: 12px;
-  height: 4px;
-  margin: 0 3px;
-  border-radius: 4px;
-  background-color: rgba(255, 255, 255, 0.4);
-  transition:
-    width 0.3s,
-    background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.custom-dots li.is-active {
-  width: 40px;
-  background: #fff;
-}
-
 :deep(.el-carousel__indicators--horizontal) {
-  left: unset;
-  bottom: 55px;
-  right: -30px;
   --el-carousel-indicator-width: 10px;
   --el-carousel-indicator-height: 5px;
+  right: 10px;
+  bottom: 50px;
+  left: unset;
   .el-carousel__button {
     opacity: 0.6;
     border-radius: 5px;
@@ -373,11 +317,70 @@ const imgs = [{
     --el-carousel-indicator-width: 30px;
     .el-carousel__button {
       opacity: 1;
-
       background-color: #3990f0;
     }
   }
 }
+
+// .custom-arrow {
+//   display: flex;
+//   position: absolute;
+//   right: 10px;
+//   left: 10px;
+//   top: calc(50% - 10px);
+//   justify-content: space-between;
+// }
+
+// .custom-arrow button {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: 28px;
+//   height: 28px;
+//   margin-right: 12px;
+//   color: #fff;
+//   background-color: rgba(255, 255, 255, 0.1);
+//   border-width: 0;
+//   border-radius: 8px;
+//   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+//   cursor: pointer;
+// }
+
+// .custom-arrow button:hover {
+//   background-color: rgba(255, 255, 255, 0.2);
+// }
+
+// .custom-arrow button:active {
+//   transform: scale(0.95);
+//   transform-origin: center;
+// }
+
+// .custom-dots {
+//   display: flex;
+//   margin: 0;
+//   padding: 0;
+//   position: absolute;
+//   bottom: 80px;
+//   right: 30px;
+// }
+
+// .custom-dots li {
+//   display: inline-block;
+//   width: 12px;
+//   height: 4px;
+//   margin: 0 3px;
+//   border-radius: 4px;
+//   background-color: rgba(255, 255, 255, 0.4);
+//   transition:
+//     width 0.3s,
+//     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+//   cursor: pointer;
+// }
+
+// .custom-dots li.is-active {
+//   width: 40px;
+//   background: #fff;
+// }
 
 .img-box {
   position: relative;

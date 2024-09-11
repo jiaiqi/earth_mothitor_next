@@ -4,28 +4,47 @@ import { decode } from '~/utils/base/dataEncry'
 import { getList } from '~/api/notice'
 import { useDayjs } from '#dayjs'
 // not need if you are using auto import
-const config = useRuntimeConfig()
-const notices = ref([
-  { id: 1, message: '7月24日11时31分新疆克孜勒苏州阿图什市发生4.3级地震' },
+import type { NewsItem } from '~/composables/home'
+import { useNewsStore } from '~/composables/home'
+
+const notices = ref<NewsItem[]>([])
+// 模拟数据
+notices.value = [
+  { id: 1, message: '7月24日11时31分新疆克孜勒苏州阿图什市发生4.3级地震', date: 1726029616901 },
   { id: 2, message: '7月25日10时45分四川绵阳市发生3.8级地震' },
   { id: 3, message: '7月26日13时20分云南昆明市发生4.1级地震' },
   { id: 4, message: '7月27日15时10分广西南宁市发生3.9级地震' },
-])
+  { id: 5, message: '7月24日11时31分新疆克孜勒苏州阿图什市发生4.3级地震', date: 1726029616901 },
+  { id: 6, message: '7月25日10时45分四川绵阳市发生3.8级地震' },
+  { id: 7, message: '7月26日13时20分云南昆明市发生4.1级地震' },
+  { id: 8, message: '7月27日15时10分广西南宁市发生3.9级地震' },
+  { id: 9, message: '7月24日11时31分新疆克孜勒苏州阿图什市发生4.3级地震', date: 1726029616901 },
+  { id: 10, message: '7月25日10时45分四川绵阳市发生3.8级地震' },
+  { id: 11, message: '7月26日13时20分云南昆明市发生4.1级地震' },
+  { id: 12, message: '7月27日15时10分广西南宁市发生3.9级地震' },
+]
+const homeStore = useNewsStore()
+homeStore.setNewsList(notices.value)
 
-getList({
-  apiBase: config.public.cataApi,
-}).then((res) => {
+getList().then((res) => {
   const data = decode(res)
   if (Array.isArray(data) && data.length > 0) {
     const dayjs = useDayjs()
     const dataSorted = useSorted(data, (a, b) => b.oTime - a.oTime)
     notices.value = dataSorted.value.slice(0, 30).map((item) => {
       return {
+        date: item.oTime,
         message: `${dayjs(item.oTime).format('MM月DD日HH时mm分')}${item.localName}发生${item.m}级地震`,
+        title: `${dayjs(item.oTime).format('MM月DD日HH时mm分')}${item.localName}发生${item.m}级地震`,
         id: item.id,
       }
     })
+    const homeStore = useNewsStore()
+    homeStore.setNewsList(notices.value)
   }
+}).catch((e) => {
+  console.log('error::', e)
+  // Failed to fetch
 })
 const animationDuration = computed(() => `${notices.value.length * 10}s`)
 </script>

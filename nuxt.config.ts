@@ -1,6 +1,3 @@
-// import AutoImport from 'unplugin-auto-import/vite'
-// import Components from 'unplugin-vue-components/vite'
-// import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import { appDescription } from './app/constants/index'
 import { pwa } from './app/config/pwa'
 
@@ -26,7 +23,6 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@nuxt/image',
     'dayjs-nuxt',
-    'nuxtjs-naive-ui',
   ],
   experimental: {
     // when using generate, payload js assets included in sw precache manifest

@@ -1,5 +1,11 @@
 <script lang="ts" setup>
+import { industry } from '~/api/notice'
+import { decode, encode } from '~/utils/base/dataEncry'
 
+const list = ref<any[]>([])
+industry(encode({ pageNum: 1, pageSize: 5 })).then((res) => {
+  list.value = decode(res)
+})
 </script>
 
 <template>
