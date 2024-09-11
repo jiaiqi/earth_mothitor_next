@@ -5,7 +5,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="px-20px py-14px md:w-415px" border="1px solid #F1F6FF rounded-22px">
+  <div class="px-20px py-14px xl:w-415px" border="1px solid #F1F6FF rounded-22px">
     <div class="flex justify-between">
       <slot name="title" />
       <div class="flex cursor-pointer items-center font-500">

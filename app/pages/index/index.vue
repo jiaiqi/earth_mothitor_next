@@ -11,7 +11,9 @@ import Banner from '~/components/Banner.vue'
 <template>
   <div class="min-h-screen-260">
     <Banner />
+    <!-- <ClientOnly> -->
     <NoticeBar />
+    <!-- </ClientOnly> -->
     <MixNews />
     <EarthQuakeNews />
     <ProfessionalWebsite />

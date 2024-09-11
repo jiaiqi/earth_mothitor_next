@@ -1,25 +1,48 @@
 <script lang="ts" setup>
-const notices = [
+import { useSorted } from '@vueuse/core'
+import { decode } from '~/utils/base/dataEncry'
+import { getList } from '~/api/notice'
+import { useDayjs } from '#dayjs'
+// not need if you are using auto import
+const config = useRuntimeConfig()
+const notices = ref([
   { id: 1, message: '7月24日11时31分新疆克孜勒苏州阿图什市发生4.3级地震' },
   { id: 2, message: '7月25日10时45分四川绵阳市发生3.8级地震' },
   { id: 3, message: '7月26日13时20分云南昆明市发生4.1级地震' },
   { id: 4, message: '7月27日15时10分广西南宁市发生3.9级地震' },
-]
+])
+
+getList({
+  apiBase: config.public.cataApi,
+}).then((res) => {
+  const data = decode(res)
+  if (Array.isArray(data) && data.length > 0) {
+    const dayjs = useDayjs()
+    const dataSorted = useSorted(data, (a, b) => b.oTime - a.oTime)
+    notices.value = dataSorted.value.slice(0, 30).map((item) => {
+      return {
+        message: `${dayjs(item.oTime).format('MM月DD日HH时mm分')}${item.localName}发生${item.m}级地震`,
+        id: item.id,
+      }
+    })
+  }
+})
+const animationDuration = computed(() => `${notices.value.length * 10}s`)
 </script>
 
 <template>
   <div class="m-x-auto m-y-24px h-68px w-full flex overflow-hidden rounded-full px-24px py-16px container xl:max-w-1300px" style="border: 1px solid #BCD7FF;">
-    <div class="bg-gradient-blue inline-block w-113px rounded-full text-center text-16px lh-35px">
+    <div class="inline-block w-113px rounded-full text-center text-16px lh-35px bg-gradient-blue">
       <i class="i-ri-volume-vibrate-fill text-20px" /> 通知公告
     </div>
     <div class="scroll-wrap flex-1 overflow-hidden rounded-full">
       <div class="scroll-content flex flex-1 whitespace-nowrap">
-        <div v-for="item in notices" :key="item.id" class="list-item rounded-full p-x-20px lh-34px">
+        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.message }}
-        </div>
-        <div v-for="item in notices" :key="item.id" class="list-item rounded-full p-x-20px lh-34px">
+        </NuxtLink>
+        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.message }}
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </div>
@@ -48,7 +71,7 @@ const notices = [
 .scroll-content {
   display: flex;
   align-items: center;
-  animation: scrollLeft 60s linear infinite;
+  animation: scrollLeft v-bind(animationDuration) linear infinite;
   &:hover {
     animation-play-state: paused;
   }

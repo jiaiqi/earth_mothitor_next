@@ -43,13 +43,13 @@ function switchTab(tab: any) {
 </script>
 
 <template>
-  <div class="earthquake-news m-y-30px h-695px" :style="{ backgroundImage: `url(${bg1})` }">
+  <div class="earthquake-news m-y-30px pb-30px" :style="{ backgroundImage: `url(${bg1})` }">
     <div class="m-x-auto container xl:max-w-1300px">
       <div class="py-30px text-center">
         <PublicTitle title="地震动态" :show-right="true" title-style="style2" />
       </div>
-      <div flex="~ col md:row md:gap-30px">
-        <div class="relative w-full rounded-20px bg-white px-16px py-10px md:w-38%">
+      <div flex="~ col xl:row gap-30px">
+        <div class="relative w-full rounded-20px bg-white px-16px py-10px xl:w-38%">
           <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500">
             更多 <i class="i-ri:arrow-right-double-fill" />
           </div>

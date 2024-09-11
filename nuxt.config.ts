@@ -5,6 +5,17 @@ import { appDescription } from './app/constants/index'
 import { pwa } from './app/config/pwa'
 
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      title: 'Nuxt3-Template',
+      description: '',
+      baseApi: '',
+      updaApi: '',
+      cataApi: '',
+      servApi: '',
+      cartApi: '',
+    },
+  },
   modules: [
     '@vueuse/nuxt',
     '@unocss/nuxt',
@@ -15,6 +26,7 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@nuxt/image',
     'dayjs-nuxt',
+    'nuxtjs-naive-ui',
   ],
   experimental: {
     // when using generate, payload js assets included in sw precache manifest

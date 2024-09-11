@@ -3,9 +3,9 @@
   "private": true,
   "packageManager": "pnpm@9.8.0",
   "scripts": {
-    "build": "nuxi build",
+    "build": "nuxi build --dotenv .env.production",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxi dev --port=3366",
-    "dev": "nuxi dev",
+    "dev": "nuxi dev --port 3030 --dotenv .env.development",
     "generate": "nuxi generate",
     "prepare": "nuxi prepare",
     "start": "node .output/server/index.mjs",
@@ -13,6 +13,10 @@
     "lint": "eslint .",
     "typecheck": "vue-tsc --noEmit",
     "commit": "git-cz"
+  },
+  "dependencies": {
+    "jsencrypt": "^3.3.2",
+    "naive-ui": "^2.39.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.27.1",
@@ -40,7 +44,8 @@
     "eslint": "^9.9.1",
     "eslint-plugin-format": "^0.1.2",
     "husky": "^9.1.5",
-    "nuxt": "^3.13.0",
+    "nuxt": "^3.13.1",
+    "nuxtjs-naive-ui": "1.0.2",
     "pinia": "^2.2.2",
     "sass": "^1.78.0",
     "typescript": "^5.5.4",
