@@ -34,7 +34,7 @@ const navList = [
 </script>
 
 <template>
-  <div class="w-full bg-#FAFAFC">
+  <div class="pos-sticky top-0 z-999 w-full bg-#FAFAFC shadow-md">
     <nav class="m-x-a max-w-1300px w-full flex items-center justify-between p-x-10px container 2xl:w-1300px xl:max-w-1300px">
       <NuxtLink
         v-for="nav in navList" :key="nav.name" :to="nav.path"
