@@ -6,11 +6,13 @@ export default defineNuxtConfig({
     public: {
       title: 'Nuxt3-Template',
       description: '',
-      baseApi: '',
-      updaApi: '',
-      cataApi: '',
-      servApi: '',
-      cartApi: '',
+      apiBase: 'http://10.7.203.147',
+      basePort: '9527',
+      updaPort: '9529',
+      cataPort: '9529',
+      servPort: '9541',
+      cartPort: '9546',
+      collePort: '9549',
     },
   },
   modules: [

@@ -1,12 +1,6 @@
 // import { useUserStore } from '~/stores/user.store'
 // import { getToken } from '~/utils/auth'
 
-export interface ResOptions<T> {
-  data: T
-  code: number
-  message: string
-  success: boolean
-}
 function handleError(response) {
   console.log(response)
 }
@@ -15,10 +9,10 @@ const fetch = $fetch.create({
   onRequest({ options }) {
     // get方法传递数组形式参数
     // 添加baseURL,nuxt3环境变量要从useRuntimeConfig里面取
-    const { public: { baseApi } } = useRuntimeConfig()
-    if (baseApi) {
-      options.baseURL = baseApi
-    }
+    // const { public: { baseApi } } = useRuntimeConfig()
+    // if (baseApi) {
+    //   options.baseURL = baseApi
+    // }
     // 添加请求头,没登录不携带token
     // const userStore = useUserStore()
     // if (!userStore.isLogin)
@@ -42,19 +36,29 @@ const fetch = $fetch.create({
 
 // 自动导出
 export const useHttp = {
-  get: <T>(url: string, params?: any) => {
-    return fetch<ResOptions<T>>(url, { method: 'get', params })
+  get: (url: string, params?: any) => {
+    return fetch(url, { method: 'get', params })
   },
 
-  post: <T>(url: string, body?: any) => {
-    return fetch<ResOptions<T>>(url, { method: 'post', body })
+  post: (url: string, body?: any, headers?: any) => {
+    return fetch(url, { method: 'post', body: body || {}, headers })
   },
 
-  put: <T>(url: string, body?: any) => {
-    return fetch<ResOptions<T>>(url, { method: 'put', body })
+  put: (url: string, body?: any) => {
+    return fetch(url, { method: 'put', body })
   },
 
-  delete: <T>(url: string, body?: any) => {
-    return fetch<ResOptions<T>>(url, { method: 'delete', body })
+  delete: (url: string, body?: any) => {
+    return fetch(url, { method: 'delete', body })
   },
+}
+
+export function usePublicConfig() {
+  const config = useRuntimeConfig()
+  return { ...config.public }
+}
+
+export function getBaseUrl(port?: any) {
+  const { apiBase } = usePublicConfig()
+  return port ? `${apiBase}:${port}` : apiBase
 }

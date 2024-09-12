@@ -2,41 +2,7 @@
 const props = defineProps<{
   list?: any[]
 }>()
-const list = ref([
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-  {
-    title: '强震动数据-数据集',
-    subTitle: '提供单位：中国地震局第二监测中心',
-    amount: '5412',
-  },
-])
-if (props.list) {
-  list.value = props.list
-}
+const list = computed(() => props.list?.length ? props.list.slice(0, 6) : [])
 </script>
 
 <template>

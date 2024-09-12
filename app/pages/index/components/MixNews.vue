@@ -1,6 +1,9 @@
 <script lang="ts" setup>
 // import { NCarousel } from 'naive-ui'
 import { getNewsList } from '~/api/news'
+import bg1 from '~/assets/images/bg1.png'
+import bg2 from '~/assets/images/bg2.png'
+import bg3 from '~/assets/images/bg3.png'
 
 const cateData = [{
   title: '按业务类型分类',
@@ -91,62 +94,32 @@ const currentSubCateList = computed(() => {
   return null
 })
 
-const newsList = ref([{
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}, {
-  title: '来学习！不能打破的交互设计规则',
-  date: '2023-03-01',
-}])
-// const homeStore = useNewsStore()
-// const dayjs = useDayjs()
+const newsList = ref<any[]>([])
 
-// newsList.value = homeStore.getNewsList().map(item={
-//   const obj = {
-//     title: item.message,
-//     date: dayjs(item.date).format('MM-DD')
-//   }
-//   return obj
-// })
 const par = 'pageNum=1&pageSize=10'
 getNewsList(par).then((res) => {
-  newsList.value = [...res.records]
+  newsList.value = [...res.records].map((item) => {
+    if (item.uploadTime) {
+      item.date = item.uploadTime
+    }
+    return item
+  })
 })
 
-const imgs = [{
-  url: '/img/img1.png',
-  title: '新疆乌什7.1级地震仪器地震烈度围',
-}, {
-  url: '/img/img1.png',
-  title: '新疆乌什7.1级地震仪器地震烈度围',
-}, {
-  url: '/img/img1.png',
-  title: '新疆乌什7.1级地震仪器地震烈度围',
-}]
+const imgs = [
+  {
+    title: '5月12日全国防灾减灾日',
+    url: bg1,
+  },
+  {
+    title: '“地震科普 携手同行”主题活动',
+    url: bg2,
+  },
+  {
+    title: '新疆乌什7.1级地震仪器地震烈度图',
+    url: bg3,
+  },
+]
 </script>
 
 <template>
@@ -183,7 +156,7 @@ const imgs = [{
         <div class="pos-relative h-430px min-h-300px flex-1 xl:ml-20px xl:min-w-500px">
           <div
             v-if="currentSubCateList && currentSubCateList.title"
-            class="pos-absolute z-2 h-full w-full flex flex-col rounded-6px bg-#D7E6FA p-15px opacity-75 xl:w-70%"
+            class="pos-absolute z-2 h-full w-full flex flex-col rounded-6px bg-#D7E6FAcc p-15px xl:w-70%"
             @mouseleave="currentCate = -1"
             @mousemove="currentSubCate = currentSubCateList.title"
           >
@@ -195,11 +168,11 @@ const imgs = [{
                 <div
                   v-for="subItem in currentSubCateList.subList" :key="subItem"
                   class="rounded-20px bg-white text-center text-14px line-height-34px"
+                  hover="bg-#D7E6FA cursor-pointer"
                 >
                   <span v-if="subItem && subItem.includes(';')">{{ subItem.split(';')[0] }}</span>
                   <span v-else>
                     {{ subItem }}
-
                   </span>
                 </div>
               </div>
@@ -207,46 +180,18 @@ const imgs = [{
           </div>
           <el-carousel motion-blur h-full height="100%" trigger="click" :autoplay="false">
             <el-carousel-item v-for="item in imgs" :key="item.title">
-              <div class="img-box min-h-220px xl:h-430px">
-                <img :src="item.url" class="w-full" draggable="false">
+              <div class="img-box min-h-220px overflow-hidden rounded-6px xl:h-430px">
+                <img :src="item.url" class="h-full w-full" draggable="false">
                 <div class="bottom-text">
                   {{ item.title }}
                 </div>
               </div>
             </el-carousel-item>
           </el-carousel>
-          <!-- <NCarousel show-arrow>
-            <div v-for="item in imgs" :key="item.title" class="img-box min-h-220px xl:h-430px">
-              <img :src="item.url" class="w-full" draggable="false">
-              <div class="bottom-text">
-                {{ item.title }}
-              </div>
-            </div>
-            <template #arrow="{ prev, next }">
-              <div class="custom-arrow">
-                <button type="button" class="custom-arrow--left" @click="prev">
-                  <i class="i-carbon:chevron-left" />
-                </button>
-                <button type="button" class="custom-arrow--right" @click="next">
-                  <i class="i-carbon:chevron-right" />
-                </button>
-              </div>
-            </template>
-            <template #dots="{ total, currentIndex, to }">
-              <ul class="custom-dots">
-                <li
-                  v-for="index of total"
-                  :key="index"
-                  :class="{ ['is-active']: currentIndex === index - 1 }"
-                  @click="to(index - 1)"
-                />
-              </ul>
-            </template>
-          </NCarousel> -->
         </div>
       </div>
     </div>
-    <NewsList :news-list="newsList">
+    <NewsList :news-list="newsList" :show-date="true">
       <template #title>
         <PublicTitle title="新闻动态" />
       </template>
@@ -321,66 +266,6 @@ const imgs = [{
     }
   }
 }
-
-// .custom-arrow {
-//   display: flex;
-//   position: absolute;
-//   right: 10px;
-//   left: 10px;
-//   top: calc(50% - 10px);
-//   justify-content: space-between;
-// }
-
-// .custom-arrow button {
-//   display: inline-flex;
-//   align-items: center;
-//   justify-content: center;
-//   width: 28px;
-//   height: 28px;
-//   margin-right: 12px;
-//   color: #fff;
-//   background-color: rgba(255, 255, 255, 0.1);
-//   border-width: 0;
-//   border-radius: 8px;
-//   transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-//   cursor: pointer;
-// }
-
-// .custom-arrow button:hover {
-//   background-color: rgba(255, 255, 255, 0.2);
-// }
-
-// .custom-arrow button:active {
-//   transform: scale(0.95);
-//   transform-origin: center;
-// }
-
-// .custom-dots {
-//   display: flex;
-//   margin: 0;
-//   padding: 0;
-//   position: absolute;
-//   bottom: 80px;
-//   right: 30px;
-// }
-
-// .custom-dots li {
-//   display: inline-block;
-//   width: 12px;
-//   height: 4px;
-//   margin: 0 3px;
-//   border-radius: 4px;
-//   background-color: rgba(255, 255, 255, 0.4);
-//   transition:
-//     width 0.3s,
-//     background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-//   cursor: pointer;
-// }
-
-// .custom-dots li.is-active {
-//   width: 40px;
-//   background: #fff;
-// }
 
 .img-box {
   position: relative;

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const props = defineProps<{
   newsList: any[]
+  showDate?: boolean
 }>()
 </script>
 
@@ -12,7 +13,7 @@ const props = defineProps<{
         更多 <i class="i-ri:arrow-right-double-fill" />
       </div>
     </div>
-    <NewsListContent class="py-20px" :news-list="props.newsList" />
+    <NewsListContent class="py-20px" :news-list="props.newsList" :show-date="showDate" />
   </div>
 </template>
 

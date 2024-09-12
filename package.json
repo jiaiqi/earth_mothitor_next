@@ -6,7 +6,7 @@
     "build": "nuxi build --dotenv .env.production",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxi dev --port=3366",
     "dev": "nuxi dev --port 3030 --dotenv .env.development",
-    "generate": "nuxi generate",
+    "generate": "nuxi generate  --dotenv .env.development",
     "prepare": "nuxi prepare",
     "start": "node .output/server/index.mjs",
     "start:generate": "npx serve .output/public",

@@ -1,6 +1,5 @@
 export interface NewsItem {
   id: number
-  message?: string
   title?: string
   date?: number | string // 可选属性
 }
@@ -16,6 +15,7 @@ export function useNewsStore() {
   }
 
   return {
+    newsList,
     setNewsList,
     getNewsList,
   }
