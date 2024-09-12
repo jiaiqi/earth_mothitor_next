@@ -28,7 +28,7 @@ export default defineConfig({
     },
   },
   rules: [
-
+    ['text-bottom-decorate-blue', { 'background-image': 'linear-gradient(126.83deg,rgba(22, 132, 252, 1) 6.77%,rgba(255, 255, 255, 0) 85.31%,rgba(255, 255, 255, 0) 85.31%)' }],
     ['min-h-screen-260', { 'min-height': 'calc(100vh - 260px)' }],
     ['bg-gradient-blue', { 'background-image': ' linear-gradient(139.61deg, rgba(47,119,201,1) 4.16%,rgba(62,143,236,1) 122.08%);', 'color': '#fff' }],
   ],
