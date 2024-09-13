@@ -3,7 +3,13 @@ const props = defineProps<{
   title: string
   desc: string
   path: any[]
+  list?: any[]
+  total?: number
+  pageSize?: number
+  pageNum?: number
 }>()
+
+const emit = defineEmits(['on-search', 'on-page-change', 'on-filter'])
 </script>
 
 <template>
@@ -20,25 +26,12 @@ const props = defineProps<{
         </div>
       </div>
       <div class="page-content pos-relative z-2 mt-33px min-h-screen bg-white px-30px py-20px drop-shadow-sm">
-        <PublicBreadcrumbNavigation :path="props.path" />
-        <PublicFilter />
-        <div class="my-24px">
-          找到<span class="px-10px text-#1684FC font-700">5612</span>条记录
-        </div>
-        <div
-          class="content"
-          flex="~ col xl:row"
-        >
-          <div class="min-h-300px w-full" flex="1">
-            <PublicList />
-            <PublicPagination />
-            <slot />
-          </div>
-          <div class="w-full xl:w-300px">
-            <PublicHotNews />
+        <PublicBreadcrumbNavigation :path="props.path" @on-search="emit('on-search', $event)">
+          <template #right>
             <slot name="right" />
-          </div>
-        </div>
+          </template>
+        </PublicBreadcrumbNavigation>
+        <slot />
       </div>
     </div>
   </div>

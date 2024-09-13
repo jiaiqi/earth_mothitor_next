@@ -36,8 +36,17 @@ const fetch = $fetch.create({
 
 // 自动导出
 export const useHttp = {
-  get: (url: string, params?: any) => {
-    return fetch(url, { method: 'get', params })
+  // get: (url: string, params?: any): Promise<Response<T>> => {
+  //   return fetch(url, { method: 'get', params }) as Promise<Response<T>>
+  // },
+  get: <T>(url: string, params?: any): Promise<T> => {
+    const requestUrl = new URL(url)
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        requestUrl.searchParams.append(key, params[key])
+      })
+    }
+    return fetch(requestUrl.toString(), { method: 'GET' }) as Promise<T>
   },
 
   post: (url: string, body?: any, headers?: any) => {

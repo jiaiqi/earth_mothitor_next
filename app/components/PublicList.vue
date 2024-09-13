@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-const list = ref([
+const props = defineProps<{
+  list?: any[]
+}>()
+const mockData = [
   {
     title: '文物减隔震技术服务(减隔震装置与方率设计)',
     viewNum: 100,
@@ -20,7 +23,15 @@ const list = ref([
     viewNum: 9851,
     id: 4,
   },
-])
+]
+const list = computed(() => {
+  if (props.list) {
+    return props.list
+  }
+  else {
+    return mockData
+  }
+})
 </script>
 
 <template>
@@ -37,28 +48,16 @@ const list = ref([
               {{ item.viewNum || '' }}次
             </span>
           </div>
-          <div class="mt-15px hidden md:flex" flex="col gap-10px">
-            <div>
-              服务分类：重大工程健康监测与诊断
-            </div>
-            <div>
-              联系单位：中国地震局工程力学研究所
-            </div>
-            <div>
-              发布时间：2023年5月3日
+          <div v-if="item.subList" class="mt-15px hidden md:flex" flex="col gap-10px">
+            <div v-for="text in item.subList" :key="text">
+              {{ text }}
             </div>
           </div>
         </div>
       </div>
-      <div class="mt-15px flex text-#424242 md:hidden" flex="col gap-10px">
-        <div>
-          服务分类：重大工程健康监测与诊断
-        </div>
-        <div>
-          联系单位：中国地震局工程力学研究所
-        </div>
-        <div>
-          发布时间：2023年5月3日
+      <div v-if="item.subList" class="mt-15px flex text-#424242 md:hidden" flex="col gap-10px">
+        <div v-for="text in item.subList" :key="text">
+          {{ text }}
         </div>
       </div>
     </div>

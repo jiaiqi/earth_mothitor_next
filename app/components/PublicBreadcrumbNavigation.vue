@@ -21,17 +21,19 @@ const props = defineProps({
         </div>
       </div>
     </div>
-    <div class="right w-40% flex py-5px" border="1px solid #E5E5EA">
-      <div class="px-16px text-center">
-        <i class="i-ri:search-2-line text-20px text-black" />
-      </div>
-      <input
-        placeholder="请输入搜索信息" class="flex-1 indent-16px outline-none"
-      >
-      <el-button type="primary" class="mx-10px w-96px">
-        搜索
-      </el-button>
-    </div>
+    <slot name="right">
+      <!-- <div class="right w-40% flex py-5px" border="1px solid #E5E5EA">
+        <div class="px-16px text-center">
+          <i class="i-ri:search-2-line text-20px text-black" />
+        </div>
+        <input
+          placeholder="请输入搜索信息" class="flex-1 indent-16px outline-none"
+        >
+        <el-button type="primary" class="mx-10px w-96px">
+          搜索
+        </el-button>
+      </div> -->
+    </slot>
   </div>
 </template>
 
