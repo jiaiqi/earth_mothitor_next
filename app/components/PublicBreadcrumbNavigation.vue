@@ -5,17 +5,26 @@ const props = defineProps({
     default: () => ['首页'],
   },
 })
+const emit = defineEmits(['navigate'])
+
+function handleClick(index: number, text: string) {
+  if (index === 0 && text === '首页') {
+    navigateTo('/')
+    return
+  }
+  emit('navigate', index, text)
+}
 </script>
 
 <template>
-  <div class="top flex justify-between">
-    <div class="left flex items-center">
-      <div class="icon pos-relative z-2 h-42px w-42px text-center text-18px text-white line-height-38px">
+  <div class="flex justify-between">
+    <div class="flex items-center">
+      <div class="pos-relative z-2 h-42px w-42px text-center text-18px text-white line-height-38px">
         <img src="~/assets/images/icons/home.png" alt="" class="pos-absolute h-full w-full">
         <i class="i-ri:home-4-fill" />
       </div>
       <div class="left-text pos-relative left--10px min-w-375px flex pl-20px line-height-34px">
-        <div v-for="(item, index) in props.path" :key="item" class="flex items-center">
+        <div v-for="(item, index) in props.path" :key="item" :class="{ 'cursor-pointer hover:text-blue': index !== props.path.length - 1 }" class="flex items-center" @click="handleClick(index, item)">
           <span>{{ item }}</span>
           <img v-if="props.path.length && props.path.length - 1 > index " src="~/assets/images/icons/right-icon.png" class="mx-15px inline-block h-24px w-24px" alt="">
         </div>
@@ -37,6 +46,8 @@ const props = defineProps({
   </div>
 </template>
 
-<style>
-
+<style scoped>
+.left-text {
+  background: linear-gradient(88.74deg, rgba(241, 246, 255, 1) 1.25%, rgba(241, 246, 246, 0) 90.23%);
+}
 </style>

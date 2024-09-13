@@ -26,7 +26,7 @@ const emit = defineEmits(['on-search', 'on-page-change', 'on-filter'])
         </div>
       </div>
       <div class="page-content pos-relative z-2 mt-33px min-h-screen bg-white px-30px py-20px drop-shadow-sm">
-        <PublicBreadcrumbNavigation :path="props.path" @on-search="emit('on-search', $event)">
+        <PublicBreadcrumbNavigation :path="props.path">
           <template #right>
             <slot name="right" />
           </template>
@@ -48,8 +48,5 @@ const emit = defineEmits(['on-search', 'on-page-change', 'on-filter'])
     rgba(255, 255, 255, 0) 85.31%,
     rgba(255, 255, 255, 0) 85.31%
   );
-}
-.top .left .left-text {
-  background-image: linear-gradient(88.74deg, rgba(241, 246, 255, 1) 1.25%, rgba(241, 246, 246, 0) 90.23%);
 }
 </style>
