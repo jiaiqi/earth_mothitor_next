@@ -94,16 +94,12 @@ const svg = `
           <div>发布时间：{{ $dayjs(detailData.cdate).format('YYYY年M月D日') }}</div>
           <div>服务分类：{{ detailData.sclassification }}</div>
         </div>
-        <div
-          v-loading="loading" element-loading-text="加载中..."
-          :element-loading-spinner="svg"
-          element-loading-background="rgba(122, 122, 122, 0.8)"
-          min-h-220px
-        >
-          <div
-            v-html="detailHtml"
-          />
+        <div v-if="loading" class="h-500px text-center line-height-500px">
+          <LoaderL1 />
         </div>
+        <div
+          v-html="detailHtml"
+        />
       </div>
     </CommonPageContainer>
   </div>

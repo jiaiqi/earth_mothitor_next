@@ -13,6 +13,7 @@ const props = defineProps<{
         更多 <i class="i-ri:arrow-right-double-fill" />
       </div>
     </div>
+    <slot name="loader" />
     <NewsListContent class="py-20px" :news-list="props.newsList" :show-date="showDate" />
   </div>
 </template>

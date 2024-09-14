@@ -97,13 +97,18 @@ const currentSubCateList = computed(() => {
 const newsList = ref<any[]>([])
 
 const par = 'pageNum=1&pageSize=10'
+const loading = ref(true)
 getNewsList(par).then((res) => {
+  loading.value = false
   newsList.value = [...res.records].map((item) => {
     if (item.uploadTime) {
       item.date = item.uploadTime
     }
     return item
   })
+}).catch((error) => {
+  console.error('获取数据失败:', error)
+  loading.value = false
 })
 
 const imgs = [
@@ -194,6 +199,11 @@ const imgs = [
     <NewsList :news-list="newsList" :show-date="true">
       <template #title>
         <PublicTitle title="新闻动态" />
+      </template>
+      <template #loader>
+        <div v-if="loading" class="text-center line-height-400px">
+          <LoaderL4 />
+        </div>
       </template>
     </NewsList>
   </div>

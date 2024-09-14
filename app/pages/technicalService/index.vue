@@ -183,19 +183,21 @@ function toDetail(item: SrvItem) {
         </el-button>
       </div>
     </template>
+
     <PublicFilter :filter-list="filterList" @change="onFilter" />
     <div v-if="searchValue" class="my-24px">
       找到<span class="px-10px text-#1684FC font-700">{{ total }}</span>条记录
     </div>
+
     <div
       class="content"
       flex="~ col xl:row"
     >
       <div class="min-h-300px w-full" flex="1">
-        <PublicList
-          v-loading="loading" :list="list" element-loading-text="加载中..." element-loading-background="rgba(122, 122, 122, 0.8)"
-          @click-item="toDetail"
-        />
+        <div v-if="loading" class="h-500px text-center line-height-500px">
+          <LoaderL1 />
+        </div>
+        <PublicList :list="list" @click-item="toDetail" />
         <PublicPagination v-if="total" :page-size="pageSize" :page-num="pageNum" :total="total" @change="onPageChange" />
         <slot />
       </div>
