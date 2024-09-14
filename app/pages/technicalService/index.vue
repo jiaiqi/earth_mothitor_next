@@ -1,5 +1,8 @@
+<!-- 技术服务列表页面 -->
 <script lang="ts" setup>
 import { getServiceList } from '~/api/service'
+import { type SrvItem, useServiceStore } from '~/composables/home'
+import { encode } from '~/utils/base/dataEncry'
 
 const routePath = ['首页', '技术服务列表']
 const list = ref<any[]>([])
@@ -103,6 +106,7 @@ function onPageChange(params: { pageNum: number, pageSize: number }) {
   pageSize.value = params.pageSize
   getList()
 }
+const loading = ref(true)
 function getList() {
   const par = {
     sType: '',
@@ -118,11 +122,12 @@ function getList() {
   // if (filterModel.value.cunit) {
   //   par.cUnit = filterModel.value.cunit
   // }
+  loading.value = true
   getServiceList(par).then((res) => {
+    loading.value = false
     total.value = res.total
     pageSize.value = res.size
     pageNum.value = res.current
-
     list.value = res.records.map((item) => {
       return {
         ...item,
@@ -131,6 +136,28 @@ function getList() {
         subList: [`服务分类：${item.ssort}`, `联系单位：${item.cunit}`, `发布时间：${dayjs(item.mdate).format('YYYY年MM月DD日')}`],
       }
     })
+  }).catch((error) => {
+    console.error('获取 HTML 数据失败:', error)
+    loading.value = false
+  })
+}
+
+function toDetail(item: SrvItem) {
+  const store = useServiceStore()
+  store.clear()
+  store.setValue(item)
+  const data = {
+    sclassification: item.sclassification,
+    cdate: item.cdate,
+    cunit: item.cunit,
+    sname: item.sname,
+    recom: item.recom,
+  }
+  navigateTo({
+    path: `/technicalService/detail/${item.id}`,
+    query: {
+      data: encode(data),
+    },
   })
 }
 </script>
@@ -138,10 +165,6 @@ function getList() {
 <template>
   <CommonPageContainer
     :path="routePath"
-    :list="list"
-    :page-size="pageSize"
-    :page-num="pageNum"
-    :total="total"
     title="技术服务"
     desc="TECHNICAL SERVICE"
   >
@@ -169,7 +192,10 @@ function getList() {
       flex="~ col xl:row"
     >
       <div class="min-h-300px w-full" flex="1">
-        <PublicList :list="list" />
+        <PublicList
+          v-loading="loading" :list="list" element-loading-text="加载中..." element-loading-background="rgba(122, 122, 122, 0.8)"
+          @click-item="toDetail"
+        />
         <PublicPagination v-if="total" :page-size="pageSize" :page-num="pageNum" :total="total" @change="onPageChange" />
         <slot />
       </div>

@@ -1,4 +1,5 @@
 import { useHttp } from '~/utils/useHttp'
+import { encode } from '~/utils/base/dataEncry'
 // 技术服务
 export function getRequestUrl(url: string) {
   const config = useRuntimeConfig()
@@ -7,7 +8,6 @@ export function getRequestUrl(url: string) {
   return `${baseApi}:${PORT}${url}`
 }
 
-// 技术服务列表
 interface SrvListParams {
   pageNum: number
   pageSize: number
@@ -25,10 +25,21 @@ interface SrvResponse {
   total: number
   searchCount: boolean
 }
+
+// 技术服务列表 带分页参数
 export function getServiceList(data: SrvListParams): Promise<SrvResponse> {
   let str = `/prodSer/listPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}&like=${data.sClassification}&type=${data.sType}&name=${data.sName}&unit=${data.cUnit}&status=1`
   if (data.sort) {
     str += `&sort=${data.sort}`
   }
   return useHttp.get(getRequestUrl(str))
+}
+
+// 查询单个服务的富文本
+export function getHtml(id: any) {
+  const par = {
+    id,
+  }
+  const url = `/prodSer/getHtml`
+  return useHttp.post(getRequestUrl(url), encode(par))
 }

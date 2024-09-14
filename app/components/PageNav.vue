@@ -54,7 +54,7 @@ const menuHamburgerActive = ref(false)
         <NuxtLink
           v-for="nav in navList" :key="nav.name" :to="nav.path"
           class="nav-item mx-10px px-10px"
-          :class="{ active: activeNav === nav.path }"
+          :class="{ active: activeNav === nav.path || (nav.path !== '/' && activeNav.indexOf(nav.path) === 0) }"
         >
           {{ nav.name }}
         </NuxtLink>

@@ -2,6 +2,9 @@
 const props = defineProps<{
   list?: any[]
 }>()
+const emit = defineEmits<{
+  (e: 'clickItem', item: any): void
+}>()
 const mockData = [
   {
     title: '文物减隔震技术服务(减隔震装置与方率设计)',
@@ -32,11 +35,15 @@ const list = computed(() => {
     return mockData
   }
 })
+
+function handleClickItem(item: any) {
+  emit('clickItem', item)
+}
 </script>
 
 <template>
   <div class="grid w-full gap-y-30px pr-30px">
-    <div v-for="item in list" :key="item.id" class="cursor-pointer pb-30px" border="1px dashed transparent b-#E2E8F2">
+    <div v-for="item in list" :key="item.id" class="cursor-pointer pb-30px" border="1px dashed transparent b-#E2E8F2" @click="handleClickItem(item)">
       <div flex="~ items-start md:items-center gap-x-24px " class="w-full">
         <img src="/img/news_img.jpg" class="h-80px w-120px md:h-158px md:w-240px">
         <div class="flex-1 text-#424242">

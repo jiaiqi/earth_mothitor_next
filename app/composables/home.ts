@@ -20,3 +20,29 @@ export function useNewsStore() {
     getNewsList,
   }
 }
+
+export interface SrvItem {
+  id: ''
+  sname: ''
+  stype: ''
+  cunit: ''
+  sclassification: ''
+  stext?: ''
+  cdate: ''
+  recom: ''
+}
+export const useServiceStore = defineStore('service', () => {
+  const currentService = ref<SrvItem>()
+  const setValue = (data: SrvItem) => {
+    currentService.value = data
+  }
+  const getValue = () => currentService.value
+  const clear = () => {
+    currentService.value = undefined
+  }
+  return {
+    getValue,
+    setValue,
+    clear,
+  }
+})

@@ -2,6 +2,17 @@ import { appDescription } from './app/constants/index'
 import { pwa } from './app/config/pwa'
 
 export default defineNuxtConfig({
+
+  app: {
+    pageTransition: {
+      name: 'fade',
+      mode: 'out-in', // 默认值
+    },
+    layoutTransition: {
+      name: 'slide',
+      mode: 'out-in', // 默认值
+    },
+  },
   runtimeConfig: {
     public: {
       title: 'Nuxt3-Template',
@@ -32,6 +43,8 @@ export default defineNuxtConfig({
     payloadExtraction: false,
     renderJsonPayloads: true,
     typedPages: true,
+    // viewTransition: true, // 视图过渡API（实验性）
+
   },
 
   css: [
