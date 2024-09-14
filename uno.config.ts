@@ -31,6 +31,7 @@ export default defineConfig({
     ['text-bottom-decorate-blue', { 'background-image': 'linear-gradient(126.83deg,rgba(22, 132, 252, 1) 6.77%,rgba(255, 255, 255, 0) 85.31%,rgba(255, 255, 255, 0) 85.31%)' }],
     ['min-h-screen-260', { 'min-height': 'calc(100vh - 260px)' }],
     ['bg-gradient-blue', { 'background-image': ' linear-gradient(139.61deg, rgba(47,119,201,1) 4.16%,rgba(62,143,236,1) 122.08%);', 'color': '#fff' }],
+    ['bg-gradient-blue-2', { 'background-image': 'linear-gradient(153.71deg, rgba(22,132,252,1) 16.54%,rgba(47,119,201,1) 136.86%);', 'color': '#fff' }],
   ],
   shortcuts: [
     ['btn', 'px-4 py-1 rounded inline-block bg-teal-600 text-white cursor-pointer hover:bg-teal-700 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],

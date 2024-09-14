@@ -1,5 +1,5 @@
 import { useHttp } from '~/utils/useHttp'
-import { encode } from '~/utils/base/dataEncry'
+import { decode, encode } from '~/utils/base/dataEncry'
 // 技术服务
 export function getRequestUrl(url: string) {
   const config = useRuntimeConfig()
@@ -51,4 +51,20 @@ export function addRemod(id: any) {
   }
   const url = '/prodSer/addRemod'
   return useHttp.post(getRequestUrl(url), encode(par))
+}
+
+// 产品目录
+export function getProList(data: any) {
+  const classStr = data.classification ? `&classification=${data.classification}` : ''
+  const nameStr = data.name ? `&name=${data.name}` : ''
+  const unitStr = data.institution ? `&unit=${data.institution}` : ''
+  const url = `/prodSer/proListPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}&status=1${classStr}${nameStr}${unitStr}`
+  return useHttp.get(getRequestUrl(url))
+}
+
+// 产品震害防御列表
+export async function getConditionsList(data) {
+  const url = `/prodSer/pgnss/ConditionsList`
+  const response = await useHttp.post(getRequestUrl(url), encode(data))
+  return decode(response)
 }
