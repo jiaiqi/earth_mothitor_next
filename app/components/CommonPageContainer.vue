@@ -21,7 +21,7 @@ function onNavigate(index: number, text: string) {
           {{ props.title || '--' }}
           <div class="pos-absolute bottom-0 z--1 hidden h-10px w-200px rounded-20px text-bottom-decorate-blue md:block" />
         </div>
-        <div class="text-18px line-height-25px">
+        <div class="text-18px line-height-25px uppercase">
           {{ props.desc || '--' }}
         </div>
       </div>

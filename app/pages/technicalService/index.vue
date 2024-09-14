@@ -151,7 +151,7 @@ function toDetail(item: SrvItem) {
     cdate: item.cdate,
     cunit: item.cunit,
     sname: item.sname,
-    recom: item.recom,
+    // recom: item.recom,
   }
   navigateTo({
     path: `/technicalService/detail/${item.id}`,

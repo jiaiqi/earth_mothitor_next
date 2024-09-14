@@ -39,10 +39,10 @@ const animationDuration = computed(() => `${notices.value.length * 10}s`)
     </div>
     <div class="scroll-wrap flex-1 overflow-hidden rounded-full">
       <div class="scroll-content flex flex-1 whitespace-nowrap">
-        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
+        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/situation/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.title }}
         </NuxtLink>
-        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
+        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/situation/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.title }}
         </NuxtLink>
       </div>

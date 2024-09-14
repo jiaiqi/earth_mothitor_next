@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { getHtml } from '~/api/service'
+import { addRemod, getHtml } from '~/api/service'
 import { decode } from '~/utils/base/dataEncry'
 
+const routePath = [{ name: '首页', path: '/' }, { name: '技术服务', path: '/technicalService' }, { name: '技术服务详情' }]
 const store = useServiceStore()
 const route = useRoute()
 const detailData = computed(() => {
@@ -10,14 +11,20 @@ const detailData = computed(() => {
   if (data.sclassification && typeof data.sclassification === 'string' && data.sclassification?.includes('/')) {
     data.sclassification = data.sclassification.split('/')[1]
   }
+  if (recom.value) {
+    data.recom = recom.value
+  }
   return data
 })
-const routePath = [{ name: '首页', path: '/' }, { name: '技术服务', path: '/technicalService' }, { name: '技术服务详情' }]
-const detailHtml = ref<string>('')
+
+const recom = ref<number | unknown>(null)
+
 const loading = ref(true)
+const detailHtml = ref<string>('')
 function getDetailHtml() {
   const route = useRoute()
   const id = route.params.id
+  addViews(id)
   getHtml(id).then((res) => {
     loading.value = false
     // 赋值给 detailHtml.value
@@ -42,22 +49,18 @@ function getDetailHtml() {
     })
 }
 getDetailHtml()
-const svg = `
-        <path class="path" d="
-          M 30 15
-          L 28 17
-          M 25.61 25.61
-          A 15 15, 0, 0, 1, 15 30
-          A 15 15, 0, 1, 1, 27.99 7.5
-          L 15 15
-        " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
-      `
+
+// 增加浏览量
+function addViews(id) {
+  addRemod(id).then((num) => {
+    recom.value = num
+  })
+}
 </script>
 
 <template>
   <div>
     <CommonPageContainer
-
       title="技术服务"
       desc="TECHNICAL SERVICE"
       :path="routePath"
@@ -98,7 +101,5 @@ const svg = `
 </template>
 
 <style>
-.example-showcase .el-loading-mask {
-  z-index: 9;
-}
+
 </style>

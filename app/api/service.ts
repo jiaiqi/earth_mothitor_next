@@ -43,3 +43,12 @@ export function getHtml(id: any) {
   const url = `/prodSer/getHtml`
   return useHttp.post(getRequestUrl(url), encode(par))
 }
+
+// 增加浏览量
+export function addRemod(id: any) {
+  const par = {
+    id,
+  }
+  const url = '/prodSer/addRemod'
+  return useHttp.post(getRequestUrl(url), encode(par))
+}
