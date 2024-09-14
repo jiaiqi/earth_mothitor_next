@@ -12,14 +12,7 @@ const detailData = computed(() => {
   }
   return data
 })
-const routePath = ['首页', '技术服务', '技术服务详情']
-function onNavigate(index: number) {
-  if (index === 1) {
-    // 回退到技术服务列表
-    const router = useRouter()
-    router.replace('/technicalService')
-  }
-}
+const routePath = [{ name: '首页', path: '/' }, { name: '技术服务', path: '/technicalService' }, { name: '技术服务详情' }]
 const detailHtml = ref<string>('')
 const loading = ref(true)
 function getDetailHtml() {
@@ -68,7 +61,6 @@ const svg = `
       title="技术服务"
       desc="TECHNICAL SERVICE"
       :path="routePath"
-      @navigate="onNavigate"
     >
       <div class="my-20px bg-#F6F7FA px-20px py-10px md:px-60px md:py-30px">
         <div class="hidden items-center justify-between md:flex">

@@ -4,7 +4,7 @@ import { getServiceList } from '~/api/service'
 import { type SrvItem, useServiceStore } from '~/composables/home'
 import { encode } from '~/utils/base/dataEncry'
 
-const routePath = ['首页', '技术服务列表']
+const routePath = [{ name: '首页', path: '/' }, { name: '技术服务列表' }]
 const list = ref<any[]>([])
 const serveUnit = ref('')
 const searchValue = ref('')
