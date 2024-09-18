@@ -258,16 +258,23 @@ const listData = computed(() => {
       flex="~ col xl:row"
     >
       <div class="min-h-300px w-full" flex="1">
-        <div class="flex items-start">
-          <div class="pos-relative mr-20px w-180px cursor-pointer rounded-6px text-center text-#333 line-height-46px" border="1px solid #E5E5EA">
-            <div class="bg-gradient-blue-2 pos-absolute left-0 z--1 h-50% w-full flex items-center rounded-6px transition-all ease-in-out" :class="{ 'top-0': dataType === '地震监测', 'top-50%': dataType === '震害防御' }">
+        <div class="pos-relative items-start" flex="~ col md:row">
+          <div md="w-180px block" class="pos-relative mb-20px mr-20px flex cursor-pointer rounded-6px bg-white text-center text-#333 line-height-46px" border="1px solid #E5E5EA">
+            <div
+              md="h-50% w-full"
+              class="bg-gradient-blue-2 pos-absolute top-0 z--1 z-1 h-full w-50% flex items-center rounded-6px transition-all ease-in-out"
+              :class="{
+                'right-50% md:right-unset': dataType === '地震监测',
+                'md:top-50% md:left-0 right-0 left-unset ': dataType === '震害防御',
+              }"
+            >
               <img src="/img/icon/right.png" alt="">
             </div>
 
-            <div :class="{ 'text-white': dataType === '地震监测' }" @click="changeDataType('地震监测')">
+            <div class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '地震监测' }" @click="changeDataType('地震监测')">
               地震监测
             </div>
-            <div :class="{ 'text-white': dataType === '震害防御' }" @click="changeDataType('震害防御')">
+            <div class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '震害防御' }" @click="changeDataType('震害防御')">
               震害防御
             </div>
           </div>
