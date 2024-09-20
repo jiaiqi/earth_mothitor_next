@@ -25,7 +25,7 @@ function onNavigate(index: number, text: string) {
           {{ props.desc || '--' }}
         </div>
       </div>
-      <div class="page-content pos-relative z-2 mt-33px min-h-screen bg-white px-30px py-20px drop-shadow-sm">
+      <div class="page-content pos-relative z-2 mt-33px bg-white px-30px py-20px drop-shadow-sm">
         <PublicBreadcrumbNavigation :path="props.path" @navigate="onNavigate">
           <template #right>
             <slot name="right" />
