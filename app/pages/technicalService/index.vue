@@ -201,10 +201,10 @@ function toDetail(item: SrvItem) {
         <PublicPagination v-if="total" :page-size="pageSize" :page-num="pageNum" :total="total" @change="onPageChange" />
         <slot />
       </div>
-      <div class="w-full xl:w-300px">
+      <!-- <div class="w-full xl:w-300px">
         <PublicHotNews />
         <slot name="right" />
-      </div>
+      </div> -->
     </div>
   </CommonPageContainer>
 </template>
