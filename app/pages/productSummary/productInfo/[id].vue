@@ -67,7 +67,9 @@ if (['地磁产品', '地电产品', '地倾斜', '地应变', '重力产品'].i
   form.originalDataSource = form.dataSource
 }
 // getDictId()
-getLinkFileList()
+if (form.classification === '地震监测') {
+  getLinkFileList()
+}
 const loading = ref(false)
 const topCardFields = [{
   label: '编号',
