@@ -24,6 +24,7 @@ export default defineNuxtConfig({
       servPort: '9541',
       cartPort: '9546',
       collePort: '9549',
+      regulationPort: '9531',
     },
   },
   modules: [
