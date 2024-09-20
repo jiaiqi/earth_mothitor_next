@@ -34,7 +34,7 @@ export default defineConfig({
     ['bg-gradient-blue-2', { 'background-image': 'linear-gradient(153.71deg, rgba(22,132,252,1) 16.54%,rgba(47,119,201,1) 136.86%);', 'color': '#fff' }],
   ],
   shortcuts: [
-    ['btn', 'px-4 py-1 rounded inline-block bg-teal-600 text-white cursor-pointer hover:bg-teal-700 disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
+    ['btn', 'px-4 py-1 rounded inline-block bg-gradient-blue-2 text-white cursor-pointer hover:bg-gradient-blue disabled:cursor-default disabled:bg-gray-600 disabled:opacity-50'],
     ['icon-btn', 'inline-block cursor-pointer select-none opacity-75 transition duration-200 ease-in-out hover:opacity-100 hover:text-teal-600'],
   ],
   presets: [
