@@ -108,3 +108,23 @@ export function seisserverORList(data) {
   const PORT = 9528
   return useHttp.post(getRequestUrl(url, PORT), `pageNum=${data.pageNum}&pageSize=${data.pageSize}`, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' })
 }
+
+// 产品附件列表
+export async function getFileList(data) {
+  const url = '/prodSer/fileInAdd/list'
+  const res = await useHttp.post(getRequestUrl(url), encode(data))
+  return decode(res)
+}
+
+// 产品类型字典表列表
+export async function dictionaryList(data) {
+  const url = `/prodSer/dictionary/list`
+  const res = await useHttp.post(getRequestUrl(url), encode(data))
+  return decode(res)
+}
+
+// 产品图片
+export function getLinkFile(id: any) {
+  const url = `/prodSer/getLinkFile?id=${id}`
+  return useHttp.get(getRequestUrl(url)).then(res => decode(res))
+}
