@@ -1,7 +1,11 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
+import { hotDataAdd } from '~/api/count'
 import { getConditionsList, getProList } from '~/api/service'
 import { type SrvItem, useServiceStore } from '~/composables/home'
-import { encode } from '~/utils/base/dataEncry'
+import { decode, encode } from '~/utils/base/dataEncry'
 
 const routePath = [{ name: '首页', path: '/' }, { name: '产品目录列表' }]
 const searchValue = ref('')
@@ -82,7 +86,13 @@ function onPageChange(params: { pageNum: number, pageSize: number }) {
   queryParams.pageSize = params.pageSize
   getList()
 }
+function onPageChange2(params: { pageNum: number, pageSize: number }) {
+  queryParams2.pageNum = params.pageNum
+  queryParams2.pageSize = params.pageSize
+  getList2()
+}
 
+// 地震监测
 const noData = ref(false)
 const loading = ref(true)
 const total = ref(0)
@@ -92,14 +102,28 @@ const queryParams = reactive(
     pageNum: 1,
   },
 )
-const serveUnitList = ref<any[]>([])
 const prodList = ref<any[]>([])
+
+// 震害防御
+const loading2 = ref(true)
+const noData2 = ref(false)
+const queryParams2 = reactive(
+  {
+    pageSize: 9,
+    pageNum: 1,
+  },
+)
+const prodList2 = ref<any[]>([])
+const total2 = ref(0)
+
+const serveUnitList = ref<any[]>([])
 function getList() {
   const par = {
     pageNum: queryParams.pageNum,
     pageSize: queryParams.pageSize,
     name: searchValue.value,
     institution: filterModel.value.institution, // 联系单位
+    classification: dataType.value,
   }
 
   loading.value = true
@@ -140,56 +164,21 @@ function getList() {
   })
 }
 
-function toDetail(item: SrvItem) {
-  const data = {
-    sclassification: item.sclassification,
-    cdate: item.cdate,
-    cunit: item.cunit,
-    sname: item.sname,
-    // recom: item.recom,
-  }
-  navigateTo({
-    path: `/technicalService/detail/${item.id}`,
-    query: {
-      data: encode(data),
-    },
-  })
-}
-const procList2 = ref<any[]>([])
+// 查找震害防御产品列表
 function getList2() {
+  prodList2.value = []
   const par = {
-    pageNum: 1,
-    pageSize: queryParams.pageSize,
-    auditState: 99,
-  }
-  procList2.value = []
-  getDisProd()
-  getConditionsList(par).then((response) => {
-    if (response.records.length) {
-      response.records.forEach((item) => {
-        const obj = { ...item, title: item.name }
-        const subList = []
-        if (item.classification) {
-          subList.push(`产品分类：${item.classification}`)
-        }
-        if (item.institution) {
-          subList.push(`联系单位：${item.institution}`)
-        }
-        obj.subList = subList
-        procList2.value.push(obj)
-      })
-    }
-  })
-}
-// 获得震害防御特殊产品列表
-function getDisProd() {
-  const par = {
-    pageNum: 1,
-    pageSize: 999,
+    pageNum: queryParams2.pageNum,
+    pageSize: queryParams2.pageSize,
     classification: '震害防御',
   }
+  loading2.value = true
   getProList(par).then((response) => {
+    loading2.value = false
     const list = response.records
+    queryParams2.pageSize = response.size
+    queryParams2.pageNum = response.current
+    total2.value = response.total
     if (list.length) {
       list.forEach((item) => {
         const subList = []
@@ -204,14 +193,35 @@ function getDisProd() {
           title: item.name,
           subList,
         }
-        procList2.value.unshift(obj)
+        prodList2.value.unshift(obj)
+      })
+    }
+  })
+  const par2 = {
+    pageNum: 1,
+    pageSize: 999,
+    auditState: 99,
+  }
+  getConditionsList(par2).then((response) => {
+    if (response.records.length) {
+      response.records.forEach((item) => {
+        const obj = { ...item, title: item.name }
+        const subList = []
+        if (item.classification) {
+          subList.push(`产品分类：${item.classification}`)
+        }
+        if (item.institution) {
+          subList.push(`联系单位：${item.institution}`)
+        }
+        obj.subList = subList
+        prodList2.value.push(obj)
       })
     }
   })
 }
+
 const dataType = ref<string>('地震监测')
 function changeDataType(type: string) {
-  console.log(type)
   dataType.value = type
   if (dataType.value === '震害防御') {
     getList2()
@@ -222,26 +232,63 @@ function changeDataType(type: string) {
 }
 
 const listData = computed(() => {
-  return dataType.value === '震害防御' ? procList2.value : prodList.value
+  return dataType.value === '震害防御' ? prodList2.value : prodList.value
 })
+
+function toDetail(item: any) {
+  if (['统一编目目录', '震源机制解目录1', '速报目录', '震源机制解目录2'].includes(item.name)) {
+    const typeMap = {
+      统一编目目录: 'cata',
+      震源机制解目录1: 'sms',
+      震源机制解目录2: 'smsxgp',
+      速报目录: 'soon',
+    }
+    navigateTo({ path: '/productSummary/earthCataList', query: { type: typeMap[item.name] } })
+  }
+  else if (item.linkUrl) {
+    if (confirm('您访问的链接即将离开公服网站，是否继续？')) {
+      window.open(item.linkUrl)
+    }
+  }
+  else {
+    navigateTo({
+      path: `/productSummary/productInfo/${item.id}`,
+      query: {
+        data: encode(item),
+      },
+    })
+    addHot(name, `/monitor/productInfo?id=${item.id}`)
+  }
+
+  // navigateTo({
+  //   path: `/technicalService/detail/${item.id}`,
+  //   query: {
+  //     data: encode(data),
+  //   },
+  // })
+}
+function addHot(name, url) {
+  const form = {
+    keyName: `产品服务-${name}`,
+    url,
+    linkUnit: '',
+  }
+  hotDataAdd(form)
+}
 </script>
 
 <template>
-  <CommonPageContainer
-    :path="routePath"
-    title="产品目录"
-    desc="PRODUCT CATALOG"
-  >
+  <CommonPageContainer :path="routePath" title="产品目录" desc="PRODUCT CATALOG">
     <template #right>
       <div class="right w-40% flex items-center py-5px" border="1px solid #E5E5EA">
         <div class="px-16px text-center">
           <i class="i-ri:search-2-line text-20px text-black" />
         </div>
-        <input
-          v-model="inputVal"
-          placeholder="请输入搜索信息" class="min-w-0 flex-1 indent-16px outline-none"
-        >
-        <i class="i-ri:close-circle-line cursor-pointer text-gray opacity-0" :class="{ 'opacity-100': inputVal }" @click="clearInput" />
+        <input v-model="inputVal" placeholder="请输入搜索信息" class="min-w-0 flex-1 indent-16px outline-none">
+        <i
+          class="i-ri:close-circle-line cursor-pointer text-gray opacity-0" :class="{ 'opacity-100': inputVal }"
+          @click="clearInput"
+        />
         <el-button type="primary" class="mx-10px md:w-96px" @click="onSearch">
           搜索
         </el-button>
@@ -253,16 +300,17 @@ const listData = computed(() => {
       找到<span class="px-10px text-#1684FC font-700">{{ total }}</span>条记录
     </div>
 
-    <div
-      class="content"
-      flex="~ col xl:row"
-    >
+    <div class="content" flex="~ col xl:row">
       <div class="min-h-300px w-full" flex="1">
         <div class="pos-relative items-start" flex="~ col md:row">
-          <div md="w-180px block" class="pos-relative mb-20px mr-20px flex cursor-pointer rounded-6px bg-white text-center text-#333 line-height-46px" border="1px solid #E5E5EA">
+          <div
+            md="w-180px block"
+            class="pos-relative mb-20px mr-20px flex cursor-pointer rounded-6px bg-white text-center text-#333 line-height-46px"
+            border="1px solid #E5E5EA"
+          >
             <div
               md="h-50% w-full"
-              class="bg-gradient-blue-2 pos-absolute top-0 z--1 z-1 h-full w-50% flex items-center rounded-6px transition-all ease-in-out"
+              class="pos-absolute top-0 z--1 z-1 h-full w-50% flex items-center rounded-6px transition-all ease-in-out bg-gradient-blue-2"
               :class="{
                 'right-50% md:right-unset': dataType === '地震监测',
                 'md:top-50% md:left-0 right-0 left-unset ': dataType === '震害防御',
@@ -271,14 +319,20 @@ const listData = computed(() => {
               <img src="/img/icon/right.png" alt="">
             </div>
 
-            <div class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '地震监测' }" @click="changeDataType('地震监测')">
+            <div
+              class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '地震监测' }"
+              @click="changeDataType('地震监测')"
+            >
               地震监测
             </div>
-            <div class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '震害防御' }" @click="changeDataType('震害防御')">
+            <div
+              class="pos-relative z-2 px-30px" :class="{ 'text-white': dataType === '震害防御' }"
+              @click="changeDataType('震害防御')"
+            >
               震害防御
             </div>
           </div>
-          <div class="flex-1">
+          <div v-show="dataType === '地震监测'" class="flex-1">
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>
@@ -287,7 +341,24 @@ const listData = computed(() => {
                 <img src="/img/productcatalog.jpg" class="h-150px w-full">
               </template>
             </PublicList>
-            <PublicPagination v-if="total" :page-size="queryParams.pageSize" :page-num="queryParams.pageNum" :total="total" @change="onPageChange" />
+            <PublicPagination
+              v-if="total" :page-size="queryParams.pageSize" :page-num="queryParams.pageNum"
+              :total="total" @change="onPageChange"
+            />
+          </div>
+          <div v-show="dataType === '震害防御'" class="flex-1">
+            <div v-if="loading" class="h-500px text-center line-height-500px">
+              <LoaderL1 />
+            </div>
+            <PublicList :list="listData" type="上图下文" @click-item="toDetail">
+              <template #image>
+                <img src="/img/productcatalog.jpg" class="h-150px w-full">
+              </template>
+            </PublicList>
+            <PublicPagination
+              v-if="total2 && total2 > queryParams2.pageSize" :page-size="queryParams2.pageSize" :page-num="queryParams2.pageNum"
+              :total="total2" @change="onPageChange2"
+            />
           </div>
         </div>
       </div>
@@ -299,6 +370,4 @@ const listData = computed(() => {
   </CommonPageContainer>
 </template>
 
-<style>
-
-</style>
+<style></style>

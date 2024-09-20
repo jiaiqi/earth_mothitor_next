@@ -1,3 +1,4 @@
+import { encode } from '~/utils/base/dataEncry'
 import { useHttp } from '~/utils/useHttp'
 
 export function getRequestUrl(url: string, port?: number) {
@@ -45,5 +46,6 @@ export function getHotSpotListPage(data) {
 
 // 热点数据新增
 export function hotDataAdd(data) {
-  return useHttp.post(getRequestUrl(`/collectserver/hotSpot/add`), data)
+  const PORT = 9537
+  return useHttp.post(getRequestUrl(`/collectserver/hotSpot/add`, PORT), encode(data))
 }

@@ -22,14 +22,14 @@ export function useNewsStore() {
 }
 
 export interface SrvItem {
-  id: ''
-  sname: ''
-  stype: ''
-  cunit: ''
-  sclassification: ''
-  stext?: ''
-  cdate: ''
-  recom: ''
+  id: string
+  sname: string
+  stype: string
+  cunit: string
+  sclassification: string
+  stext?: string
+  cdate: string
+  recom: string
 }
 export const useServiceStore = defineStore('service', () => {
   const currentService = ref<SrvItem>()

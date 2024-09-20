@@ -1,9 +1,9 @@
 import { useHttp } from '~/utils/useHttp'
 import { decode, encode } from '~/utils/base/dataEncry'
 // 技术服务
-export function getRequestUrl(url: string) {
+export function getRequestUrl(url: string, prot?: number) {
   const config = useRuntimeConfig()
-  const PORT = config.public.servPort
+  const PORT = prot || config.public.servPort
   const baseApi = config.public.apiBase
   return `${baseApi}:${PORT}${url}`
 }
@@ -67,4 +67,44 @@ export async function getConditionsList(data) {
   const url = `/prodSer/pgnss/ConditionsList`
   const response = await useHttp.post(getRequestUrl(url), encode(data))
   return decode(response)
+}
+
+// 获取速报列表
+export function getEveList(data: any) {
+  const url = `/infoserver/sb/pageList?pageNum=${data.pageNum}&pageSize=${data.pageSize}&m=${data.m || ''}`
+  return useHttp.get(getRequestUrl(url))
+}
+
+// 震源机制解
+export function seisserverXGPList(data) {
+  const url = `/seisserver/XGP/list`
+  const PORT = 9528
+  return useHttp.post(getRequestUrl(url, PORT), `pageNum=${data.pageNum}&pageSize=${data.pageSize}`, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' })
+  // return request({
+  //   url: '/seisserver/XGP/list',
+  //   headers: {
+  //     isToken: true,
+  //     Accept: 'text/plain, */*',
+  //     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' //
+  //   },
+  //   method: 'post',
+  //   data: Qs.stringify({
+  //     pageNum: data.pageNum,
+  //     pageSize: data.pageSize
+  //   })
+  // })
+}
+
+// 震源机制解目录
+export function seisserverSMSList(data: any) {
+  const url = `/seisserver/SMS/list`
+  const PORT = 9528
+  return useHttp.post(getRequestUrl(url, PORT), `pageNum=${data.pageNum}&pageSize=${data.pageSize}`, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' })
+}
+
+// 统一编目目录
+export function seisserverORList(data) {
+  const url = `/seisserver/OR/list`
+  const PORT = 9528
+  return useHttp.post(getRequestUrl(url, PORT), `pageNum=${data.pageNum}&pageSize=${data.pageSize}`, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' })
 }
