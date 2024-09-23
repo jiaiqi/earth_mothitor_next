@@ -2,6 +2,7 @@
   setup
   lang="ts"
 >
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import { appName } from '~/constants'
 
 useHead({
@@ -14,12 +15,14 @@ useHead({
   <NuxtLayout>
     <div>
       <NuxtLoadingIndicator color="var(--color-primary)" />
-      <NuxtPage
-        :transition="{
-          name: 'bounce',
-          mode: 'out-in',
-        }"
-      />
+      <el-config-provider :locale="zhCn">
+        <NuxtPage
+          :transition="{
+            name: 'bounce',
+            mode: 'out-in',
+          }"
+        />
+      </el-config-provider>
     </div>
   </NuxtLayout>
 </template>
