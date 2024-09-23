@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 interface PathItem {
   name: string
-  path: string
+  path?: string
 }
 
 const props = defineProps<{ path: PathItem[] }>()
@@ -23,7 +23,7 @@ const currentPath = props.path.length > 0 ? props.path : defaultPath
         <img src="~/assets/images/icons/home.png" alt="" class="pos-absolute h-full w-full">
         <i class="i-ri:home-4-fill" />
       </div>
-      <div class="left-text pos-relative left--10px min-w-375px flex pl-20px line-height-34px">
+      <div class="left-text pos-relative left--10px min-w-300px flex pl-20px line-height-34px">
         <div v-for="(item, index) in currentPath" :key="index" :class="{ 'cursor-pointer hover:text-#3682DA': item.path }" class="flex items-center">
           <span v-if="!item.path">{{ item.name }}</span>
           <NuxtLink v-else :to="item.path">
