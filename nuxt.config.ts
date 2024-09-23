@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       title: 'Nuxt3-Template',
       description: '',
       apiBase: 'http://10.7.203.147',
-      basePort: '9527',
+      basePort: '9528',
       updaPort: '9529',
       cataPort: '9529',
       servPort: '9541',
@@ -37,6 +37,7 @@ export default defineNuxtConfig({
     '@element-plus/nuxt',
     '@nuxt/image',
     'dayjs-nuxt',
+    '@nuxtjs/leaflet',
   ],
   experimental: {
     // when using generate, payload js assets included in sw precache manifest
