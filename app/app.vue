@@ -35,4 +35,12 @@ useHead({
   opacity: 0;
   filter: blur(1rem);
 }
+@media (min-width: 768px) {
+  .md\:flex {
+    display: flex !important;
+  }
+}
+.iclient-leaflet-logo.leaflet-control {
+  display: none;
+}
 </style>
