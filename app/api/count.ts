@@ -25,12 +25,14 @@ export function viewNumAdd(data) {
 
 // 学科分类列表
 export function getListPage(data) {
-  return useHttp.get(getRequestUrl(`/collectserver/subjectMsg/listPage?${data}`))
+  const PORT = 9549
+  return useHttp.get(getRequestUrl(`/collectserver/subjectMsg/listPage?${data}`, PORT))
 }
 
 // 学科类型列表
 export function getTypeDic(data) {
-  return useHttp.get(getRequestUrl(`/collectserver/typeDic/listPage?${data}`))
+  const PORT = 9549
+  return useHttp.get(getRequestUrl(`/collectserver/typeDic/listPage?${data}`, PORT))
 }
 
 // 热点数据列表

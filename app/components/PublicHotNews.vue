@@ -1,5 +1,8 @@
 <!-- 热门推荐 -->
 <script lang="ts" setup>
+const props = defineProps<{
+  list: any[]
+}>()
 const list = ref([
   {
     title: '自治区活动断层分布图',
@@ -26,6 +29,27 @@ const list = ref([
     id: 6,
   },
 ])
+const listData = computed(() => {
+  if (props.list && props.list.length) {
+    return props.list
+  }
+  else {
+    return list
+  }
+})
+// 查看详情
+function goInfo(item) {
+  sessionStorage.setItem('hotInfo', JSON.stringify(item))
+  if (item.linkUnit) {
+    sessionStorage.setItem('tips', item.linkUnit)
+  }
+  if (item.url.includes('http://') || item.url.includes('https://')) {
+    window.open(item.url)
+  }
+  else {
+    navigateTo(item.url)
+  }
+}
 </script>
 
 <template>
@@ -51,11 +75,11 @@ const list = ref([
       </span>
     </div>
     <div class="mb-20px">
-      <div v-for="(item, index) in list" :key="item.id" class="mt-20px flex cursor-pointer items-center">
+      <div v-for="(item, index) in listData" :key="item.id" class="mt-20px flex cursor-pointer items-center" @click="goInfo(item)">
         <div :class="[{ 'list-decorate': index > 2, 'bg-#1684FC w-18px line-height-18px text-center text-12px  text-white': index < 3 }]">
           <span v-if="index < 3">{{ index + 1 }}</span>
         </div>
-        <div class="ml-10px">
+        <div class="ml-10px truncate" :title="item.title ">
           {{ item.title }}
         </div>
       </div>
