@@ -161,6 +161,53 @@ function htmlToText(htmlString: string) {
   // 返回纯文本
   return text.trim()
 }
+
+const router = useRouter()
+function toPath(name) {
+  // microApp.setData(name, { path: path })
+  // router.push(path)
+  if (name === '#') {
+    ElMessage.info('正在建设中，敬请期待')
+    return
+  }
+  if (name.includes(',')) {
+    const type = name.split(',')[1]
+    const name2 = name.split(',')[0]
+    if (name === 'precursorElectromagnetism,1') {
+      ElMessage.info('地磁数据涉密，请按照有关涉密数据申请要求办理相关手续。')
+      return
+    }
+    if (name === 'precursorElectromagnetism,2') {
+      ElMessage.info('地电数据涉密，请按照有关涉密数据申请要求办理相关手续。')
+      return
+    }
+    router.push({ name: name2, query: { type } })
+    // router.go(0)
+  }
+  else {
+    if (name === 'precursorGravity') {
+      ElMessage.info('重力数据涉密，请按照有关涉密数据申请要求办理相关手续。')
+      return
+    }
+
+    let routerName = name
+    switch (name) {
+      case 'serviceSeismometry':
+        routerName = 'service-seismometry'
+        break
+      default:
+        routerName = camelToKebab(name)
+        break
+    }
+    router.push({ name: routerName })
+    if (name !== 'home') {
+      // router.go(0)
+    }
+  }
+}
+function camelToKebab(camelStr) {
+  return camelStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
+}
 </script>
 
 <template>
@@ -179,18 +226,31 @@ function htmlToText(htmlString: string) {
           <LoaderL1 />
         </div>
         <div class="w-full flex flex-col gap-y-30px overflow-hidden pr-30px">
-          <div v-for="item in list" :key="item.id" flex="~" class="w-full cursor-pointer overflow-hidden pb-30px" border="1px dashed transparent b-#E2E8F2" @click="handleClickItem(item)">
+          <div
+            v-for="item in list" :key="item.id" flex="~"
+            class="w-full cursor-pointer overflow-hidden pb-30px"
+            border="1px dashed transparent b-#E2E8F2"
+            @click="toPath(item.url)"
+          >
             <img src="/img/img2.jpg" class="h-80px w-120px md:h-158px md:w-240px">
             <div class="w-[calc(100%_-_120px)] flex-1 px-20px text-#424242">
               <div class="title" flex="col md:row ~ justify-between">
-                <span class="line-clamp-2 text-size-18px text-#111 font-700 line-height-26px" :title="item.title">{{ item.title }}
+                <span
+                  class="line-clamp-2 text-size-18px text-#111 font-700 line-height-26px"
+                  :title="item.title"
+                >{{ item.title }}
                 </span>
                 <span v-if="item.viewNum" class="flex items-center text-#AEAEB2">
                   <i class="i-ri:eye-fill mr-10px" />
                   {{ item.viewNum || '' }}次
                 </span>
               </div>
-              <div v-if="item.richText" class="line-clamp-4 mt-5px text-#424242 line-height-30px" :title="htmlToText(item.richText)" v-text="htmlToText(item.richText)" />
+              <div
+                v-if="item.richText"
+                class="line-clamp-4 mt-5px text-#424242 line-height-30px"
+                :title="htmlToText(item.richText)"
+                v-text="htmlToText(item.richText)"
+              />
             </div>
           </div>
         </div>

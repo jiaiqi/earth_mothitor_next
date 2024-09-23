@@ -80,19 +80,6 @@ export function seisserverXGPList(data) {
   const url = `/seisserver/XGP/list`
   const PORT = 9528
   return useHttp.post(getRequestUrl(url, PORT), `pageNum=${data.pageNum}&pageSize=${data.pageSize}`, { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' })
-  // return request({
-  //   url: '/seisserver/XGP/list',
-  //   headers: {
-  //     isToken: true,
-  //     Accept: 'text/plain, */*',
-  //     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' //
-  //   },
-  //   method: 'post',
-  //   data: Qs.stringify({
-  //     pageNum: data.pageNum,
-  //     pageSize: data.pageSize
-  //   })
-  // })
 }
 
 // 震源机制解目录
@@ -127,4 +114,26 @@ export async function dictionaryList(data) {
 export function getLinkFile(id: any) {
   const url = `/prodSer/getLinkFile?id=${id}`
   return useHttp.get(getRequestUrl(url)).then(res => decode(res))
+}
+
+// 产品条件查询
+export function getProdConditionList(data) {
+  const url = `/prodSer/ptemplate/list`
+  const params = {
+    description: data.description, // 所属产品目录名称
+    p_time: data.p_time, // 产品编制时间
+    institution: data.institution, // 提供单位
+  }
+  return useHttp.post(getRequestUrl(url), encode(params)).then(res => decode(res))
+}
+
+// 技术服务查询条件查询
+export function getProdSerList(data) {
+  const url = `/prodSer/ptemplate/list`
+  const params = {
+    ssort: data.ssort, // 分类
+    c_time: data.c_time, // 创建时间
+    c_unit: data.c_unit, // 提供单位
+  }
+  return useHttp.post(getRequestUrl(url), encode(params)).then(res => decode(res))
 }
