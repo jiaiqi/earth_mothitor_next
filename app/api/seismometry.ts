@@ -45,8 +45,9 @@ export function getStationBNum() {
 
 // 查询通道信息
 export function getcata(data) {
-  const url = getRequestUrl('/seisserver/catalogdata/list')
-  return useHttp.get(url, encode(data)).then(res => decode(res))
+  const PORT = 9528
+  const url = getRequestUrl('/seisserver/catalogdata/list', PORT)
+  return useHttp.post(url, encode(data)).then(res => decode(res))
 }
 // 查询通道信息
 export function getChannel(data) {

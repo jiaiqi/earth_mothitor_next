@@ -48,6 +48,7 @@ export function getHotSpotListPage(data) {
 
 // 热点数据新增
 export function hotDataAdd(data) {
-  const PORT = 9537
+  const PORT = 9549
+  // const PORT = 9537
   return useHttp.post(getRequestUrl(`/collectserver/hotSpot/add`, PORT), encode(data))
 }

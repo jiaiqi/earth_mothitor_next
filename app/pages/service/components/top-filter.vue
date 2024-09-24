@@ -124,7 +124,13 @@ function changeValue2(item: string | { id: string }) {
         <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
       <el-input v-if="type === '测震'" v-model="station" class="select" placeholder="请输入台站名称" />
-      <el-date-picker v-if="type === '测震'" v-model="dateDuring" class="select" style="width: 260px;" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" />
+      <el-date-picker
+        v-if="type === '测震'"
+        v-model="dateDuring"
+        class="select"
+        type="daterange"
+        range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+      />
       <el-select v-if="type === '强震动'" v-model="net" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
         <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
@@ -162,8 +168,8 @@ function changeValue2(item: string | { id: string }) {
   .el-select__wrapper {
     min-width: 120px;
   }
-  &.el-date-editor {
-    margin-left: 20px;
+  .el-date-range-picker__header {
+    line-height: unset;
   }
 }
 </style>

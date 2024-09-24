@@ -42,6 +42,7 @@ async function getStatonList() {
     // }
   })
 }
+const mapInstance = ref(null)
 onMounted(() => {
   getStatonList()
   if (sessionStorage.getItem('province') === '' || !sessionStorage.getItem('province')) {
@@ -60,7 +61,6 @@ function getCataList() {
   const arr = { staId: '', netId: '' }
   arr.staId = marke.value.id
   arr.netId = marke.value.netId
-  staId = marke.value.id
   const form = {
     keyName: `测震数据-${drawerTitle.value}数据集`,
     url: '/service/seismometry',
@@ -157,8 +157,14 @@ function getCataList2() {
     })
 }
 // 地图标记点点击
-function maplist(val, type) {
+function handleClickMaker(val, L, latlng) {
   marke.value = val
+  const content = `aaaaa`
+  L.popup({ minWidth: 350 })
+    .setLatLng([latlng.lat, latlng.lng])
+    .setContent(content)
+    .openOn(mapInstance.value)
+  debugger
   // console.log(val)
   // console.log(type)
   drawerTitle.value = val.staName
@@ -373,8 +379,9 @@ const searchVal = ref('')
         :list="station"
         :highspot="highspot"
         :map-show="mapShow"
-        @maplist="maplist"
+        @maplist="handleClickMaker"
         @lists="filterPlatList"
+        @map-ready="mapInstance = $event"
       />
       <leftDrawer :load="loadNode" :node-click="handleNodeClick" />
     </ClientOnly>

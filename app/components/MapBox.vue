@@ -54,6 +54,7 @@ const emit = defineEmits<{
   (event: 'maplist', item: MapListItem): void
   (event: 'stationDraw', item: StationSpot): void
   (event: 'lists', items: MapListItem[]): void
+  (event: 'mapReady', mapInstance: any): void
 }>()
 
 const map = ref<L.Map | null>(null)
@@ -134,7 +135,7 @@ function initializeMap() {
     zoomControl: false,
     preferCanvas: true,
   })
-
+  emit('mapReady', map.value)
   layerGroups.value = new L.FeatureGroup()
   layerGroups.value.addTo(map.value)
 
@@ -307,8 +308,9 @@ function addDraw() {
   for (let j = 0; j < props.list.length; j++) {
     const item = props.list[j]
     if (item.staLat !== null && item.staLon !== null) {
-      const circle = L.marker([item.staLat, item.staLon], { icon: myIcon }).on('click', () => {
-        emit('maplist', item)
+      const circle = L.marker([item.staLat, item.staLon], { icon: myIcon }).on('click', (params) => {
+        console.log(params)
+        emit('maplist', item, L, params.latlng)
       })
       circles.push(circle)
       circle_map[j] = circle
