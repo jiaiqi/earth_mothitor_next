@@ -6,11 +6,8 @@ const props = defineProps({
       return { label: 'unitName', children: 'zones', isLeaf: 'leaf' }
     },
   },
-  load: {
+  loadNode: {
     type: Function,
-    default: () => {
-      return null
-    },
   },
   filterNodeMethod: {
     type: Function,
@@ -46,10 +43,10 @@ const unfold = ref(true)
       ref="tree"
       class="mt-16px flex-1 rounded-6px"
       border="1px solid #E5E5EA"
-      :props="prop"
+      :props="props.prop"
       accordion
-      :load="load"
-      :filter-node-method="filterNodeMethod"
+      :load="props.loadNode"
+      :filter-node-method="props.filterNodeMethod"
       lazy
       @node-click="nodeClick"
     >

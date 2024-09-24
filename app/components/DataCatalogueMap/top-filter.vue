@@ -3,11 +3,11 @@ import { computed, ref, watch } from 'vue'
 
 // 定义组件属性
 interface Props {
-  netList: { value: string, label: string }[]
+  netList?: { value: string, label: string }[]
   stationList?: { id: string, staName: string }[]
   pointerList?: { id: string, shockAddr: string }[]
   yearlist?: { year: string }[]
-  type: string
+  type?: string
 }
 
 // 定义组件属性类型
@@ -118,43 +118,41 @@ function changeValue2(item: string | { id: string }) {
 
 <template>
   <!-- 顶部过滤器 -->
-  <div>
-    <div class="z-999 flex rounded-6px bg-white px-12px py-6px">
-      <el-select v-if="type === '测震'" v-model="net" class="select" collapse-tags placeholder="请选择台网">
-        <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-input v-if="type === '测震'" v-model="station" class="select" placeholder="请输入台站名称" />
-      <el-date-picker
-        v-if="type === '测震'"
-        v-model="dateDuring"
-        class="select"
-        type="daterange"
-        range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
-      />
-      <el-select v-if="type === '强震动'" v-model="net" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
-        <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-select v-if="type === '强震动'" v-model="pointer" class="select" collapse-tags placeholder="请选择地点" @change="changeValue2">
-        <el-option v-for="item in locationList" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-input v-if="type === '强震动'" v-model="station" class="select" placeholder="请输入地点" @input="changeValue2" />
-      <el-select v-if="type === '模拟资料'" v-model="pointer" class="select" collapse-tags placeholder="请选择台站" @change="changeValue2">
-        <el-option v-for="item in stationList2" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-select v-if="type === '模拟资料'" v-model="year" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
-        <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
-      </el-select>
-      <el-input v-if="type === '科学台阵'" v-model="station" class="select" placeholder="请输入台站代码" />
-      <div class="flex">
-        <el-button type="primary" class="w-70px" @click="check">
-          查询
-        </el-button>
-        <el-button type="" class="w-70px" @click="reset">
-          <i class="i-ri:refresh-fill mr-5px text-black" />
+  <div class="z-999 flex rounded-6px bg-white px-12px py-6px">
+    <el-select v-if="type === '测震'" v-model="net" class="select" collapse-tags placeholder="请选择台网">
+      <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '测震'" v-model="station" class="select" placeholder="请输入台站名称" />
+    <el-date-picker
+      v-if="type === '测震'"
+      v-model="dateDuring"
+      class="select"
+      type="daterange"
+      range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期"
+    />
+    <el-select v-if="type === '强震动'" v-model="net" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
+      <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-select v-if="type === '强震动'" v-model="pointer" class="select" collapse-tags placeholder="请选择地点" @change="changeValue2">
+      <el-option v-for="item in locationList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '强震动'" v-model="station" class="select" placeholder="请输入地点" @input="changeValue2" />
+    <el-select v-if="type === '模拟资料'" v-model="pointer" class="select" collapse-tags placeholder="请选择台站" @change="changeValue2">
+      <el-option v-for="item in stationList2" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-select v-if="type === '模拟资料'" v-model="year" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
+      <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '科学台阵'" v-model="station" class="select" placeholder="请输入台站代码" />
+    <div class="flex">
+      <el-button type="primary" class="w-70px" @click="check">
+        查询
+      </el-button>
+      <el-button type="" class="w-70px" @click="reset">
+        <i class="i-ri:refresh-fill mr-5px text-black" />
 
-          重置
-        </el-button>
-      </div>
+        重置
+      </el-button>
     </div>
   </div>
 </template>

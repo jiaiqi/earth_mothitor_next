@@ -1,7 +1,8 @@
 <!-- 测震 -->
 <script lang="ts" setup>
-import topFilter from '../components/top-filter.vue'
-import leftDrawer from '../components/left-drawer.vue'
+import TopFilter from '~/components/DataCatalogueMap/top-filter.vue'
+import LeftDrawer from '~/components/DataCatalogueMap/left-drawer.vue'
+import LeafletMap from '~/components/DataCatalogueMap/leaflet-map.vue'
 import { hotDataAdd } from '~/api/count'
 import { getAllStation, getArraycatalogdat, getArraystation, getCompanyList, getStation, getarraynetwork, getcata } from '~/api/seismometry'
 
@@ -43,7 +44,6 @@ async function getStatonList() {
     // }
   })
 }
-const mapInstance = ref(null)
 onMounted(() => {
   getStatonList()
   if (sessionStorage.getItem('province') === '' || !sessionStorage.getItem('province')) {
@@ -58,18 +58,18 @@ const tableData = ref([])
 
 // 获取通道数据
 function getCataList() {
-  console.log(marke.value)
+  console.log(maker.value)
   const arr = { staId: '', netId: '' }
-  arr.staId = marke.value.id
-  arr.netId = marke.value.netId
+  arr.staId = maker.value.id
+  arr.netId = maker.value.netId
   const form = {
     keyName: `测震数据-${drawerTitle.value}数据集`,
     url: '/service/seismometry',
   }
-  if (marke.value.staLevel === '省台' || marke.value.staLevel === '市台') {
+  if (maker.value.staLevel === '省台' || maker.value.staLevel === '市台') {
     form.postUrl = JSON.stringify({
-      netCode: marke.value.netCode,
-      staName: marke.value.staName,
+      netCode: maker.value.netCode,
+      staName: maker.value.staName,
     })
   }
   else {
@@ -115,7 +115,7 @@ function getCataList() {
     //   if (top < 0) {
     //     top = 50
     //   }
-    //   drawerTitle.value = `${marke.value.staName}台站`
+    //   drawerTitle.value = `${maker.value.staName}台站`
     // }
     // else {
     //   $message.error('数据为空')
@@ -123,15 +123,17 @@ function getCataList() {
     //   show = false
     //   isActive = false
     // }
-    for (let j = 0; j < tableData.value.length; j++) {
-      tableData.value[j].dataDate = dayjs(tableData[j].dataDate).format('YYYY-MM-DD')
+    if (tableData.value.length) {
+      tableData.value.forEach((item) => {
+        item.dataDate = dayjs(item.dataDate).format('YYYY-MM-DD')
+      })
     }
   })
 }
 
 const loading = ref(false)
 const station = ref<any[]>([])
-const marke = ref({})
+const maker = ref({})
 const drawerTitle = ref('')
 //
 const highspot = ref(null) //  存储点击的点
@@ -143,11 +145,11 @@ const isScience = ref(false) // 科学台震
 // 获取科学台阵通道数据
 function getCataList2() {
   const arr = { staId: '', netId: '' }
-  arr.staId = marke.value.id
-  arr.netId = marke.value.netId
+  arr.staId = maker.value.id
+  arr.netId = maker.value.netId
   getArraycatalogdat(arr)
     .then((res) => {
-      drawerTitle.value = `${marke.value.staCode}台站`
+      drawerTitle.value = `${maker.value.staCode}台站`
       tableData.value = res.map((item) => {
         item.dataDate = dayjs(dataDate).format('YYYY-MM-DD')
         return item
@@ -158,14 +160,14 @@ function getCataList2() {
     })
 }
 // 地图标记点点击
-function handleClickMaker(val, L, latlng) {
-  marke.value = val
-  const content = `aaaaa`
-  L.popup({ minWidth: 350 })
-    .setLatLng([latlng.lat, latlng.lng])
-    .setContent(content)
-    .openOn(mapInstance.value)
-  debugger
+function handleClickMaker(val, L) {
+  maker.value = val
+  // const content = `aaaaa`
+  // L.popup({ minWidth: 350 })
+  //   .setLatLng([val.latlng[0], val.latlng[1]])
+  //   .setContent(content)
+  //   .openOn(mapInstance.value)
+  // debugger
   // console.log(val)
   // console.log(type)
   drawerTitle.value = val.staName
@@ -187,7 +189,7 @@ function handleClickMaker(val, L, latlng) {
       }
     }
   })
-  if (marke.value.noiseLevel) {
+  if (maker.value.noiseLevel) {
     isProvince.value = true
   }
   else {
@@ -260,11 +262,6 @@ function handleNodeClick(data) {
       })
   }
 }
-
-function filterPlatList() {
-
-}
-const mapShow = ref(null)
 
 // 获取上报单位台网
 function loadNode(node, resolve) {
@@ -345,33 +342,47 @@ function loadNode(node, resolve) {
     }
   }
 }
-const searchVal = ref('')
+function makerrClick(params: any) {
+  const { data, L } = params
+  handleClickMaker(data, L)
+}
 </script>
 
 <!-- 数据目录-测震 -->
 <template>
-  <div
-    class="pos-relative h-[calc(100vh_-_160px)] w-100vw overflow-hidden"
-  >
+  <div>
     <ClientOnly>
-      <div class="header pos-absolute left-20px top-20px z-999 w-full flex">
-        <PublicBreadcrumbNavigation :path="routePath" class="w-342px rounded-6px bg-white" />
-        <topFilter class="ml-40px" :net-list="netList" type="测震" @search="searchVal" />
-      </div>
-
-      <MapBox
-        v-loading="loading"
-        class=" "
-        :list="station"
-        :highspot="highspot"
-        :map-show="mapShow"
-        @maplist="handleClickMaker"
-        @lists="filterPlatList"
-        @map-ready="mapInstance = $event"
-      />
-      <leftDrawer :load="loadNode" :node-click="handleNodeClick" />
+      <DataCatalogueMap v-loading="loading" page-name="测震" :route-path="routePath" :list="station" @makerr-click="makerrClick">
+        <template #header>
+          <TopFilter :net-list="netList" type="测震" />
+        </template>
+        <template #left>
+          <LeftDrawer :load-node="loadNode" :node-click="handleNodeClick" />
+        </template>
+        <template #content>
+          <LeafletMap v-model:active-maker="maker" v-loading="loading" :list="station" @makerr-click="makerrClick" />
+        </template>
+      </DataCatalogueMap>
     </ClientOnly>
   </div>
+
+  <!-- <div class="header pos-absolute left-20px top-20px z-999 w-full flex">
+      <PublicBreadcrumbNavigation :path="routePath" class="w-342px rounded-6px bg-white" />
+      <topFilter class="ml-40px" :net-list="netList" type="测震" @search="searchVal" />
+    </div>
+
+    <MapBox
+      v-loading="loading"
+      style="height: 100vh;"
+      class=" "
+      :list="station"
+      :highspot="highspot"
+      :map-show="mapShow"
+      @maplist="handleClickMaker"
+      @lists="filterPlatList"
+      @map-ready="mapInstance = $event"
+    />
+    <leftDrawer :load="loadNode" :node-click="handleNodeClick" /> -->
 </template>
 
 <style>
