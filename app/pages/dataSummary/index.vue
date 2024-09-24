@@ -1,15 +1,13 @@
 <!-- 技术服务列表页面 -->
 <script lang="ts" setup>
-import { type SrvItem, useServiceStore } from '~/composables/home'
-import { encode } from '~/utils/base/dataEncry'
 import { getFlagList, getListPage, getTypeDic } from '~/api/count'
 
 const routePath = [{ name: '首页', path: '/' }, { name: '数据目录' }]
 
 const hostList = ref([])
-const cataList = ref([])
+const cataList = ref<any[]>([])
 const type = ref('')
-const type2 = ref('')
+const type2 = ref<any>('')
 const info = ref()
 const route = useRoute()
 const currentType = ref<string>('')
@@ -18,31 +16,40 @@ const list = computed(() => {
   if (currentType.value) {
     return allList.value[currentType.value]
   }
+  else if (Object.keys(allList.value).length) {
+    return Object.keys(allList.value).reduce((acc: any[], cur: any[]) => acc.concat(allList.value[cur]), [])
+  }
   return [] // 当条件不满足时返回空数组
 })
 onMounted(() => {
   // getList()
-  getTypeDic('pageNum=1&pageSize=999').then((res) => {
+  getTypeDic('pageNum=1&pageSize=999').then((res: any) => {
     cataList.value = res.records
     if (cataList.value.length) {
       currentType.value = cataList.value[0].typeName || ''
       getList()
     }
   })
-  getFlagList('pageNum=1&pageSize=10').then((res) => {
+  // 热门推荐
+  getFlagList('pageNum=1&pageSize=10').then((res: any) => {
     const data = res.records
-    hostList.value = data.map((item) => {
+    hostList.value = data.map((item: any) => {
       item.title = item.keyName
       return item
     })
   })
 })
+const loading = ref(true)
+
+const filterModel = ref<any>({
+  ssort: '',
+})
 function getList() {
-  const queryString = `pageNum=1&pageSize=999&typeName=${currentType.value}`
+  const queryString = `pageNum=1&pageSize=999&typeName=${currentType.value || filterModel.value.ssort || ''}`
   loading.value = true
-  getListPage(queryString).then((resp) => {
+  getListPage(queryString).then((resp: any) => {
     loading.value = false
-    allList.value[currentType.value] = resp.records.map((item) => {
+    allList.value[currentType.value] = resp.records.map((item: any) => {
       item.title = item.sname
       item.richText = item.stext
       return item
@@ -50,7 +57,7 @@ function getList() {
     if (route.query.type) {
       type2.value = ''
       if (route.query.type.includes('-')) {
-        type2.value = route.query.type.split('-')[1]
+        type2.value = (route.query.type as string).split('-')[1]
         type.value = route.query.type as string
       }
       else {
@@ -85,65 +92,26 @@ const filterList = computed(() => {
       value: '',
       key: 'ssort',
       options: [
-        {
-          label: '观测数据',
-          value: '观测数据',
-        },
-        {
-          label: '探测数据',
-          value: '探测数据',
-        },
-        {
-          label: '调查数据',
-          value: '调查数据',
-        },
-        {
-          label: '实验数据',
-          value: '实验数据',
-        },
-        {
-          label: '专题数据',
-          value: '专题数据',
-        },
-        {
-          label: '综合数据',
-          value: '综合数据',
-        },
       ],
     }]
   }
 })
 
-function onFilter(data) {
-  console.log(data)
-}
-
-const loading = ref(true)
-
-function toDetail(item: SrvItem) {
-  const store = useServiceStore()
-  store.clear()
-  store.setValue(item)
-  const data = {
-    sclassification: item.sclassification,
-    cdate: item.cdate,
-    cunit: item.cunit,
-    sname: item.sname,
-    // recom: item.recom,
+function onFilter(data: any) {
+  filterModel.value = data
+  currentType.value = data.ssort
+  if (allList.value[currentType.value]?.length) {
+    return
   }
-  navigateTo({
-    path: `/technicalService/detail/${item.id}`,
-    query: {
-      data: encode(data),
-    },
-  })
+  getList()
 }
+
 function htmlToText(htmlString: string) {
   // 使用正则表达式去除 HTML 标签
   let text = htmlString.replace(/<[^>]*>/g, '')
 
   // 处理特殊字符
-  const entities = {
+  const entities: { [key: string]: string } = {
     '&nbsp;': ' ',
     '&lt;': '<',
     '&gt;': '>',
@@ -155,7 +123,7 @@ function htmlToText(htmlString: string) {
   // 替换 HTML 实体
   Object.keys(entities).forEach((entity) => {
     const regex = new RegExp(entity, 'g')
-    text = text.replace(regex, entities[entity])
+    text = text.replace(regex, match => entities[match] || match)
   })
 
   // 返回纯文本
@@ -163,49 +131,41 @@ function htmlToText(htmlString: string) {
 }
 
 const router = useRouter()
-function toPath(name) {
+function toPath(url: string) {
   // microApp.setData(name, { path: path })
   // router.push(path)
-  if (name === '#') {
+  if (url === '#') {
     ElMessage.info('正在建设中，敬请期待')
     return
   }
-  if (name.includes(',')) {
-    const type = name.split(',')[1]
-    const name2 = name.split(',')[0]
-    if (name === 'precursorElectromagnetism,1') {
-      ElMessage.info('地磁数据涉密，请按照有关涉密数据申请要求办理相关手续。')
-      return
-    }
-    if (name === 'precursorElectromagnetism,2') {
-      ElMessage.info('地电数据涉密，请按照有关涉密数据申请要求办理相关手续。')
-      return
-    }
-    router.push({ name: name2, query: { type } })
-    // router.go(0)
+  if (['precursorElectromagnetism,1', 'precursorElectromagnetism,2'].includes(url)) {
+    ElMessage.info('地磁数据涉密，请按照有关涉密数据申请要求办理相关手续。')
+    return
   }
-  else {
-    if (name === 'precursorGravity') {
-      ElMessage.info('重力数据涉密，请按照有关涉密数据申请要求办理相关手续。')
-      return
-    }
-
-    let routerName = name
-    switch (name) {
-      case 'serviceSeismometry':
-        routerName = 'service-seismometry'
-        break
-      default:
-        routerName = camelToKebab(name)
-        break
-    }
-    router.push({ name: routerName })
-    if (name !== 'home') {
-      // router.go(0)
-    }
+  if (['precursorGravity'].includes(url)) {
+    ElMessage.info('重力数据涉密，请按照有关涉密数据申请要求办理相关手续。')
+    return
   }
+  let name: any = url
+  let type = ''
+  if (url.includes(',')) {
+    type = url.split(',')[1] as string
+    name = url.split(',')[0] as string
+  }
+  switch (url) {
+    case 'serviceSeismometry':// 测震
+      name = 'service-seismometry'
+      break
+    case 'precursorProspecting': // 地震测深
+      name = 'precursor-prospecting'
+      break
+    default:
+      name = camelToKebab(url)
+      break
+  }
+  router.push({ name, query: { type } })
 }
-function camelToKebab(camelStr) {
+function camelToKebab(camelStr: string) {
   return camelStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
 </script>

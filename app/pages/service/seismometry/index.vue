@@ -172,33 +172,17 @@ function handleClickMaker(val, L, latlng) {
   markshow.value = true
   netList.value.map((item) => {
     if (item.id === val.netId && item.label != '全国') {
-      if (item.label === '北京' || item.label === '天津' || item.label === '上海' || item.label === '重庆') {
-        stationName.value = `${item.label}市`
+      if (['北京', '天津', '上海', '重庆'].includes(item.label)) {
+        item.label = `${item.label}市`
       }
       else {
         stationName.value = `${item.label}省`
-        /*   if(item.label === '内蒙古' || item.label === '宁夏' ||
-             item.label === '新疆' || item.label === '广西' || item.label === '西藏'){
-              stationName = item.label+'自治区'
-            } */
-        if (item.label.includes('内蒙')) {
-          stationName.value = `${item.label}古自治区`
-        }
-        if (item.label.includes('内蒙古')) {
-          stationName.value = `${item.label}自治区`
-        }
-        if (item.label.includes('宁夏')) {
-          stationName.value = `${item.label}回族自治区`
-        }
-        if (item.label.includes('新疆')) {
-          stationName.value = `${item.label}维吾尔自治区`
-        }
-        if (item.label.includes('广西')) {
-          stationName.value = `${item.label}壮族自治区`
-        }
-        if (item.label.includes('西藏')) {
-          stationName.value = `${item.label}自治区`
-        }
+        const provinceList = ['内蒙', '宁夏', '新疆', '广西', '西藏']
+        provinceList.forEach((itm) => {
+          if (item.label.includes(itm)) {
+            stationName.value = `${item.label}自治区`
+          }
+        })
       }
     }
   })
