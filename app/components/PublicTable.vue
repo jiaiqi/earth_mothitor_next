@@ -138,6 +138,17 @@ function handleClickItem(item: any) {
       </template>
     </el-table-column>
   </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '地震科普'" :data="list" border style="width: 100%"
+    :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
+    <el-table-column prop="date" label="省份" :show-overflow-tooltip="true" width="300px" >
+    </el-table-column>
+    <el-table-column  prop="undertaker" label="地址" align='center' />
+    <el-table-column label="时间" align="center" prop="implDate" width="220px" >
+      <template #default="scope">
+        <span>{{ $dayjs(scope.row.releaseTime).format('YYYY-MM-DD') }}</span>
+      </template>
+    </el-table-column>
+  </el-table>
   <el-table v-else :data="list" border class="max-w-1300px" style="width: 100%"
     :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
     <el-table-column prop="sname" label="法规名称" :show-overflow-tooltip="true">

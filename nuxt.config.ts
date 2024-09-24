@@ -25,6 +25,7 @@ export default defineNuxtConfig({
       cartPort: '9546',
       collePort: '9549',
       regulationPort: '9531',
+      earthquakePort: '9545',
     },
   },
   modules: [

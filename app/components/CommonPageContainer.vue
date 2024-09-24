@@ -13,7 +13,7 @@ function onNavigate(index: number, text: string) {
 </script>
 
 <template>
-  <div class="pos-relative bg-#F7F9FD pb-90px min-h-screen-260">
+  <div class="pos-relative bg-#F7F9FD pb-20px min-h-screen-260">
     <div class="top-bg bg-url(~'/images/top-bg.png) pos-absolute left-0 top-0 z-0 h-310px w-full" />
     <div class="m-auto min-h-220px container xl:max-w-1300px">
       <div class="page-title pos-relative z-2 pt-35px text-center text-size-28px text-white font-700 line-height-40px md:text-left">
