@@ -3,10 +3,10 @@
   setup
 >
 import { hotDataAdd } from '~/api/count'
-import { getknowledge, getFlagList ,getSchoolList,getBaseList} from '~/api/earthquakePopularization'
+import { getknowledge, getFlagList, getSchoolList, getBaseList } from '~/api/earthquakePopularization'
 import { type SrvItem, useServiceStore } from '~/composables/home'
 import { decode, encode } from '~/utils/base/dataEncry'
-import {  Search } from '@element-plus/icons-vue'
+import { Search } from '@element-plus/icons-vue'
 const routePath = [{ name: '首页', path: '/' }, { name: '地震科普' }]
 const searchValue = ref('')
 const inputVal = ref('')
@@ -21,11 +21,11 @@ onMounted(() => {
       return item
     })
   })
-  getSchoolList( {
+  getSchoolList({
     pageSize: 99999,
     pageNum: 1,
-  }).then((res:any)=>{
-    tableschoolList.value=res.records
+  }).then((res: any) => {
+    tableschoolList.value = res.records
   })
 })
 
@@ -133,8 +133,6 @@ function getList() {
     pageSize: queryParams.pageSize,
     name: searchValue.value,
     typeId: filterModel.value.classification
-    // institution: filterModel.value.institution, // 联系单位
-    // classification: dataType.value,
   }
 
   loading.value = true
@@ -144,7 +142,6 @@ function getList() {
     queryParams.pageSize = response.size
     queryParams.pageNum = response.current
     total.value = response.total
-    // prodList.value=response.records
     prodList.value = response.records.map((item: any) => {
       return {
         ...item,
@@ -153,54 +150,9 @@ function getList() {
       }
     })
   })
-
-  //   loading.value = false
-  //   prodList.value = response.records.map((item) => {
-  //     const subList = []
-  //     if (item.classification) {
-  //       subList.push(`产品分类：${item.classification}`)
-  //     }
-  //     if (item.institution) {
-  //       subList.push(`联系单位：${item.institution}`)
-  //     }
-  //     return {
-  //       ...item,
-  //       title: item.name,
-  //       subList,
-  //     }
-  //   })
-  //   queryParams.pageSize = response.size
-  //   queryParams.pageNum = response.current
-  //   total.value = response.total
-  //   if (prodList.value.length > 0) {
-  //     let unitArr: string[] = []
-  //     prodList.value.forEach((item) => {
-  //       unitArr.push(item.cunit)
-  //     })
-  //     unitArr = Array.from(new Set(unitArr))
-  //     serveUnitList.value = unitArr
-  //     noData.value = false
-  //   }
-  //   else {
-  //     noData.value = true
-  //   }
-  // }).catch((error) => {
-  //   console.error('获取数据失败:', error)
-  //   loading.value = false
-  // })
 }
 
-const dataType = ref<string>('地震科普')
-// function changeDataType(type: string) {
-//   dataType.value = type
-//   if (dataType.value === '震害防御') {
-//     getList2()
-//   }
-//   else {
-//     getList()
-//   }
-// }
-
+const dataType = ref<string>('学校')
 const listData = computed(() => {
   return prodList.value
 })
@@ -208,44 +160,50 @@ const tableData = computed(() => {
   return tableschoolList.value
 })
 function toDetail(item: any) {
-  if (['统一编目目录', '震源机制解目录1', '速报目录', '震源机制解目录2'].includes(item.name)) {
-    const typeMap = {
-      统一编目目录: 'cata',
-      震源机制解目录1: 'sms',
-      震源机制解目录2: 'smsxgp',
-      速报目录: 'soon',
-    }
-    navigateTo({ path: '/productSummary/earthCataList', query: { type: typeMap[item.name] } })
-  }
-  else if (item.linkUrl) {
-    if (confirm('您访问的链接即将离开公服网站，是否继续？')) {
-      window.open(item.linkUrl)
-    }
-  }
-  else {
-    navigateTo({
-      path: `/productSummary/productInfo/${item.id}`,
-      query: {
-        data: encode(item),
-      },
-    })
-    addHot(name, `/monitor/productInfo?id=${item.id}`)
-  }
-
-  // navigateTo({
-  //   path: `/technicalService/detail/${item.id}`,
-  //   query: {
-  //     data: encode(data),
-  //   },
-  // })
+  console.log(item)
+  navigateTo({
+    path: `/earthquakePopularization/detail/${item.fileId}`,
+    query: {
+      data:  encode(item),
+    },
+  })
 }
-function changeType(){
-
+function handleQuery() {
+  if(dataType.value=='学校'){
+    getSchData()
+  }else{
+    getBaseData()
+  }
 }
-function handleQuery(){
-
+function getTableData(val:any) {
+  console.log(val)
+  if(val=='学校'){
+    dataType.value='学校'
+    getSchData()
+  }else{
+    dataType.value='基地'
+    getBaseData()
+  }
 }
-function addHot(name:any, url:any) {
+function getSchData(){
+  getSchoolList({
+    pageSize: 99999,
+    pageNum: 1,
+    ...queryParams2
+  }).then((res: any) => {
+    tableschoolList.value = res.records
+  })
+}
+function getBaseData(){
+  getBaseList({
+    pageSize: 99999,
+    pageNum: 1,
+    ...queryParams2
+  }).then((res: any) => {
+    tableschoolList.value = res.records
+  })
+}
+function addHot(name: any, url: any) {
   const form = {
     keyName: `地震科普-${name}`,
     url,
@@ -296,7 +254,7 @@ function addHot(name:any, url:any) {
               :total="total" @change="onPageChange" />
           </div>
           <div class="flex-none  w-84">
-            <PublicHotNews :list="hostList" />
+            <PublicHotNews :list="hostList" type="地震科普" />
           </div>
         </div>
       </div>
@@ -314,27 +272,26 @@ function addHot(name:any, url:any) {
           </div>
           <el-form :model="queryParams2" ref="queryForm" size="small" :inline="true">
             <el-form-item label="">
-              <el-radio-group size="medium" v-model="basetype">
-                <el-radio-button label="学校"></el-radio-button>
-                <el-radio-button label="基地"></el-radio-button>
+              <el-radio-group size="default" v-model="basetype" @change="getTableData(basetype)">
+                <el-radio-button label="学校" value="学校"></el-radio-button>
+                <el-radio-button label="基地" value="基地"></el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="" prop="schoolName">
-              <el-input  :prefix-icon="Search" style="width: 240px" size="default" v-model="queryParams2.schoolName" placeholder="请输入搜索信息" clearable />
+              <el-input :prefix-icon="Search" style="width: 240px" size="default" v-model="queryParams2.schoolName"
+                placeholder="请输入搜索信息" clearable />
             </el-form-item>
             <el-form-item label="" prop="schoolProvince">
-              <el-select v-model="queryParams2.schoolProvince" style="width: 140px" placeholder="请选择省份" size="default" clearable>
+              <el-select v-model="queryParams2.schoolProvince" style="width: 140px" placeholder="请选择省份" size="default"
+                clearable>
                 <el-option v-for="dict in provinList" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary"  size="mini" @click="handleQuery()">搜索</el-button>
+              <el-button type="primary" size="default" @click="handleQuery()">搜索</el-button>
             </el-form-item>
           </el-form>
-          <PublicTable :list="tableData" :dataType="dataType" @click-item="toDetail">
-            <template #image>
-              <img src="/img/productcatalog.jpg" class="h-150px w-full">
-            </template>
+          <PublicTable :list="tableData" :dataType="dataType" >
           </PublicTable>
         </div>
       </div>

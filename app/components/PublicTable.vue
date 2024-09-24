@@ -6,9 +6,15 @@ const props = defineProps<{
   type?: string
   dataType?: string
 }>()
-const pagenum = ref(1)
-const pagesize = ref(10)
+// const pagenum = ref(1)
+// const pagesize = ref(10)
 const total = ref()
+const queryParams = reactive(
+  {
+    pageSize: 10,
+    pageNum: 1,
+  },
+)
 const previewUrl = ref()
 const open = ref()
 const htmlText = ref()
@@ -39,24 +45,19 @@ const mockData = [
 ]
 const list = computed(() => {
   if (props.list) {
-    console.log(props.list)
     const dataSource = props.list
     total.value = props.list.length
-    const start = (pagenum.value - 1) * pagesize.value;
-    const end = start + pagesize.value;
+    const start = (queryParams.pageNum - 1) * queryParams.pageSize;
+    const end = start + queryParams.pageSize;
     return dataSource.slice(start, end);
   }
   else {
     return mockData
   }
 })
-// 分页大小改变时的回调
+// 
 function handleSizeChange(val: any) {
-  pagesize.value = val;
-}
-// 当前页改变时的回调
-function handleCurrentChange(val: any) {
-  pagenum.value = val;
+  queryParams.pageNum = val.pageNum;
 }
 function openUrl(url: any) {
   window.open(url)
@@ -68,7 +69,6 @@ function viewpdf(row: any) {
     let blob = new Blob([res], { type: 'application/pdf' })
     let blobURL = URL.createObjectURL(blob)
     previewUrl.value = blobURL + '#toolbar=0'
-    console.log(previewUrl)
     window.open(previewUrl.value)
 
   })
@@ -138,15 +138,20 @@ function handleClickItem(item: any) {
       </template>
     </el-table-column>
   </el-table>
-  <el-table class="custom-table" v-else-if="dataType == '地震科普'" :data="list" border style="width: 100%"
+  <el-table class="custom-table" v-else-if="dataType == '学校'" :data="list" border style="width: 100%"
     :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
-    <el-table-column prop="date" label="省份" :show-overflow-tooltip="true" width="300px" >
+    <el-table-column prop="schoolProvince" label="省份" align="center" :show-overflow-tooltip="true" width="300px">
     </el-table-column>
-    <el-table-column  prop="undertaker" label="地址" align='center' />
-    <el-table-column label="时间" align="center" prop="implDate" width="220px" >
-      <template #default="scope">
-        <span>{{ $dayjs(scope.row.releaseTime).format('YYYY-MM-DD') }}</span>
-      </template>
+    <el-table-column prop="schoolName" label="地址" align='center' />
+    <el-table-column label="时间" align="center" prop="confirmTime" width="220px">
+    </el-table-column>
+  </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '基地'" :data="list" border style="width: 100%"
+    :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
+    <el-table-column prop="baseProvince" label="省份" align="center" :show-overflow-tooltip="true" width="300px">
+    </el-table-column>
+    <el-table-column prop="baseName" label="地址" align='center' />
+    <el-table-column label="时间" align="center" prop="confirmTime" width="220px">
     </el-table-column>
   </el-table>
   <el-table v-else :data="list" border class="max-w-1300px" style="width: 100%"
@@ -168,8 +173,10 @@ function handleClickItem(item: any) {
       </template>
     </el-table-column>
   </el-table>
-  <el-pagination v-model:currentPage="pagenum" v-model:page-size="pagesize" layout="total, sizes, prev, pager, next"
-    :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+  <PublicPagination :page-size="queryParams.pageSize" :page-num="queryParams.pageNum"
+              :total="total" @change="handleSizeChange" />
+  <!-- <el-pagination background v-model:currentPage="pagenum" v-model:page-size="pagesize" layout="total,  prev, pager, next"
+    :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" /> -->
   <el-dialog v-model="open" :append-to-body=true width="85%">
     <div v-html="htmlText" style="padding: 15px 30px;">
     </div>
@@ -225,4 +232,7 @@ function handleClickItem(item: any) {
   background-color: #f2f2f2;
   /* 修改表头背景颜色 */
 }
+</style>
+<style lang="scss" scoped>
+
 </style>

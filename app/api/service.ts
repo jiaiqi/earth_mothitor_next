@@ -137,3 +137,8 @@ export function getProdSerList(data) {
   }
   return useHttp.post(getRequestUrl(url), encode(params)).then(res => decode(res))
 }
+// 科普预览
+export function preView(data: any) {
+  const url = '/prodSer/downloadImage/?filename='+ data
+  return useHttp.get(getRequestUrl(url))
+}

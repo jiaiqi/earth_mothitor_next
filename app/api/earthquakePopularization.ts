@@ -19,11 +19,20 @@ export function getFlagList(data: any) {
 }
 // 地震科普-分类列表
 export function getSchoolList(data: any) {
-  const url = `/knowledgeserver/knowledgeSchool/listPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}`
+  const schoolName = data.schoolName ? `&schoolName=${data.schoolName}` : ''
+  const schoolProvince = data.schoolProvince ? `&schoolProvince=${data.schoolProvince}` : ''
+  const url = `/knowledgeserver/knowledgeSchool/listPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}${schoolName}${schoolProvince}`
   return useHttp.get(getRequestUrl(url))
 }
 // 地震科普-分类列表
 export function getBaseList(data: any) {
-  const url = `/knowledgeserver/knowledgeBase/listPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}`
+  const baseName = data.schoolName ? `&baseName=${data.schoolName}` : ''
+  const baseProvince = data.schoolProvince ? `&baseProvince=${data.schoolProvince}` : ''
+  const url = `/knowledgeserver/knowledgeBase/listPage?pageNum=${data.pageNum}&pageSize=${data.pageSize}${baseName}${baseProvince}`
   return useHttp.get(getRequestUrl(url))
+}
+
+// 观看数加
+export function viewNumberAdd(data: any) {
+  return useHttp.post(getRequestUrl('/knowledgeserver/knowledge/viewNumberAdd'), data)
 }
