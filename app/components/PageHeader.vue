@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+const props = defineProps({
+  size: { type: String, default: 'normal' },
+})
 const headerButtons = ref([
   {
     icon: '/img/icon/person.png',
@@ -16,17 +19,18 @@ const headerButtons = ref([
 <template>
   <header
     class="pos-relative z-1000 h-100px w-full flex items-center justify-between text-18px text-white bg-gradient-blue"
+    :class="{ 'h-60px ': props.size === 'mini' }"
   >
     <div class="hidden flex-1 md:flex" />
     <div container xl:max-w-1300px class="m-x-10px w-full flex flex-col items-center justify-between md:flex-row">
       <div class="flex items-center">
-        <img src="/img/icon/logo.png" class="hidden h-46px w-46px md:flex" alt="" srcset="">
-        <img src="/img/icon/logo2.png" class="hidden h-54.55px w-120px md:flex" alt="" srcset="">
+        <img src="/img/icon/logo.png" class="hidden md:flex" :class="{ 'h-40px w-40px': props.size === 'mini', 'h-46px w-46px': props.size !== 'mini' }" alt="" srcset="">
+        <img src="/img/icon/logo2.png" class="hidden md:flex" :class="{ 'h-35px w-90px': props.size === 'mini', 'h-55px w-120px': props.size !== 'mini' }" alt="" srcset="">
         <div class="ml-12px text-24px font-bold">
           <h3 class="text-18px md:text-24px">
             国家防震减灾公共服务平台
           </h3>
-          <p class="hidden text-10px md:flex">
+          <p v-if="props.size !== 'mini'" class="hidden text-10px md:flex">
             National public service platform for earthquake prevention and
             disaster reduction
           </p>
