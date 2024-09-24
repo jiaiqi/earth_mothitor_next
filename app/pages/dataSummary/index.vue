@@ -26,10 +26,10 @@ onMounted(() => {
   getTypeDic('pageNum=1&pageSize=999').then((res: any) => {
     cataList.value = res.records
     if (cataList.value.length) {
-      currentType.value = cataList.value[0].typeName || ''
-      getList()
+      // currentType.value = cataList.value[0].typeName || ''
     }
   })
+  getList()
   // 热门推荐
   getFlagList('pageNum=1&pageSize=10').then((res: any) => {
     const data = res.records
@@ -41,19 +41,27 @@ onMounted(() => {
 })
 const loading = ref(true)
 
-const filterModel = ref<any>({
-  ssort: '',
-})
 function getList() {
-  const queryString = `pageNum=1&pageSize=999&typeName=${currentType.value || filterModel.value.ssort || ''}`
+  // const queryString = `pageNum=1&pageSize=999&typeName=${currentType.value || ''}`
+  const queryString = `pageNum=1&pageSize=999`
   loading.value = true
   getListPage(queryString).then((resp: any) => {
     loading.value = false
-    allList.value[currentType.value] = resp.records.map((item: any) => {
-      item.title = item.sname
-      item.richText = item.stext
-      return item
-    })
+    allList.value = resp.records.reduce((acc: any, cur: any) => {
+      const key = cur.typeName
+      if (acc[key]) {
+        acc[key].push(cur)
+      }
+      else {
+        acc[key] = [cur]
+      }
+      return acc
+    }, {})
+    // allList.value[currentType.value] = resp.records.map((item: any) => {
+    //   item.title = item.sname
+    //   item.richText = item.stext
+    //   return item
+    // })
     if (route.query.type) {
       type2.value = ''
       if (route.query.type.includes('-')) {
@@ -98,7 +106,6 @@ const filterList = computed(() => {
 })
 
 function onFilter(data: any) {
-  filterModel.value = data
   currentType.value = data.ssort
   if (allList.value[currentType.value]?.length) {
     return
@@ -106,9 +113,29 @@ function onFilter(data: any) {
   getList()
 }
 
+function removeStylesFromHtml(htmlString: string) {
+  // 使用正则表达式移除<style>标签内的内容
+  let cleanedHtml = htmlString.replace(/<style\b[^>]*>[\s\S]*<\/style>/g, '')
+
+  // 移除内联样式
+  cleanedHtml = cleanedHtml.replace(/ style=".*?"/g, '')
+
+  // 移除class属性
+  cleanedHtml = cleanedHtml.replace(/ class=".*?"/g, '')
+
+  // 移除id属性
+  cleanedHtml = cleanedHtml.replace(/ id=".*?"/g, '')
+
+  // 移除其他样式相关的属性
+  cleanedHtml = cleanedHtml.replace(/ data-.*?=".*?"/g, '')
+
+  return cleanedHtml
+}
+
 function htmlToText(htmlString: string) {
   // 使用正则表达式去除 HTML 标签
-  let text = htmlString.replace(/<[^>]*>/g, '')
+  // let text = htmlString.replace(/<[^>]*>/g, '')
+  let text = htmlString
 
   // 处理特殊字符
   const entities: { [key: string]: string } = {
@@ -152,7 +179,7 @@ function toPath(url: string) {
     type = url.split(',')[1] as string
     name = url.split(',')[0] as string
   }
-  switch (url) {
+  switch (name) {
     case 'serviceSeismometry':// 测震
       name = 'service-seismometry'
       break
@@ -160,9 +187,10 @@ function toPath(url: string) {
       name = 'precursor-prospecting'
       break
     default:
-      name = camelToKebab(url)
+      name = camelToKebab(name)
       break
   }
+
   router.push({ name, query: { type } })
 }
 function camelToKebab(camelStr: string) {
@@ -197,8 +225,8 @@ function camelToKebab(camelStr: string) {
               <div class="title" flex="col md:row ~ justify-between">
                 <span
                   class="line-clamp-2 text-size-18px text-#111 font-700 line-height-26px"
-                  :title="item.title"
-                >{{ item.title }}
+                  :title="item.sname"
+                >{{ item.sname }}
                 </span>
                 <span v-if="item.viewNum" class="flex items-center text-#AEAEB2">
                   <i class="i-ri:eye-fill mr-10px" />
@@ -206,10 +234,10 @@ function camelToKebab(camelStr: string) {
                 </span>
               </div>
               <div
-                v-if="item.richText"
-                class="line-clamp-4 mt-5px text-#424242 line-height-30px"
-                :title="htmlToText(item.richText)"
-                v-text="htmlToText(item.richText)"
+                v-if="item.stext"
+                class="line-clamp-4 mt-5px indent-2rem text-#424242 line-height-30px"
+                :title="htmlToText(item.stext)"
+                v-html="removeStylesFromHtml(item.stext)"
               />
             </div>
           </div>

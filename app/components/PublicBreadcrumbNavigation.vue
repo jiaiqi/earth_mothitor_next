@@ -4,7 +4,7 @@ interface PathItem {
   path?: string
 }
 
-const props = defineProps<{ path: PathItem[] }>()
+const props = defineProps<{ path?: PathItem[] }>()
 // 初始化默认值
 const defaultPath = [
   {

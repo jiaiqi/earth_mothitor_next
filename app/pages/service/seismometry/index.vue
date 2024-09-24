@@ -1,3 +1,4 @@
+<!-- 测震 -->
 <script lang="ts" setup>
 import topFilter from '../components/top-filter.vue'
 import leftDrawer from '../components/left-drawer.vue'
@@ -5,7 +6,7 @@ import { hotDataAdd } from '~/api/count'
 import { getAllStation, getArraycatalogdat, getArraystation, getCompanyList, getStation, getarraynetwork, getcata } from '~/api/seismometry'
 
 definePageMeta({
-  layout: 'without-footer',
+  layout: 'map-page',
 })
 const dayjs = useDayjs()
 
@@ -350,7 +351,7 @@ const searchVal = ref('')
 <!-- 数据目录-测震 -->
 <template>
   <div
-    class="pos-relative"
+    class="pos-relative h-[calc(100vh_-_160px)] w-100vw overflow-hidden"
   >
     <ClientOnly>
       <div class="header pos-absolute left-20px top-20px z-999 w-full flex">
@@ -360,6 +361,7 @@ const searchVal = ref('')
 
       <MapBox
         v-loading="loading"
+        class=" "
         :list="station"
         :highspot="highspot"
         :map-show="mapShow"

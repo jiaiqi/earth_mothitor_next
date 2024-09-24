@@ -363,6 +363,7 @@ function stationDraw() {
 
 <style scoped lang="scss">
 .map-box {
-  height: calc(100vh - 160px);
+  height: 100%;
+  width: 100%;
 }
 </style>
