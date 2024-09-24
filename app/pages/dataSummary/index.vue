@@ -17,7 +17,7 @@ const list = computed(() => {
     return allList.value[currentType.value]
   }
   else if (Object.keys(allList.value).length) {
-    return Object.keys(allList.value).reduce((acc: any[], cur: any[]) => acc.concat(allList.value[cur]), [])
+    return Object.keys(allList.value).reduce((acc: any[], cur: string) => acc.concat(allList.value[cur]), [])
   }
   return [] // 当条件不满足时返回空数组
 })
