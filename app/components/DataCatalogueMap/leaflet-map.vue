@@ -127,6 +127,19 @@ function onMarkerClick(index: number, event: L.LeafletMouseEvent) {
   emit('update:activeMaker', data)
   emit('markerClick', { data, event, L })
 }
+function toMarker(data) {
+  if (!data?.latlng && data?.staLat && data?.staLon) {
+    data.latlng = [data.staLat, data.staLon]
+  }
+  center.value = [data.staLat, data.staLon]
+  mapInstance.value.setView(center.value, 7)
+  popupInstance.value.setLatLng(data.latlng).openOn(mapInstance.value)
+  emit('update:activeMaker', data)
+  emit('markerClick', { data })
+}
+// 暴露toMarker方法
+defineExpose({ toMarker })
+
 const iconMap = {
   red: getIcon(yy),
   blue: getIcon(bit),
@@ -155,8 +168,9 @@ const pointList = computed<any[]>(() => {
     return []
   }
 })
+const mc = ref<any>() // 保存markerCluster实例
 watch(() => props.list, (newVal) => {
-  let list = []
+  let list: any[] = []
   if (newVal.length) {
     list = newVal.map((item, index) => {
       let icon: 'red' | 'blue' = 'blue'
@@ -175,23 +189,28 @@ watch(() => props.list, (newVal) => {
         },
       }
     })
-
-    if (mapInstance.value) {
-      const lMarkerCluster = useLMarkerCluster({
-        leafletObject: mapInstance.value,
-        markers: list,
-      })
-      lMarkerCluster.then(({ markerCluster, markers }) => {
-        // markerCluster.on('clusterclick', (event) => {
-        //   console.log('Cluster clicked')
-        // })
+  }
+  if (mapInstance.value) {
+    if (mc.value?.clearLayers) {
+      mc.value.clearLayers()
+    }
+    const lMarkerCluster = useLMarkerCluster({
+      leafletObject: mapInstance.value,
+      markers: list,
+    })
+    lMarkerCluster.then(({ markerCluster, markers }) => {
+      mc.value = markerCluster
+      // markerCluster.on('clusterclick', (event) => {
+      //   console.log('Cluster clicked')
+      // })
+      if (markers?.length) {
         markers.forEach((marker, index) => {
           marker.on('click', (event) => {
             onMarkerClick(index, event)
           })
         })
-      })
-    }
+      }
+    })
   }
 })
 </script>

@@ -5,7 +5,7 @@ import { computed, ref, watch } from 'vue'
 interface Props {
   netList?: { value: string, label: string }[]
   stationList?: { id: string, staName: string }[]
-  pointerList?: { id: string, shockAddr: string }[]
+  pointerList?: any[]
   yearlist?: { year: string }[]
   type?: string
 }
@@ -30,6 +30,7 @@ const year = ref('')
 const yearList = ref<{ value: string, label: string }[]>([])
 const locationList = ref<{ value: string, label: string }[]>([])
 const stationList2 = ref<{ value: string, label: string }[]>([])
+const TimeSelect = ref([])
 
 // 计算属性
 const isSeismic = computed(() => props.type === '测震')
@@ -38,21 +39,41 @@ const isSimulatedData = computed(() => props.type === '模拟资料')
 const isScienceArray = computed(() => props.type === '科学台阵')
 
 // 监听器
-watch(props.netList, () => {
+watch(() => props.netList, () => {
   if (isStrongMotion.value) {
     yearList.value = props.netList.map(item => ({ value: item.year, label: item.year }))
   }
 })
+watch(() => props.pointerList, () => {
+  let labelKey = 'shockAddr'
+  let valueKey = 'id'
+  if (props.type === 'GNSS') {
+    labelKey = 'pointName'
+  }
+  else if (props.type === '定点形变') {
+    labelKey = 'sta_name'
+    valueKey = 'sta_code'
+  }
+  else if (props.type === '流体') {
+    labelKey = 'stationName'
+    valueKey = 'stationCode'
+  }
+  else if (props.type === '电磁') {
+    labelKey = 'sta_name'
+    valueKey = 'sta_code'
+  }
+  else if (props.type === '重力') {
+    labelKey = 'sta_name'
+    valueKey = 'sta_code'
+  }
+  locationList.value = props.pointerList.map(item => ({ value: item[valueKey], label: item[labelKey] }))
+}, { immediate: true, deep: true })
 
-watch(props.pointerList, () => {
-  locationList.value = props.pointerList.map(item => ({ value: item.id, label: item.shockAddr }))
-})
-
-watch(props.stationList, () => {
+watch(() => props.stationList, () => {
   stationList2.value = props.stationList.map(item => ({ value: item.id, label: item.staName }))
 })
 
-watch(props.yearlist, () => {
+watch(() => props.yearlist, () => {
   yearList.value = props.yearlist.map(item => ({ value: item.year, label: item.year }))
 })
 
@@ -91,9 +112,7 @@ function check() {
 }
 
 function changeValue(item: string) {
-  if (isStrongMotion.value || isSimulatedData.value) {
-    emit('filter', item)
-  }
+  emit('filter', item)
 }
 
 function changeValue2(item: string | { id: string }) {
@@ -113,6 +132,10 @@ function changeValue2(item: string | { id: string }) {
   else if (isSimulatedData.value) {
     emit('filter', item)
   }
+}
+const search = ref('')
+function searchVal(val) {
+  emit('search', search)
 }
 </script>
 
@@ -144,6 +167,32 @@ function changeValue2(item: string | { id: string }) {
       <el-option v-for="item in yearList" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
     <el-input v-if="type === '科学台阵'" v-model="station" class="select" placeholder="请输入台站代码" />
+    <el-select v-if="type === '流动形变'" v-model="year" class="select" collapse-tags placeholder="请选择年份" @change="changeValue">
+      <el-option v-for="item in yearlist" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '流动形变'" v-model="search" class="select" placeholder="请输入测线名称" @input="searchVal" />
+    <el-select v-if="type === 'GNSS'" v-model="net" class="select" collapse-tags placeholder="请选择台网" @change="changeValue2">
+      <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === 'GNSS'" v-model="pointer" class="select" placeholder="请输入台站名称" />
+    <el-date-picker
+      v-if="type === 'GNSS'" v-model="TimeSelect" style="margin-left: 10px;" type="daterange" range-separator="至" start-placeholder="开始日期"
+      end-placeholder="结束日期"
+    />
+    <el-select v-if="type === '地震地质'" v-model="pointer" class="select" collapse-tags placeholder="请选择省份" @change="changeValue">
+      <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '地震地质'" v-model="search" class="select" placeholder="请输入项目名称" />
+    <el-select v-if="type === '定点形变'" v-model="pointer" class="select" collapse-tags placeholder="请选择台站" @change="changeValue">
+      <el-option v-for="item in locationList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-select v-if="type === '流体'" v-model="pointer" class="select" collapse-tags placeholder="请选择台站" @change="changeValue">
+      <el-option v-for="item in locationList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
+    <el-input v-if="type === '流体'" v-model="search" class="select" placeholder="请输入台站名称" @input="changeValue" />
+    <el-select v-if="type === '电磁'" v-model="pointer" class="select" collapse-tags placeholder="请选择台站" @change="changeValue">
+      <el-option v-for="item in locationList" :key="item.value" :label="item.label" :value="item.value" />
+    </el-select>
     <div class="flex">
       <el-button type="primary" class="w-70px" @click="check">
         查询

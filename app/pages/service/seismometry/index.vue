@@ -160,7 +160,7 @@ function getCataList2() {
     })
 }
 // 地图标记点点击
-function handleClickMaker(val, L) {
+function handleClickMaker(val) {
   maker.value = val
   // const content = `aaaaa`
   // L.popup({ minWidth: 350 })
@@ -170,7 +170,6 @@ function handleClickMaker(val, L) {
   // debugger
   // console.log(val)
   // console.log(type)
-  debugger
   drawerTitle.value = val.staName
   highspot.value = val
   markshow.value = true
@@ -344,8 +343,8 @@ function loadNode(node, resolve) {
   }
 }
 function markerClick(params: any) {
-  const { data, L } = params
-  handleClickMaker(data, L)
+  const { data } = params
+  handleClickMaker(data)
 }
 </script>
 

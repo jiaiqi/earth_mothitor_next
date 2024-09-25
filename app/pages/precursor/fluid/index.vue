@@ -5,11 +5,13 @@ import TopFilter from '~/components/DataCatalogueMap/top-filter.vue'
 import LeftDrawer from '~/components/DataCatalogueMap/left-drawer.vue'
 import LeafletMap from '~/components/DataCatalogueMap/leaflet-map.vue'
 import { getPreitem, getWordList } from '~/api/precursor'
+import { hotDataAdd } from '~/api/count'
 
 definePageMeta({
   layout: 'map-page',
 })
 const routePath = [{ name: '首页', path: '/' }, { name: '观测数据', path: '/dataSummary' }, { name: '地下流体', path: '' }]
+const mapRef = ref<any>(null)
 const station = ref([])
 const treeList = ref([])
 const yearList = ref([])
@@ -93,7 +95,10 @@ function filterVal(id) {
   if (id === '') {
     return
   }
-  markerClick(info)
+  if (mapRef.value?.toMarker) {
+    mapRef.value.toMarker(info)
+  }
+  // markerClick({ data: info })
 }
 function searchStation() {
 
@@ -122,7 +127,7 @@ function handleNodeClick(data) {
   else if (data.keyname) {
     if (data.keyname) {
       // this.stationName = data.netName
-      getWordList({ networkCode: thisProvince }).then(
+      getWordList({ networkCode: thisProvince.value }).then(
         (res) => {
           const list = res.map((item) => {
             item.staLat = item.latitude
@@ -197,8 +202,14 @@ function loadNode(node, resolve) {
 function markerClick(params) {
   const { data } = params
   marker.value = data
-  debugger
-  // const val = data
+  const val = data
+  const form = {
+    keyName: `地下流体-${val.stationName}台站数据集`,
+    url: '/precursor/fluid',
+    linkUnit: tipText,
+    postUrl: val.stationName,
+  }
+  hotDataAdd(form)
   // debugger
   // // 判断是输入还是选择
   // if (typeof data == 'string' && data != '') {
@@ -220,20 +231,20 @@ function markerClick(params) {
   // }
 
   // markshow.value = true
-  highspot.value = val
-  if (val.shockAddr) {
-    drawertitle.value = '强震动地震数据信息'
-    shockAddr = val.shockAddr
-    drawerTitle.value = val.shockAddr
-    isActive = true
-    show = true
-    getCataList()
-  }
-  else {
-    drawertitle.value = '强震动地震台站数据信息'
-    drawerTitle.value = val.staName
-    handleNodeClick({ eventId: val.id, row: val })
-  }
+  // highspot.value = val
+  // if (val.shockAddr) {
+  //   drawertitle.value = '强震动地震数据信息'
+  //   shockAddr = val.shockAddr
+  //   drawerTitle.value = val.shockAddr
+  //   isActive = true
+  //   show = true
+  //   // getCataList()
+  // }
+  // else {
+  //   drawertitle.value = '强震动地震台站数据信息'
+  //   drawerTitle.value = val.staName
+  //   handleNodeClick({ eventId: val.id, row: val })
+  // }
 }
 </script>
 
@@ -242,7 +253,7 @@ function markerClick(params) {
     <ClientOnly>
       <DataCatalogueMap v-loading="loading" page-name="地下流体" :route-path="routePath">
         <template #header>
-          <TopFilter :net-list="yearList" type="地下流体" />
+          <TopFilter :net-list="yearList" type="流体" :pointer-list="station" @filter="filterVal" />
         </template>
         <template #left>
           <LeftDrawer
@@ -254,7 +265,14 @@ function markerClick(params) {
           />
         </template>
         <template #content>
-          <LeafletMap v-model:active-marker="marker" v-loading="loading" :restmap="restmap" :list="station" show-marker-popup @marker-click="markerClick">
+          <LeafletMap
+            ref="mapRef"
+            v-model:active-marker="marker" v-loading="loading"
+            :restmap="restmap"
+            :list="station"
+            show-marker-popup
+            @marker-click="markerClick"
+          >
             <template #marker-popup>
               <div v-if="marker && marker.id">
                 <PopupContent
