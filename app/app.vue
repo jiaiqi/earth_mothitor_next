@@ -46,4 +46,7 @@ useHead({
 .iclient-leaflet-logo.leaflet-control {
   display: none;
 }
+.leaflet-popup-content {
+  margin: 0;
+}
 </style>

@@ -135,6 +135,7 @@ const activeMarkerId = computed(() => props.activeMaker?.id)
 const activeMarkerLatLng = computed(() => props.activeMaker?.latlng)
 const popupOptions = ref({
   // offset: [0, 75],
+  minWidth: 350,
 })
 const pointList = computed<any[]>(() => {
   if (props.list?.length) {

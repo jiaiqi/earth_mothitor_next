@@ -1,5 +1,6 @@
 <!-- 测震 -->
 <script lang="ts" setup>
+import PopupContent from './popup-content.vue'
 import TopFilter from '~/components/DataCatalogueMap/top-filter.vue'
 import LeftDrawer from '~/components/DataCatalogueMap/left-drawer.vue'
 import LeafletMap from '~/components/DataCatalogueMap/leaflet-map.vue'
@@ -14,6 +15,17 @@ const dayjs = useDayjs()
 const routePath = [{ name: '首页', path: '/' }, { name: '观测数据', path: '/dataSummary' }, { name: '测震', path: '' }]
 
 const isChildProvince = ref(false)
+
+const loading = ref(false)
+const station = ref<any[]>([])
+const maker = ref({})
+const drawerTitle = ref('')
+//
+const highspot = ref(null) //  存储点击的点
+const markshow = ref(false)
+const stationName = ref('')
+const isProvince = ref(false)
+const isScience = ref(false) // 科学台震
 // 1、获取测震站列表
 const netList = ref<any[]>([])
 async function getStatonList() {
@@ -58,7 +70,6 @@ const tableData = ref([])
 
 // 获取通道数据
 function getCataList() {
-  console.log(maker.value)
   const arr = { staId: '', netId: '' }
   arr.staId = maker.value.id
   arr.netId = maker.value.netId
@@ -131,17 +142,6 @@ function getCataList() {
   })
 }
 
-const loading = ref(false)
-const station = ref<any[]>([])
-const maker = ref({})
-const drawerTitle = ref('')
-//
-const highspot = ref(null) //  存储点击的点
-const markshow = ref(false)
-const stationName = ref('')
-const isProvince = ref(false)
-const isScience = ref(false) // 科学台震
-
 // 获取科学台阵通道数据
 function getCataList2() {
   const arr = { staId: '', netId: '' }
@@ -170,6 +170,7 @@ function handleClickMaker(val, L) {
   // debugger
   // console.log(val)
   // console.log(type)
+  debugger
   drawerTitle.value = val.staName
   highspot.value = val
   markshow.value = true
@@ -342,7 +343,7 @@ function loadNode(node, resolve) {
     }
   }
 }
-function makerrClick(params: any) {
+function markerClick(params: any) {
   const { data, L } = params
   handleClickMaker(data, L)
 }
@@ -352,7 +353,7 @@ function makerrClick(params: any) {
 <template>
   <div>
     <ClientOnly>
-      <DataCatalogueMap v-loading="loading" page-name="测震" :route-path="routePath" :list="station" @makerr-click="makerrClick">
+      <DataCatalogueMap v-loading="loading" page-name="测震" :route-path="routePath" :list="station">
         <template #header>
           <TopFilter :net-list="netList" type="测震" />
         </template>
@@ -360,7 +361,18 @@ function makerrClick(params: any) {
           <LeftDrawer :load-node="loadNode" :node-click="handleNodeClick" />
         </template>
         <template #content>
-          <LeafletMap v-model:active-maker="maker" v-loading="loading" :list="station" @makerr-click="makerrClick" />
+          <LeafletMap v-model:active-maker="maker" v-loading="loading" :list="station" show-marker-popup @marker-click="markerClick">
+            <template #marker-popup>
+              <div v-if="maker && maker.staName">
+                <PopupContent
+                  :marke-arr="maker"
+                  :title="isScience ? '科学台阵' : '测震数据'"
+                  :data-length="tableData.length"
+                  :station-name="stationName"
+                />
+              </div>
+            </template>
+          </LeafletMap>
         </template>
       </DataCatalogueMap>
     </ClientOnly>
