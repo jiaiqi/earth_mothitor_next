@@ -17,6 +17,18 @@ const props = defineProps({
     },
   },
   activeMaker: Object,
+  deformation: {
+    type: Array as PropType<any[]>,
+    default: () => {
+      return []
+    },
+  },
+  stationspot: {
+    type: Array as PropType<any[]>,
+    default: () => {
+      return []
+    },
+  },
   showMarkerPopup: {
     type: Boolean,
     default: false,
@@ -34,7 +46,8 @@ const positionText = ref('')
 const mapLayer = ref<any>()
 const textLayer = ref<any>()
 const showTextLayer = ref(true)
-
+const lineData = ref<any[]>([])
+const deformationlist = ref<any[]>([])
 const layerMap = {
   sl: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/矢量底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/矢量中文注记_经纬度'],
   yx: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像中文注记_经纬度'],
@@ -213,6 +226,89 @@ watch(() => props.list, (newVal) => {
     })
   }
 })
+watch(props.deformation, (newVal) => {
+  if (newVal) {
+    deformationlist.value = newVal
+    if (newVal[0].beginLongitude && newVal[0].beginLatitude) { // 地震测深数据
+      setLine()
+    }
+    else {
+      setLine2()
+    }
+  }
+})
+// 画线-地震测深数据
+function setLine() {
+  const num = deformationlist.value.length
+  for (let i = 0; i < num; i++) {
+    const deform = this.deformationlist[i]
+    const startMark = [deform.startLat, deform.startLon]
+    const endmark = [deform.endLat, deform.endLon]
+    const latlngs = [startMark, endmark]
+    lineData.value.push({
+      latlngs,
+      color: 'red',
+    })
+    // const line = L.polyline(latlngs, { color: 'red' }).on('click', () => {
+    //   this.$emit('maplist', deform)
+    // })
+    // // this.map.fitBounds()  .getBounds()
+    // lines.push(line)
+    // this.line_group = new L.LayerGroup(lines).addTo(this.layerGroups)
+  }
+}
+// 画线
+function setLine2() {
+  const lines = []
+  const line_map = {}
+  // for (let i = 0; i < this.deformationlist.length; i++) {
+  const Line = deformationlist.value[0]
+  // let txt = `测线名称：${Line.lineName}<br/>`  .bindPopup(txt, { className: 'popupLineClass' })
+  // .openPopup()
+  if (Line.latAndLon.length >= 2) {
+    const latlngs = Line.latAndLon
+    const lineData = {
+      latlngs,
+      color: 'red',
+    }
+    lines.push(lineData)
+  }
+  // }
+}
+// 高亮线
+const activeLine = ref<any>(null)
+const lines = computed(() => {
+  return lineData.value.map((item) => {
+    if (item.id && item.id === activeLine.value) {
+      return {
+        ...item,
+        color: 'blue',
+      }
+    }
+    else {
+      return item
+    }
+  })
+})
+
+function highLine(Line) {
+  const lines = []
+
+  if (Line.latAndLon.length >= 2) {
+    const latlngs = Line.latAndLon
+    const lineData = {
+      latlngs,
+      color: 'blue',
+    }
+
+    lines.push(line)
+
+    mapInstance.value.flyToBounds(
+      [Line.latAndLon[0], Line.latAndLon[Line.latAndLon.length - 1]],
+      { maxZoom: 6 },
+    )
+  }
+}
 </script>
 
 <template>
@@ -252,6 +348,11 @@ watch(() => props.list, (newVal) => {
         <ChangeLayer v-model:show-text-layer="showTextLayer" :layer-name="layerName" @change-base-layer="changeLayer" />
       </LControl>
       <LControlScale position="bottomleft" :imperial="true" :metric="true" />
+      <LPolyline
+        v-for="(item, index) in lineData" :key="index"
+        :lat-lngs="item.latlngs"
+        :color="item.color || 'green'"
+      />
       <!-- <LControlZoom position="bottomright" /> -->
     </LMap>
     <div class="pos-absolute right-70px top-15px z-999">

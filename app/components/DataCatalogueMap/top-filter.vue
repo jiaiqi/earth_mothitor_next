@@ -125,6 +125,13 @@ function check() {
     }
     emit('search', station.value)
   }
+  else if (props.type === '探测数据') {
+    if (station.value === '') {
+      ElMessage.error('请输入至少一个信息')
+      return
+    }
+    emit('search', station)
+  }
 }
 
 function changeValue(item: string) {
@@ -145,6 +152,7 @@ function searchVal(val) {
 <template>
   <!-- 顶部过滤器 -->
   <div class="z-999 flex rounded-6px bg-white px-12px py-6px">
+    <el-input v-if="type === '探测数据'" v-model="station" class="select" placeholder="请输入测线名称" />
     <el-select v-if="type === '测震'" v-model="net" class="select" collapse-tags placeholder="请选择台网">
       <el-option v-for="item in netList" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>

@@ -106,7 +106,7 @@ const btns = [
 .circle {
   width: 80px;
 }
-::v-deep .el-card__body {
+:deep(.el-card__body) {
   flex-direction: column;
 }
 .switch-btn .image {

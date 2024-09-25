@@ -1,4 +1,4 @@
-<!-- GNSS -->
+  <!-- 探测数据 -->
 <script lang="ts" setup>
 import PopupContent from './popup-content.vue'
 import TopFilter from '~/components/DataCatalogueMap/top-filter.vue'
@@ -8,11 +8,12 @@ import { getPreitem, getWordList } from '~/api/precursor'
 import { hotDataAdd } from '~/api/count'
 import { getContinuousList, getContinuousNet, getFlowGnss, getFlowNet, getGnssList, gnssHeadSearch } from '~/api/gnss'
 import { getCompanyList } from '~/api/seismometry'
+import { getDRlist, getGeophydata } from '~/api/probedata'
 
 definePageMeta({
   layout: 'map-page',
 })
-const routePath = [{ name: '首页', path: '/' }, { name: '观测数据', path: '/dataSummary' }, { name: 'GNSS', path: '' }]
+const routePath = [{ name: '首页', path: '/' }, { name: '观测数据', path: '/dataSummary' }, { name: '探测数据', path: '' }]
 const mapRef = ref<any>(null)
 const station = ref([])
 const dratitle = ref('')
@@ -29,19 +30,25 @@ const nowProvince = ref('')
 const deformation = ref<any[]>([])
 const netId = ref(null)
 const netList = ref<any[]>([])
+const showName = ref(false)
+const platName = ref<any[]>([])
+const deformationLine = ref<any[]>([])
+const comTreeList = ref<any[]>([])
+const treeData = [
+  {
+    lineName: '地震测深',
+    children: [{
+      lineName: '人工地震测深',
+      children: [{
+        lineName: '按剖面名称',
+      }],
+    }],
+  },
+]
 onMounted(() => {
-  getHotList()
+  handleNodeClick({ lineName: '按剖面名称' })
   if (sessionStorage.getItem('tips')) {
-    tipText.value = sessionStorage.getItem('tips') as string
-  }
-  // 子站过滤省局数据
-  if (sessionStorage.getItem('province') === '' || !sessionStorage.getItem('province')) {
-    isChildProvince.value = false
-    getNetList()
-    handleNodeClick({ netCode: 'DZKXSYC', netName: '中国地震科学实验场', type: 'continue', unit_id: 3 })
-  }
-  else {
-    isChildProvince.value = true
+    tipText.value = sessionStorage.getItem('tips')
   }
 })
 function getNetList() {
@@ -134,76 +141,32 @@ function searchStation() {
 
 }
 function handleNodeClick(data) {
-  console.log(data)
-  console.log(nowProvince)
-  if (data.netName && data.netCode && data.netName.length < 4) {
-    nowProvince.value = data.netName
-  }
-  highspot.value = null
-  deformation.value = []
-  station.value = []
-  if (data.unit_id && data.type === 'flow') {
-    let id = data.unit_id
-    if (netId.value) {
-      id = netId
-    }
-    getFlowGnss(
-      { net_id: id }, //  f_unit_id: data.f_unit_id,
-    ).then((res) => {
-      const list = res.map((item) => {
-        item.type = data.type
-        item.staLat = item.lat
-        item.staLon = item.lon
-        return item
+  if (data.lineName === '按剖面名称') {
+    const data = {}
+    getDRlist(data)
+      .then((res) => {
+        const list = res.map((item) => {
+          item.staLat = item.beginLatitude
+          item.staLon = item.beginLongitude
+          item.endLat = item.endLatitude
+          item.endLon = item.endLongitude
+          return item
+        })
+        loading.value = false
+        showName.value = true
+        deformationLine.value = list
+        platName.value = list
+        // treeData = list
       })
-      if (list.length === 0) {
-        ElMessage.error('数据为空')
-        return
-      }
-      station.value = list
-    })
-  }
-  else if (data.unit_id && data.type === 'continue') {
-    // id.unit_id = data.c_unit_id
-    let id = data.unit_id
-    if (netId.value) {
-      id = netId
-    }
-    getContinuousList(
-      { net_id: id }, //  c_unit_id: data.c_unit_id,
-    ).then((res) => {
-      const list = res.map((item) => {
-        item.type = data.type
-        item.staLat = item.lat
-        item.staLon = item.lon
-        return item
+      .catch(() => {
+        ElMessage.error('请先登录')
       })
-      if (list.length === 0) {
-        ElMessage.error('数据为空')
-        return
-      }
-      station.value = list
-    })
-    // }
-  }
-  else if (data.netName && data.type === 'continue') {
-    const par = {
-      roll: nowProvince,
+    const form = {
+      keyName: '地震测深数据集',
+      url: '/prevention/prospecting?type=0',
+      linkUnit: tipText,
     }
-    getGnssList(par).then((res) => {
-      const list = res.map((item) => {
-        item.staLat = item.latitude
-        item.staLon = item.longitude
-        item.pointName = item.roll
-        item.cTime = item.buildTime
-        item.type = 'new'
-        return item
-      })
-      station.value = list
-      if (list.length === 0) {
-        ElMessage.error('数据为空')
-      }
-    })
+    hotDataAdd(form).then()
   }
 }
 // 获取前两层数据
@@ -394,45 +357,43 @@ function loadNode(node, resolve) {
   }
 }
 
-const dayjs = useDayjs()
 // 地图标记点点击
 function markerClick(params) {
   const { data } = params
   marker.value = data
   const val = data
-  const form = {
-    keyName: `地下流体-${val.stationName}台站数据集`,
-    url: '/precursor/fluid',
-    linkUnit: tipText,
-    postUrl: val.stationName,
-  }
-  hotDataAdd(form)
-  if (val.type != 'new') {
-    dratitle.value = 'GNSS连续观测站点信息'
-    val.cTime = dayjs(val.cTime).format('YYYY-MM-DD HH:mm:ss').slice(0, 4)
-    markshow = true
-    // getCataList(val)
-  }
-  else {
-    dratitle.value = 'GNSS台站信息'
-    drawerTitle.value = `${val.roll}台站`
-  }
+  comTreeList.value = [val]
+  station.value = val.childPoint
+  highspot.value = val
+  getCataList()
+}
+
+// 获取数据详情
+function getCataList() {
+  // 连续站
+  getGeophydata({ bid: marker.value.id }).then((res) => {
+    const list = res
+    deformation.value = list
+    platName.value = [{
+      collectDataDate: deformation.value[0].date,
+      lineName: deformation.value[0].description,
+    }]
+  })
 }
 </script>
 
 <template>
   <div>
     <ClientOnly>
-      <DataCatalogueMap v-loading="loading" page-name="GNSS" :route-path="routePath">
+      <DataCatalogueMap v-loading="loading" page-name="探测数据" :route-path="routePath">
         <template #header>
-          <TopFilter :net-list="netList" :station-list="station" type="GNSS" @search="searchVal" @filter="filterVal" />
+          <TopFilter :net-list="netList" :station-list="station" type="探测数据" @search="searchVal" @filter="filterVal" />
         </template>
         <template #left>
           <LeftDrawer
-            :load-node="loadNode" :node-click="handleNodeClick" :prop="{
-              label: 'netName',
-              children: 'zones',
-              isLeaf: 'leaf',
+            :tree-data="treeData" :node-click="handleNodeClick" :prop="{
+              children: 'children',
+              label: 'lineName',
             }"
           />
         </template>
@@ -448,10 +409,7 @@ function markerClick(params) {
               <div v-if="marker && marker.id">
                 <PopupContent
                   :marke-arr="marker"
-                  :title="dratitle"
-                  :data-length="unitList.length"
-                  :begin-time="drawertitle.time"
-                  :days="drawertitle.num"
+                  title="地震测深"
                 />
               </div>
             </template>

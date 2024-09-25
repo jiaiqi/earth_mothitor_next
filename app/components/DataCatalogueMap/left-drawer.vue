@@ -21,6 +21,12 @@ const props = defineProps({
       return null
     },
   },
+  treeData: {
+    type: Array,
+    default: () => {
+      return []
+    },
+  },
 })
 const filterText = ref('')
 const tree = ref(null)
@@ -44,6 +50,7 @@ const unfold = ref(true)
       class="mt-16px flex-1 rounded-6px"
       border="1px solid #E5E5EA"
       :props="props.prop"
+      :data="treeData"
       accordion
       :load="props.loadNode"
       :filter-node-method="props.filterNodeMethod"

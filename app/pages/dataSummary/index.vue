@@ -186,6 +186,12 @@ function toPath(url: string) {
       break
     case 'precursorProspecting': // 地震测深
       name = 'precursor-prospecting'
+      if (currentType.value === '探测数据') { // 探测数据 地震测深
+        name = 'prevention-prospecting'
+      }
+      break
+    case 'precursorFlowMation': // 水准
+      name = 'precursor-flowmation'
       break
     default:
       name = camelToKebab(name)

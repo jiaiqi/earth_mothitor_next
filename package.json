@@ -3,7 +3,7 @@
   "private": true,
   "packageManager": "pnpm@9.8.0",
   "scripts": {
-    "build": "nuxi build --dotenv .env.production",
+    "build": "nuxi build --dotenv .env.development",
     "dev:pwa": "VITE_PLUGIN_PWA=true nuxi dev --port=3366",
     "dev": "nuxi dev --port 3030 --dotenv .env.development",
     "generate": "nuxi generate  --dotenv .env.development",

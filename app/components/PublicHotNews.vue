@@ -1,9 +1,10 @@
 <!-- 热门推荐 -->
 <script lang="ts" setup>
 import { decode, encode } from '~/utils/base/dataEncry'
+
 const props = defineProps<{
   list: any[]
-  type: any[]
+  type?: any[]
 }>()
 const list = ref([
   {
@@ -49,7 +50,8 @@ function goInfo(item) {
         data: encode(item),
       },
     })
-  } else {
+  }
+  else {
     sessionStorage.setItem('hotInfo', JSON.stringify(item))
     if (item.linkUnit) {
       sessionStorage.setItem('tips', item.linkUnit)
@@ -61,7 +63,6 @@ function goInfo(item) {
       navigateTo(item.url)
     }
   }
-
 }
 </script>
 
@@ -77,7 +78,8 @@ function goInfo(item) {
         </defs>
         <g fill="url('#UMWUvl3aUMblH20J4eZMCL1')">
           <path
-            d="M14.222 1.778s9.495 2.952 7.394 12.075c0 0 1.050-0.805 2.101-2.415 0 0 4.727 3.757 4.727 9.124 0 3.757-3.152 6.977-9.455 9.66h-0.765c2.101-3.041 2.189-5.546 0.263-7.514-4.202-4.025-2.364-6.709-2.364-6.709s-4.448 2.159-5.312 6.18c-0.464 2.159 0.105 4.855 2.949 8.042h-0.426c-5.333-1.778-9.778-5.3-9.778-10.667 0-10.029 9.942-8.354 10.667-17.778z" />
+            d="M14.222 1.778s9.495 2.952 7.394 12.075c0 0 1.050-0.805 2.101-2.415 0 0 4.727 3.757 4.727 9.124 0 3.757-3.152 6.977-9.455 9.66h-0.765c2.101-3.041 2.189-5.546 0.263-7.514-4.202-4.025-2.364-6.709-2.364-6.709s-4.448 2.159-5.312 6.18c-0.464 2.159 0.105 4.855 2.949 8.042h-0.426c-5.333-1.778-9.778-5.3-9.778-10.667 0-10.029 9.942-8.354 10.667-17.778z"
+          />
         </g>
       </svg>
       <!-- <i class="i-twemoji:fire mr-10px" /> -->
@@ -86,10 +88,13 @@ function goInfo(item) {
       </span>
     </div>
     <div class="mb-20px">
-      <div v-for="(item, index) in listData" :key="item.id" class="mt-20px flex cursor-pointer items-center"
-        @click="goInfo(item)">
+      <div
+        v-for="(item, index) in listData" :key="item.id" class="mt-20px flex cursor-pointer items-center"
+        @click="goInfo(item)"
+      >
         <div
-          :class="[{ 'list-decorate': index > 2, 'bg-#1684FC w-18px line-height-18px text-center text-12px  text-white': index < 3 }]">
+          :class="[{ 'list-decorate': index > 2, 'bg-#1684FC w-18px line-height-18px text-center text-12px  text-white': index < 3 }]"
+        >
           <span v-if="index < 3">{{ index + 1 }}</span>
         </div>
         <div class="ml-10px truncate" :title="item.title">
