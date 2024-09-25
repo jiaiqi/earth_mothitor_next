@@ -179,6 +179,7 @@ function toPath(url: string) {
     type = url.split(',')[1] as string
     name = url.split(',')[0] as string
   }
+  debugger
   switch (name) {
     case 'serviceSeismometry':// 测震
       name = 'service-seismometry'

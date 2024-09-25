@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { isPropertySignature } from 'typescript'
 import { computed, ref, watch } from 'vue'
 
 // 定义组件属性
@@ -84,13 +85,28 @@ function reset() {
   dateDuring.value = ''
   pointer.value = ''
   year.value = ''
+  TimeSelect.value = []
   emit('search', {})
 }
 
 function check() {
-  if (isSeismic.value) {
+  if (props.type === 'GNSS') {
+    const par: any = {}
+    if (TimeSelect.value?.length === 2 && TimeSelect.value[0] && TimeSelect.value[1]) {
+      par.beginTime = new Date(TimeSelect.value[0]).toLocaleDateString().replaceAll('/', '-')
+      par.endTime = new Date(TimeSelect.value[1]).toLocaleDateString().replaceAll('/', '-')
+    }
+    if (pointer.value) {
+      par.siteName = pointer.value
+      if (!TimeSelect.value?.length) {
+        emit('filter', pointer)
+      }
+    }
+    emit('search', par)
+  }
+  else if (props.type === '测震') {
     if (station.value === '' && net.value === '' && dateDuring.value === '') {
-      alert('请输入至少一个信息')
+      ElMessage.error('请输入至少一个信息')
       return
     }
     const info = { netCode: net.value }
@@ -102,9 +118,9 @@ function check() {
     }
     emit('search', info)
   }
-  else if (isScienceArray.value) {
+  else if (props.type === '科学台阵') {
     if (station.value === '') {
-      alert('请输入至少一个信息')
+      ElMessage.error('请输入至少一个信息')
       return
     }
     emit('search', station.value)
@@ -116,21 +132,8 @@ function changeValue(item: string) {
 }
 
 function changeValue2(item: string | { id: string }) {
-  if (isStrongMotion.value) {
-    if (typeof item === 'string') {
-      emit('filter2', item)
-      return
-    }
-    let data = {}
-    props.pointerList.forEach((itm) => {
-      if (itm.id === item) {
-        data = itm
-      }
-    })
-    emit('filter2', data)
-  }
-  else if (isSimulatedData.value) {
-    emit('filter', item)
+  if (props.type === 'GNSS') {
+    emit('search', item)
   }
 }
 const search = ref('')
@@ -218,5 +221,9 @@ function searchVal(val) {
   .el-date-range-picker__header {
     line-height: unset;
   }
+}
+:deep(.el-range-editor.el-input__wrapper) {
+  min-width: var(--el-date-editor-width);
+  margin-right: 10px;
 }
 </style>
