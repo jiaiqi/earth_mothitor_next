@@ -196,7 +196,7 @@ const imgs = [
         </div>
       </div>
     </div>
-    <NewsList :news-list="newsList" :show-date="true">
+    <NewsList :news-list="newsList" :show-date="true" type="新闻动态">
       <template #title>
         <PublicTitle title="新闻动态" />
       </template>

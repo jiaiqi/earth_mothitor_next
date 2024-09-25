@@ -14,3 +14,8 @@ export function getList(pageNum: number, pageSize: number, month: any, day: any)
 export function getList2(data: any) {
   return useHttp.post(getRequestUrl('/infoserver/sb/list'), data)
 }
+// 获取速报列表
+export function getEveList(data: any) {
+  const url = `/infoserver/sb/pageList?pageNum=${data.pageNum}&pageSize=${data.pageSize}`
+  return useHttp.get(getRequestUrl(url))
+}

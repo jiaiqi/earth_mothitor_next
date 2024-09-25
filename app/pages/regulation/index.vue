@@ -293,10 +293,6 @@ const listData = computed(() => {
           </div>
         </div>
       </div>
-      <!-- <div class="w-full xl:w-300px">
-        <PublicHotNews />
-        <slot name="right" />
-      </div> -->
     </div>
   </CommonPageContainer>
 </template>

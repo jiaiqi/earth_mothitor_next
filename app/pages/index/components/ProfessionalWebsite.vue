@@ -10,13 +10,18 @@ industry(encode({ pageNum: 1, pageSize: 5 })).then((res) => {
 function openUrl(item) {
   window.open(item.url)
 }
+function openMore(){
+  navigateTo({
+      path: `/specialList`,
+    })
+}
 </script>
 
 <template>
   <div class="m-x-auto m-y-30px bg-white container md:max-w-1300px">
     <div class="mb-30px flex justify-between">
       <PublicTitle title="专业服务" />
-      <div class="flex cursor-pointer items-center font-500">
+      <div class="flex cursor-pointer items-center font-500" @click="openMore()">
         更多 <i class="i-ri:arrow-right-double-fill" />
       </div>
     </div>

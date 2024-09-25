@@ -44,7 +44,8 @@ function handleClickItem(item: any) {
 
 <template>
   <div v-if="type === '上图下文'" class="w-full gap-y-30px pr-30px" grid="~  md:cols-2 xl:cols-3 gap-20px">
-    <div v-for="item in list" :key="item.id" class="cursor-pointer overflow-hidden rounded-6px bg-#F6F7FA" @click="handleClickItem(item)">
+    <div v-for="item in list" :key="item.id" class="cursor-pointer overflow-hidden rounded-6px bg-#F6F7FA"
+      @click="handleClickItem(item)">
       <slot name="image" />
       <div class="px-24px py-16px">
         <div class="truncate text-size-18px text-#111 font-700 line-height-26px" :title="item.title">
@@ -58,11 +59,45 @@ function handleClickItem(item: any) {
       </div>
     </div>
   </div>
+  <div v-if="type === '专业服务'" class="w-full gap-y-30px pr-30px " grid="~  md:cols-2 xl:cols-3 gap-20px">
+    <div v-for="item in list" :key="item.id"
+      class="cursor-pointer overflow-hidden rounded-6px bg-#fff text-center rounded-10 border-1 border-inherit"
+      @click="handleClickItem(item)">
+      <slot name="image">
+        <img :src="item.photoUrl ? item.photoUrl : '/img/news_img.jpg'"
+          class="h-80px w-full md:h-158px  inline-block">
+      </slot>
+      <div class="px-24px py-16px">
+        <div class="truncate text-size-18px text-#111 font-700 line-height-26px" :title="item.title">
+          {{ item.deptName }}
+        </div>
+        <div class="mt-5px hidden truncate text-#424242 md:flex" flex="col gap-10px">
+          {{ item.url }}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="type === '图书报刊'" class="w-full gap-y-30px pr-30px " grid="~  md:cols-2 xl:cols-5 gap-20px">
+    <div v-for="item in list" :key="item.id"
+      class="cursor-pointer overflow-hidden rounded-6px bg-#fff text-center rounded-10 border-1 border-inherit rounded-tr-3xl"
+      @click="handleClickItem(item)">
+      <slot name="image">
+        <img src="/img/wImag.png"
+          class="h-80px w-full md:h-158px  inline-block">
+      </slot>
+      <div class="px-18px py-16px">
+        <div class="truncate text-size-18px text-#111 font-700 line-height-26px" :title="item.title">
+          {{ item.name }}
+        </div>
+      </div>
+    </div>
+  </div>
   <div v-else-if="type === '地震科普'" class="w-full gap-y-30px pr-30px" grid="~  md:cols-2 xl:cols-3 gap-20px">
     <div v-for="item in list" :key="item.id" class="cursor-pointer overflow-hidden rounded-6px bg-#F6F7FA text-center"
       @click="handleClickItem(item)">
       <slot name="image">
-        <img :src="item.imgUrl ? item.imgUrl : '/img/news_img.jpg'" class="h-80px w-120px md:h-158px md:w-240px inline-block">
+        <img :src="item.imgUrl ? item.imgUrl : '/img/news_img.jpg'"
+          class="h-80px w-120px md:h-158px md:w-240px inline-block">
       </slot>
       <div class="px-24px py-16px">
         <div class="truncate text-size-18px text-#111 font-700 line-height-26px" :title="item.title">
@@ -77,14 +112,16 @@ function handleClickItem(item: any) {
     </div>
   </div>
   <div v-else class="grid w-full gap-y-30px pr-30px">
-    <div v-for="item in list" :key="item.id" class="cursor-pointer pb-30px" border="1px dashed transparent b-#E2E8F2" @click="handleClickItem(item)">
+    <div v-for="item in list" :key="item.id" class="cursor-pointer pb-30px" border="1px dashed transparent b-#E2E8F2"
+      @click="handleClickItem(item)">
       <div flex="~ items-start md:items-center gap-x-24px " class="w-full">
         <slot name="image">
           <img src="/img/news_img.jpg" class="h-80px w-120px md:h-158px md:w-240px">
         </slot>
         <div class="flex-1 text-#424242">
           <div class="title" flex="col md:row ~ justify-between">
-            <span class="line-clamp-2 text-size-18px text-#111 font-700 line-height-26px" :title="item.title">{{ item.title }}
+            <span class="line-clamp-2 text-size-18px text-#111 font-700 line-height-26px" :title="item.title">{{
+              item.title }}
             </span>
             <span v-if="item.viewNum" class="flex items-center text-#AEAEB2">
               <i class="i-ri:eye-fill mr-10px" />
@@ -104,9 +141,6 @@ function handleClickItem(item: any) {
         </div>
       </div>
     </div>
-  </div>
-</template>
+  </div></template>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

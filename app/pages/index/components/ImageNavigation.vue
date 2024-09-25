@@ -6,6 +6,11 @@ import bg4 from 'public/img/img4.png'
 function openUrl(url) {
   window.open(url)
 }
+function openBook(){
+  navigateTo({
+      path: `/bookList`,
+    })
+}
 </script>
 
 <template>
@@ -37,7 +42,7 @@ function openUrl(url) {
           </div>
         </div>
       </div>
-      <div class="h-230px cursor-pointer overflow-hidden rounded-20px bg-cover" :style="{ backgroundImage: `url(${bg4})` }">
+      <div class="h-230px cursor-pointer overflow-hidden rounded-20px bg-cover" :style="{ backgroundImage: `url(${bg4})` }" @click="openBook()">
         <div class="h-full w-full bg-#101010 bg-op-17 px-40px" flex="~ items-center justify-center">
           <i class="i-ri:gps-line h-100px w-100px rounded-full text-60px text-white" border="1px solid #fff" />
           <div class="ml-40px flex-1 text-white">

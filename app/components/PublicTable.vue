@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { Operation, Download } from '@element-plus/icons-vue'
 import { downStandard } from '~/api/regulation'
+import { decode, encode } from '~/utils/base/dataEncry'
 const props = defineProps<{
   list?: any[]
   type?: string
@@ -61,6 +62,18 @@ function handleSizeChange(val: any) {
 }
 function openUrl(url: any) {
   window.open(url)
+}
+function openNewsDetail(row: any) {
+  if (row.url == '') {
+    navigateTo({
+      path: `/newsMore/detail/${row.id}`,
+      query: {
+        data: encode(row),
+      },
+    })
+  } else {
+    window.open(row.url)
+  }
 }
 function viewpdf(row: any) {
   // window.open(url)
@@ -128,7 +141,7 @@ function handleClickItem(item: any) {
     <el-table-column fixed="right" label="操作" align='center' width="200px">
       <template #default="scope">
         <div v-if="type !== '1'">
-          <span class="cursor-pointer" @click="openUrl(scope.row.url)">详情</span>
+          <span class="cursor-pointer" @click="openUrl(scope.row.newsText)">详情</span>
           <i class="i-ri:more-2-fill text-14px text-#2F77C9" />
         </div>
         <div v-if="type === '1'">
@@ -154,6 +167,58 @@ function handleClickItem(item: any) {
     <el-table-column label="时间" align="center" prop="confirmTime" width="220px">
     </el-table-column>
   </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '新闻动态'" :data="list" border style="width: 100%"
+    :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
+    <el-table-column prop="title" label="新闻标题" :show-overflow-tooltip="true">
+
+    </el-table-column>
+    <el-table-column prop="uploadTime" label="上传时间" align='center'>
+      <template #default="scope">
+        {{ scope.row.uploadTime.split('T0')[0] }}
+      </template>
+    </el-table-column>
+    <el-table-column label="操作" align="center" prop="confirmTime" width="220px">
+      <template #default="scope">
+        <div>
+          <span class="cursor-pointer" @click="openNewsDetail(scope.row)"> 查看详情</span>
+          <i class="i-ri:more-2-fill text-14px text-#2F77C9" />
+        </div>
+      </template>
+    </el-table-column>
+  </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '地震动态'" :data="list" border style="width: 100%"
+    :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
+    <el-table-column type="index" width="80" label="序号"/>
+    <el-table-column prop="m" label="震级" >
+    </el-table-column>
+    <el-table-column prop="otime" label="发布日期" width="220px">
+      <template #default="scope">
+        {{ $dayjs(scope.row.otime).format('YYYY-MM-DD hh:mm:ss') }}
+      </template>
+    </el-table-column>
+    <el-table-column label="纬度(°)"  prop="lat" >
+    </el-table-column>
+    <el-table-column label="经度(°)" prop="lon" >
+    </el-table-column>
+    <el-table-column label="深度(km)"  prop="depth">
+    </el-table-column>
+    <el-table-column label="位置"  prop="localName" width="320px" :show-overflow-tooltip="true">
+    </el-table-column>
+  </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '历史今天'" :data="list" border style="width: 100%"
+    :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
+    <el-table-column type="index" width="80" label="序号"/>
+    <el-table-column prop="m" label="震级" >
+    </el-table-column>
+    <el-table-column prop="earthquakeDate" label="发震时刻" width="220px">
+    </el-table-column>
+    <el-table-column label="纬度(°)"  prop="lat" >
+    </el-table-column>
+    <el-table-column label="经度(°)" prop="lon" >
+    </el-table-column>
+    <el-table-column label="位置"  prop="placeName" width="320px" :show-overflow-tooltip="true">
+    </el-table-column>
+  </el-table>
   <el-table v-else :data="list" border class="max-w-1300px" style="width: 100%"
     :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
     <el-table-column prop="sname" label="法规名称" :show-overflow-tooltip="true">
@@ -173,8 +238,8 @@ function handleClickItem(item: any) {
       </template>
     </el-table-column>
   </el-table>
-  <PublicPagination :page-size="queryParams.pageSize" :page-num="queryParams.pageNum"
-              :total="total" @change="handleSizeChange" />
+  <PublicPagination :page-size="queryParams.pageSize" :page-num="queryParams.pageNum" :total="total"
+    @change="handleSizeChange" />
   <!-- <el-pagination background v-model:currentPage="pagenum" v-model:page-size="pagesize" layout="total,  prev, pager, next"
     :total="total" @size-change="handleSizeChange" @current-change="handleCurrentChange" /> -->
   <el-dialog v-model="open" :append-to-body=true width="85%">
@@ -233,6 +298,4 @@ function handleClickItem(item: any) {
   /* 修改表头背景颜色 */
 }
 </style>
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

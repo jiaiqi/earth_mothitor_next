@@ -67,7 +67,17 @@ const province = [
 const list3 = ref<any[]>([])
 const list4 = ref<any[]>([])
 const list5 = ref<any[]>([])
-
+function getMore() {
+  if (currentTab.value == 'first') {
+    navigateTo({
+      path: `/earthlist`,
+    })
+  }else{
+    navigateTo({
+      path: `/listearth`,
+    })
+  }
+}
 function getTodayHistory() {
   const date = new Date()
   const pageNum = 1
@@ -75,7 +85,7 @@ function getTodayHistory() {
   const dayjs = useDayjs()
   const month = dayjs().format('MM')
   getList(pageNum, pageSize, month, date.getDate())
-    .then((res) => {
+    .then((res:any) => {
       const data = res.records || []
       todayList.value = data.slice(0, 10).map((item: any) => {
         return {
@@ -89,9 +99,9 @@ function getTodayHistory() {
     .catch(() => {
       text.value = '今日无历史地震'
     })
-  getFlagList('pageNum=1&pageSize=10').then((res) => {
+  getFlagList('pageNum=1&pageSize=10').then((res:any) => {
     const data = res.records || []
-    list3.value = data.map((item) => {
+    list3.value = data.map((item:any) => {
       return {
         ...item,
         title: item.keyName,
@@ -100,9 +110,9 @@ function getTodayHistory() {
       }
     })
   })
-  getFlagList('pageNum=1&pageSize=10&key=d').then((res) => {
+  getFlagList('pageNum=1&pageSize=10&key=d').then((res:any) => {
     const data = res.records || []
-    list5.value = data.map((item) => {
+    list5.value = data.map((item:any) => {
       return {
         ...item,
         title: item.keyName,
@@ -111,9 +121,9 @@ function getTodayHistory() {
       }
     })
   })
-  getFlagList('pageNum=1&pageSize=10&key=date').then((res) => {
+  getFlagList('pageNum=1&pageSize=10&key=date').then((res:any) => {
     const data = res.records || []
-    list4.value = data.map((item) => {
+    list4.value = data.map((item:any) => {
       return {
         ...item,
         title: item.keyName,
@@ -134,15 +144,15 @@ getTodayHistory()
       </div>
       <div flex="~ col xl:row gap-30px">
         <div class="relative w-full rounded-20px bg-white px-16px py-10px xl:w-38%">
-          <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500">
+          <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500" @click="getMore()">
             更多 <i class="i-ri:arrow-right-double-fill" />
           </div>
           <el-tabs v-model="currentTab" class="custom-tabs">
             <el-tab-pane label="最新地震动态" name="first">
-              <NewsListContent :news-list="newsList" :show-date="false" />
+              <NewsListContent :news-list="newsList" :show-date="false" type="最新地震动态" />
             </el-tab-pane>
             <el-tab-pane label="历史上的今天" name="second">
-              <NewsListContent :news-list="todayList" :show-date="false" />
+              <NewsListContent :news-list="todayList" :show-date="false" type="历史上的今天" />
             </el-tab-pane>
           </el-tabs>
         </div>
@@ -171,24 +181,30 @@ getTodayHistory()
 .earthquake-news {
   :deep(.el-tabs) {
     --el-color-primary: #3990f0;
+
     .el-tabs__item.is-active {
       font-weight: 700;
       font-size: 18px;
     }
+
     .el-tabs__nav-wrap:after {
       height: 1px;
     }
+
     .el-tabs__active-bar {
       height: 4px;
     }
   }
 }
+
 .title {
   font-weight: 600;
   position: relative;
+
   .title-icon {
     overflow: hidden;
     margin-right: 12px;
+
     @mixin before {
       content: '';
       display: inline-block;
@@ -199,6 +215,7 @@ getTodayHistory()
       border-radius: 2px;
       margin-right: 2px;
     }
+
     @mixin after {
       content: '';
       display: inline-block;
@@ -208,21 +225,25 @@ getTodayHistory()
       transform: skewY(-45deg) rotate(-45deg) scaleY(0.8);
       border-radius: 3px;
     }
+
     &::before {
       @include before;
     }
+
     &::after {
       @include after;
     }
+
     &.reverse {
       margin-left: 12px;
+
       &::before {
         @include after;
       }
+
       &::after {
         @include before;
       }
     }
   }
-}
-</style>
+}</style>
