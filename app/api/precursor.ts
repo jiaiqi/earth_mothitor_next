@@ -18,7 +18,7 @@ export function getPrecursorList(data) {
 // 获取台站
 export function getPrestationList(data) {
   const url = getRequestUrl('/precursorserver/prestation/list')
-  return useHttp.post(url, data)
+  return useHttp.post(url, encode(data)).then(res => decode(res))
 }
 
 // 获取全国台站

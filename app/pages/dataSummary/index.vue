@@ -190,8 +190,11 @@ function toPath(url: string) {
       name = camelToKebab(name)
       break
   }
-
-  router.push({ name, query: { type } })
+  const query: any = {}
+  if (type) {
+    query.type = type
+  }
+  router.push({ name, query })
 }
 function camelToKebab(camelStr: string) {
   return camelStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()

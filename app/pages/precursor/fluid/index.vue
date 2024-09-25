@@ -210,41 +210,6 @@ function markerClick(params) {
     postUrl: val.stationName,
   }
   hotDataAdd(form)
-  // debugger
-  // // 判断是输入还是选择
-  // if (typeof data == 'string' && data != '') {
-  //   treeList.value.dataue.map((itm) => {
-  //     if (itm.shockAddr && itm.shockAddr.includes(data)) {
-  //       data = { ...itm }
-  //     }
-  //   })
-  //   if (treeList.value.length == 0 || (treeList.value.length != 0 && !treeList.value[0].shockAddr)) {
-  //     searchStation(data)
-  //     return
-  //   }
-  //   if (typeof data == 'string') {
-  //     return
-  //   }
-  // }
-  // if (data == '') {
-  //   return
-  // }
-
-  // markshow.value = true
-  // highspot.value = val
-  // if (val.shockAddr) {
-  //   drawertitle.value = '强震动地震数据信息'
-  //   shockAddr = val.shockAddr
-  //   drawerTitle.value = val.shockAddr
-  //   isActive = true
-  //   show = true
-  //   // getCataList()
-  // }
-  // else {
-  //   drawertitle.value = '强震动地震台站数据信息'
-  //   drawerTitle.value = val.staName
-  //   handleNodeClick({ eventId: val.id, row: val })
-  // }
 }
 </script>
 
