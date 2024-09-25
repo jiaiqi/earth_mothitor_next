@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import L from 'leaflet'
+import 'leaflet.markercluster'
 import { tiledMapLayer } from '@supermap/iclient-leaflet'
 import 'leaflet.pm'
 import 'leaflet.pm/dist/leaflet.pm.css'
@@ -9,14 +10,23 @@ import yy from '~~/public/img/icon/mini.png'
 import blue from '~~/public/img/icon/zi.png'
 
 const props = defineProps({
-  list: Array,
+  list: {
+    type: Array as PropType<any[]>,
+    default: () => {
+      return []
+    },
+  },
   activeMaker: Object,
+  showMarkerPopup: {
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['markerClick', 'update:activeMaker'])
 // const activeMaker = ref<any>()
 const center = ref<[number, number]>([30.7, 104])
 const zoom = ref(4)
-const map = ref<any>()
+const map = ref(null) as any
 const featureGroup = ref<any>()
 const mapInstance = ref<any>()
 const layerGroups = ref<any>()
@@ -65,16 +75,6 @@ watch(() => showTextLayer.value, () => {
   changeTextLayer()
 })
 
-function highDraw(data) {
-  // 高亮点击的点
-  // activeMaker.value = data
-  if (data?.staLat && data?.staLon) {
-    center.value = [data.staLat, data.staLon]
-    mapInstance.value.setView(center.value, 7)
-  }
-  emit('update:activeMaker', data)
-}
-
 function getIcon(url: string) {
   return L.icon({
     iconUrl: url,
@@ -86,6 +86,10 @@ function getIcon(url: string) {
 function onFeatureGroupReady() {
   layerGroups.value = featureGroup.value.leafletObject
   changeLayer(layerName.value)
+}
+const popupInstance = ref<any>()
+function onPopupReady(event) {
+  popupInstance.value = event
 }
 function onMapReady() {
   mapInstance.value = map.value.leafletObject
@@ -110,31 +114,83 @@ function onMapReady() {
     positionText.value = `当前鼠标位置：${latlng.lat.toFixed(3)},${latlng.lng.toFixed(3)}`
   })
 }
-function onMarkerClick(data: any, event: L.LeafletMouseEvent) {
-  const content = `${data.staName}`
-  highDraw(data)
-  L.popup({ minWidth: 350 })
-    .setLatLng([data.latlng[0], data.latlng[1]])
-    .setContent(content)
-    .openOn(mapInstance.value)
+function onMarkerClick(index: number, event: L.LeafletMouseEvent) {
+  const data: any = props.list[index]
+  if (data?.id) {
+    data.latlng = [event.latlng.lat, event.latlng.lng]
+  }
+  if (data?.staLat && data?.staLon) {
+    center.value = [data.staLat, data.staLon]
+    mapInstance.value.setView(center.value, 7)
+  }
+  popupInstance.value.setLatLng(data.latlng).openOn(mapInstance.value)
+  emit('update:activeMaker', data)
   emit('markerClick', { data, event, L })
 }
+const iconMap = {
+  red: getIcon(yy),
+  blue: getIcon(bit),
+}
+const activeMarkerId = computed(() => props.activeMaker?.id)
+const activeMarkerLatLng = computed(() => props.activeMaker?.latlng)
+const popupOptions = ref({
+  // offset: [0, 75],
+})
 const pointList = computed<any[]>(() => {
   if (props.list?.length) {
-    return props.list.map((item: any) => {
-      // let icon = bit
-      // if (item.id && item.id === activeMaker.value?.id) {
-      //   icon = yy
-      // }
+    return props.list.map((item: any, index) => {
+      let icon: 'red' | 'blue' = 'blue'
+      if (item.id && item.id === activeMarkerId.value) {
+        icon = 'red'
+      }
       return {
-        ...item,
-        markerIcon: getIcon(bit),
+        _item_index: index,
+        _icon: iconMap[icon],
         latlng: [item.staLat, item.staLon],
       }
     })
   }
   else {
     return []
+  }
+})
+watch(() => props.list, (newVal) => {
+  let list = []
+  if (newVal.length) {
+    list = newVal.map((item, index) => {
+      let icon: 'red' | 'blue' = 'blue'
+      if (item.id && item.id === activeMarkerId.value) {
+        icon = 'red'
+      }
+      return {
+        _item_index: index,
+        name: item.staName,
+        lat: item.staLat,
+        lng: item.staLon,
+        // popup: `<h1>This is ${item.staName}</h1>`,
+        options: {
+          draggable: false,
+          icon: iconMap[icon],
+        },
+      }
+    })
+
+    if (mapInstance.value) {
+      const lMarkerCluster = useLMarkerCluster({
+        leafletObject: mapInstance.value,
+        markers: list,
+      })
+      lMarkerCluster.then(({ markerCluster, markers }) => {
+        // markerCluster.on('clusterclick', (event) => {
+        //   console.log('Cluster clicked')
+        // })
+        markers.forEach((marker, index) => {
+          marker.on('click', (event) => {
+            onMarkerClick(index, event)
+          })
+        })
+      })
+    }
   }
 })
 </script>
@@ -153,7 +209,7 @@ const pointList = computed<any[]>(() => {
         zoomControl: false,
         preferCanvas: true,
       }"
-      use-global-leaflet
+      :use-global-leaflet="true"
       @ready="onMapReady"
     >
       <!-- <LTileLayer
@@ -162,9 +218,15 @@ const pointList = computed<any[]>(() => {
       layer-type="base"
       name="OpenStreetMap"
     /> -->
+
       <LFeatureGroup ref="featureGroup" @ready="onFeatureGroupReady">
-        <LMarker v-if="activeMaker && activeMaker.latlng" :lat-lng="activeMaker.latlng" :icon="getIcon(yy)" />
-        <LMarker v-for="(item, index) in pointList" v-show="!activeMaker || item.id !== activeMaker.id" :key="index" :lat-lng="item.latlng" :icon="item.markerIcon" @click="onMarkerClick(item, $event)" />
+        <LPopup :options="popupOptions" :lat-lng="activeMarkerLatLng" @ready="onPopupReady">
+          <slot name="marker-popup" />
+        </LPopup>
+        <LMarker v-if="activeMaker && activeMaker.latlng" :z-index-offset="999" :lat-lng="activeMarkerLatLng" :icon="getIcon(yy)" />
+        <!--
+        <LMarker v-for="(item, index) in pointList" v-show="!activeMaker || item.id !== activeMaker.id" :key="index" :lat-lng="item.latlng" :icon="item._icon" @click="onMarkerClick(item, $event)" /> -->
+        <!-- <LMarker v-for="(item, index) in pointList" :key="index" :lat-lng="item.latlng" :icon="item._icon" @click="onMarkerClick(item._item_index, $event)" /> -->
       </LFeatureGroup>
       <LControl position="bottomright">
         <ChangeLayer v-model:show-text-layer="showTextLayer" :layer-name="layerName" @change-base-layer="changeLayer" />
