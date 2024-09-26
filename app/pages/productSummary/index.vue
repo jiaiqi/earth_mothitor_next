@@ -332,7 +332,7 @@ function addHot(name, url) {
               震害防御
             </div>
           </div>
-          <div v-show="dataType === '地震监测'" class="flex-1">
+          <div v-if="dataType === '地震监测'" class="flex-1">
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>
@@ -346,7 +346,7 @@ function addHot(name, url) {
               :total="total" @change="onPageChange"
             />
           </div>
-          <div v-show="dataType === '震害防御'" class="flex-1">
+          <div v-if="dataType === '震害防御'" class="flex-1">
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>

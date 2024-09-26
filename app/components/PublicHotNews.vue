@@ -60,7 +60,19 @@ function goInfo(item) {
       window.open(item.url)
     }
     else {
-      navigateTo(item.url)
+      let url = item.url
+      if (url?.includes('/monitor/productInfo')) {
+        url = url.replace('/monitor/productInfo?id=', '/productSummary/productInfo/')
+        navigateTo({
+          path: url,
+          query: {
+            data: encode(item),
+          },
+        })
+      }
+      else {
+        navigateTo(url)
+      }
     }
   }
 }
