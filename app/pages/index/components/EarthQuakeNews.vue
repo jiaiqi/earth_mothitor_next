@@ -78,6 +78,15 @@ function getMore() {
     })
   }
 }
+function getHotMore() {
+    navigateTo({
+      path: `/hotMore`,
+      query: {
+          data: currentRightTab.value,
+      },
+    })
+   
+}
 function getTodayHistory() {
   const date = new Date()
   const pageNum = 1
@@ -157,7 +166,7 @@ getTodayHistory()
           </el-tabs>
         </div>
         <div class="relative flex-1 rounded-20px bg-white px-16px py-10px">
-          <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500">
+          <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500" @click="getHotMore()">
             更多 <i class="i-ri:arrow-right-double-fill" />
           </div>
           <el-tabs v-model="currentRightTab" class="custom-tabs">

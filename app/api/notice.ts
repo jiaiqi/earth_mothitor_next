@@ -24,3 +24,7 @@ export function getConfList(id?: any) {
 export function industry(data: any) {
   return useHttp.post(getRequestUrl('/infoserver/indust/list'), data)
 }
+// 获取速报列表
+export function getNoticeList(id: any) {
+  return useHttp.get(getRequestUrl('/infoserver/sb/pageList'), { id })
+}

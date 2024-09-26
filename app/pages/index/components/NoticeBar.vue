@@ -1,17 +1,17 @@
 <script lang="ts" setup>
 import { useSorted } from '@vueuse/core'
-import { decode } from '~/utils/base/dataEncry'
+import { decode , encode} from '~/utils/base/dataEncry'
 import { getList } from '~/api/notice'
 // not need if you are using auto import
 import { useNewsStore } from '~/composables/home'
-
 const notices = ref<any[]>([])
+const data = ref<any[]>([])
 
 getList().then((res) => {
-  const data = decode(res)
-  if (Array.isArray(data) && data.length > 0) {
+    data.value = decode(res)
+  if (Array.isArray(data.value) && data.value.length > 0) {
     const dayjs = useDayjs()
-    const dataSorted = useSorted(data, (a, b) => b.oTime - a.oTime)
+    const dataSorted = useSorted(data.value, (a, b) => b.oTime - a.oTime)
     const endData = dataSorted.value.slice(0, 30)
     if (Array.isArray(endData)) {
       notices.value = endData.map((item) => {
@@ -19,6 +19,7 @@ getList().then((res) => {
           date: item.oTime,
           title: `${dayjs(item.oTime).format('M月D日H时m分')}${item.localName}发生${item.m}级地震`,
           id: item.id,
+          item:item
         }
       })
       const homeStore = useNewsStore()
@@ -29,6 +30,14 @@ getList().then((res) => {
   console.log('Failed to fetch error::', e)
   // Failed to fetch
 })
+function toDetail(item:any){
+  navigateTo({
+      path: `/earthquakeInfo/situation/${item.id}`,
+      query: {
+        data: encode(item),
+      },
+    })
+}
 const animationDuration = computed(() => `${notices.value.length * 10}s`)
 </script>
 
@@ -39,12 +48,12 @@ const animationDuration = computed(() => `${notices.value.length * 10}s`)
     </div>
     <div class="scroll-wrap flex-1 overflow-hidden rounded-full">
       <div class="scroll-content flex flex-1 whitespace-nowrap">
-        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/situation/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
+        <a v-for="(item,index) in notices" :key="item.id" @click="toDetail(item.item)"  class="list-item rounded-full p-x-20px lh-34px">
           {{ item.title }}
-        </NuxtLink>
-        <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/situation/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
+        </a>
+        <!-- <NuxtLink v-for="item in notices" :key="item.id" :to="`/earthquakeInfo/situation/${item.id}`" class="list-item rounded-full p-x-20px lh-34px">
           {{ item.title }}
-        </NuxtLink>
+        </NuxtLink> -->
       </div>
     </div>
   </div>

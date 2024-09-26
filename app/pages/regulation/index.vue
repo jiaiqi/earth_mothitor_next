@@ -92,67 +92,23 @@ function getList() {
 
   loading.value = true
   getStandardList(encode({ type: searchType.value })).then((res) => {
-    // console.log(decode(res))
+    console.log(decode(res))
     const list = decode(res)
     //先按时间排序 
     prodList.value = list.sort(function (a: any, b: any) {
       // console.log(a.releaseTime)
       return b.releaseTime < a.releaseTime ? -1 : 1
     })
+    
     loading.value = false
   })
-  //   getStandardList(encode({ pageNum: 1, pageSize: 5 })).then((res) => {
-  //   // list.value = decode(res)
-  // })
-  // getProList(par).then((response) => {
-  //   loading.value = false
-  //   prodList.value = response.records.map((item) => {
-  //     const subList = []
-  //     if (item.classification) {
-  //       subList.push(`产品分类：${item.classification}`)
-  //     }
-  //     if (item.institution) {
-  //       subList.push(`联系单位：${item.institution}`)
-  //     }
-  //     return {
-  //       ...item,
-  //       title: item.name,
-  //       subList,
-  //     }
-  //   })
-  //   queryParams.pageSize = response.size
-  //   queryParams.pageNum = response.current
-  //   total.value = response.total
-  //   if (prodList.value.length > 0) {
-  //     let unitArr: string[] = []
-  //     prodList.value.forEach((item) => {
-  //       unitArr.push(item.cunit)
-  //     })
-  //     unitArr = Array.from(new Set(unitArr))
-  //     serveUnitList.value = unitArr
-  //     noData.value = false
-  //   }
-  //   else {
-  //     noData.value = true
-  //   }
-  // }).catch((error) => {
-  //   console.error('获取数据失败:', error)
-  //   loading.value = false
-  // })
 }
 
-function toDetail(item: SrvItem) {
-  const data = {
-    sclassification: item.sclassification,
-    cdate: item.cdate,
-    cunit: item.cunit,
-    sname: item.sname,
-    // recom: item.recom,
-  }
+function toDetail(item:any) {
   navigateTo({
-    path: `/technicalService/detail/${item.id}`,
+    path: `/regulation/detail/${item.id}`,
     query: {
-      data: encode(data),
+      data: encode(item),
     },
   })
 }
@@ -213,16 +169,13 @@ function getDisProd() {
 const dataType = ref<string>('标准')
 function changeDataType(type: string) {
   dataType.value = type
-  console.log(filterList)
   if (dataType.value === '法规') {
     searchType.value = ''
     getList2()
     filterList[0].options = options2
   }
   else {
-    console.log(filterModel)
     searchType.value = '0'
-    console.log(filterModel)
     filterList[0].options = options1
     filterList[0].value = '0'
     // getList()

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Operation, Download } from '@element-plus/icons-vue'
-import { downStandard } from '~/api/regulation'
 import { decode, encode } from '~/utils/base/dataEncry'
 const props = defineProps<{
   list?: any[]
@@ -60,8 +59,12 @@ const list = computed(() => {
 function handleSizeChange(val: any) {
   queryParams.pageNum = val.pageNum;
 }
-function openUrl(url: any) {
-  window.open(url)
+function openUrl(row: any) {
+  // if(row.newsText){
+
+  // }else{
+    window.open(row.url)
+  // }
 }
 function openNewsDetail(row: any) {
   if (row.url == '') {
@@ -76,15 +79,8 @@ function openNewsDetail(row: any) {
   }
 }
 function viewpdf(row: any) {
-  // window.open(url)
-  downStandard(row.id).then((res: any) => {
-    // let url = process.env.VUE_APP_CRIT_API + '/fileservice/ecdownload'
-    let blob = new Blob([res], { type: 'application/pdf' })
-    let blobURL = URL.createObjectURL(blob)
-    previewUrl.value = blobURL + '#toolbar=0'
-    window.open(previewUrl.value)
-
-  })
+  emit('clickItem', row)
+  
 }
 function previewfg(row: any) {
   let url = row.url;
@@ -141,7 +137,7 @@ function handleClickItem(item: any) {
     <el-table-column fixed="right" label="操作" align='center' width="200px">
       <template #default="scope">
         <div v-if="type !== '1'">
-          <span class="cursor-pointer" @click="openUrl(scope.row.newsText)">详情</span>
+          <span class="cursor-pointer" @click="openUrl(scope.row)">详情</span>
           <i class="i-ri:more-2-fill text-14px text-#2F77C9" />
         </div>
         <div v-if="type === '1'">
@@ -188,35 +184,54 @@ function handleClickItem(item: any) {
   </el-table>
   <el-table class="custom-table" v-else-if="dataType == '地震动态'" :data="list" border style="width: 100%"
     :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
-    <el-table-column type="index" width="80" label="序号"/>
-    <el-table-column prop="m" label="震级" >
+    <el-table-column type="index" width="80" label="序号" />
+    <el-table-column prop="m" label="震级">
     </el-table-column>
     <el-table-column prop="otime" label="发布日期" width="220px">
       <template #default="scope">
         {{ $dayjs(scope.row.otime).format('YYYY-MM-DD hh:mm:ss') }}
       </template>
     </el-table-column>
-    <el-table-column label="纬度(°)"  prop="lat" >
+    <el-table-column label="纬度(°)" prop="lat">
     </el-table-column>
-    <el-table-column label="经度(°)" prop="lon" >
+    <el-table-column label="经度(°)" prop="lon">
     </el-table-column>
-    <el-table-column label="深度(km)"  prop="depth">
+    <el-table-column label="深度(km)" prop="depth">
     </el-table-column>
-    <el-table-column label="位置"  prop="localName" width="320px" :show-overflow-tooltip="true">
+    <el-table-column label="位置" prop="localName" width="320px" :show-overflow-tooltip="true">
     </el-table-column>
   </el-table>
   <el-table class="custom-table" v-else-if="dataType == '历史今天'" :data="list" border style="width: 100%"
     :header-cell-style="{ 'background': '#F1F6FF', 'color': '#333' }">
-    <el-table-column type="index" width="80" label="序号"/>
-    <el-table-column prop="m" label="震级" >
+    <el-table-column type="index" width="80" label="序号" />
+    <el-table-column prop="m" label="震级">
     </el-table-column>
     <el-table-column prop="earthquakeDate" label="发震时刻" width="220px">
     </el-table-column>
-    <el-table-column label="纬度(°)"  prop="lat" >
+    <el-table-column label="纬度(°)" prop="lat">
     </el-table-column>
-    <el-table-column label="经度(°)" prop="lon" >
+    <el-table-column label="经度(°)" prop="lon">
     </el-table-column>
-    <el-table-column label="位置"  prop="placeName" width="320px" :show-overflow-tooltip="true">
+    <el-table-column label="位置" prop="placeName" width="320px" :show-overflow-tooltip="true">
+    </el-table-column>
+  </el-table>
+  <el-table class="custom-table" v-else-if="dataType == '点击排行榜'" :data="list"  style="width: 100%"
+  :header-cell-style="{  'color': '#333' }" :cell-style="{  'color': '#333' }" stripe>
+    <el-table-column type="index" width="80" label="排行" align='center' />
+    <el-table-column prop="keyName" label="名称" :show-overflow-tooltip="true" width="520px">
+    </el-table-column>
+    <!-- <el-table-column prop="earthquakeDate" label="提供单位" width="220px">
+    </el-table-column> -->
+    <el-table-column label="浏览量" prop="hotNum" align='center'>
+      <template #default="scope">
+        <span class="text-[#0D73CF]">{{ scope.row.hotNum }}</span>
+      </template>
+    </el-table-column>
+    <el-table-column fixed="right" label="操作" align='center'>
+      <template #default="scope">
+        <span class="cursor-pointer" @click="handleClickItem(scope.row)">详情</span>
+        <i class="i-ri:more-2-fill text-14px text-#2F77C9" />
+      </template>
     </el-table-column>
   </el-table>
   <el-table v-else :data="list" border class="max-w-1300px" style="width: 100%"
