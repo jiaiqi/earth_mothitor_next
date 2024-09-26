@@ -407,7 +407,7 @@ function markerClick(params) {
     postUrl: val.stationName,
   }
   hotDataAdd(form)
-  if (val.type != 'new') {
+  if (val.type !== 'new') {
     dratitle.value = 'GNSS连续观测站点信息'
     val.cTime = dayjs(val.cTime).format('YYYY-MM-DD HH:mm:ss').slice(0, 4)
     markshow = true

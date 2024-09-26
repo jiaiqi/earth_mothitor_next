@@ -1,28 +1,20 @@
-<script>
-export default {
-  props: ['markeArr', 'title'],
-  data() {
-    return {
-      // markeArr: this.marke
-    }
-  },
-  created() {
-    // console.log(this.markeArr)
-  },
-  methods: {
-    changShow() {
-      this.$emit('markees', 'false')
-    },
-  },
+<script setup lang="ts">
+const props = defineProps({
+  data: Object as PropType<any>,
+  title: String,
+})
+const emit = defineEmits(['close'])
+function changeShow() {
+  emit('close')
 }
 </script>
 
 <template>
   <div class="markees">
-    <div v-if="title === '活动断层'">
+    <div v-if="props.title === '活动断层'">
       <div class="header1">
-        <span>活动断层{{ title }}</span>
-        <i style="cursor: pointer" class="el-icon-close" @click="changShow" />
+        <span>活动断层{{ props.title }}</span>
+        <i style="cursor: pointer" class="el-icon-close" @click="changeShow" />
       </div>
       <div>
         <div class="nav">
@@ -30,17 +22,17 @@ export default {
             断层名称
           </div>
           <div class="navTil">
-            {{ markeArr.FaultName == " " ? markeArr['断层名称'] : markeArr.FaultName }}
+            {{ data.FaultName === " " ? data['断层名称'] : data.FaultName }}
           </div>
         </div>
 
         <div class="main">
           <div class="txtmain">
             <div class="header">
-              <span>断层性质：{{ markeArr['断层性质'] }}</span>
+              <span>断层性质：{{ data['断层性质'] }}</span>
             </div>
             <div class="txt">
-              <span>活动时代: {{ markeArr['活动时代'] }}</span>
+              <span>活动时代: {{ data['活动时代'] }}</span>
             </div>
           </div>
           <div
@@ -48,11 +40,11 @@ export default {
             style="border-bottom: 1px solid #000; margin-bottom: 3px"
           >
             <div class="header">
-              <span>断层倾向: {{ markeArr['断层倾向'] }}</span>
+              <span>断层倾向: {{ data['断层倾向'] }}</span>
             </div>
             <div class="txt">
-              <span>断层倾角：{{ markeArr['断层倾角'] }}</span>
-              <span>断层走向：{{ markeArr['断层走向'] }}</span>
+              <span>断层倾角：{{ data['断层倾角'] }}</span>
+              <span>断层走向：{{ data['断层走向'] }}</span>
             </div>
           </div>
           <div
@@ -71,10 +63,10 @@ export default {
       </div>
     </div>
 
-    <div v-if="title === '钻孔联合剖面'">
+    <div v-if="props.title === '钻孔联合剖面'">
       <div class="header1">
-        <span>{{ title }}</span>
-        <i style="cursor: pointer" class="el-icon-close" @click="changShow" />
+        <span>{{ props.title }}</span>
+        <i style="cursor: pointer" class="el-icon-close" @click="changeShow" />
       </div>
       <div>
         <div class="nav">
@@ -82,20 +74,20 @@ export default {
             摘要描述
           </div>
           <div class="navTil">
-            {{ markeArr.descriptions }}
+            {{ data.descriptions }}
           </div>
         </div>
 
         <div class="main">
           <div class="txtmain">
             <div class="header">
-              <span>所属数据目录名称：{{ markeArr.directoryName }}</span>
+              <span>所属数据目录名称：{{ data.directoryName }}</span>
             </div>
             <div class="txt">
-              <span>数据目录提供单位: {{ markeArr.provider }}</span>
+              <span>数据目录提供单位: {{ data.provider }}</span>
             </div>
             <div class="txt">
-              <span>处理过程: {{ markeArr.processingProcess }}</span>
+              <span>处理过程: {{ data.processingProcess }}</span>
             </div>
           </div>
           <div
@@ -103,16 +95,16 @@ export default {
             style="border-bottom: 1px solid #000; margin-bottom: 3px"
           >
             <div class="header">
-              <span>所属项目名称: {{ markeArr.projectName }}</span>
+              <span>所属项目名称: {{ data.projectName }}</span>
             </div>
             <div class="txt">
-              <span>剖面名称：{{ markeArr.lineName }}</span>
+              <span>剖面名称：{{ data.lineName }}</span>
             </div>
             <div class="txt">
-              <span>开工日期：{{ new Date(markeArr.dateOfCommence).toLocaleDateString() }}</span>
+              <span>开工日期：{{ new Date(data.dateOfCommence).toLocaleDateString() }}</span>
             </div>
             <div class="txt">
-              <span>竣工日期：{{ new Date(markeArr.completionDate).toLocaleDateString() }}</span>
+              <span>竣工日期：{{ new Date(data.completionDate).toLocaleDateString() }}</span>
             </div>
           </div>
           <div
@@ -120,26 +112,26 @@ export default {
             style="border-top: 1px solid #000"
           >
             <div class="header">
-              <span>分发方式: {{ markeArr.distributionMode }}</span>
+              <span>分发方式: {{ data.distributionMode }}</span>
             </div>
             <div class="txt">
-              <span>联系人：{{ markeArr.personToContact }}</span>
+              <span>联系人：{{ data.personToContact }}</span>
             </div>
             <div class="txt">
-              <span>联系方式：{{ markeArr.phoneNum }}</span>
+              <span>联系方式：{{ data.phoneNum }}</span>
             </div>
             <div class="txt">
-              <span>分发单位：{{ markeArr.distributionDepartment }}</span>
+              <span>分发单位：{{ data.distributionDepartment }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="title === '人工地震勘探'">
+    <div v-if="props.title === '人工地震勘探'">
       <div class="header1">
-        <span>{{ title }}</span>
-        <i style="cursor: pointer" class="el-icon-close" @click="changShow" />
+        <span>{{ props.title }}</span>
+        <i style="cursor: pointer" class="el-icon-close" @click="changeShow" />
       </div>
       <div>
         <div class="nav">
@@ -147,20 +139,20 @@ export default {
             摘要描述
           </div>
           <div class="navTil">
-            {{ markeArr.descriptions }}
+            {{ data.descriptions }}
           </div>
         </div>
 
         <div class="main">
           <div class="txtmain">
             <div class="header">
-              <span>所属数据目录名称：{{ markeArr.directoryName }}</span>
+              <span>所属数据目录名称：{{ data.directoryName }}</span>
             </div>
             <div class="txt">
-              <span>数据目录提供单位: {{ markeArr.providerUnit }}</span>
+              <span>数据目录提供单位: {{ data.providerUnit }}</span>
             </div>
             <div class="txt">
-              <span>处理过程: {{ markeArr.treatingProcesses }}</span>
+              <span>处理过程: {{ data.treatingProcesses }}</span>
             </div>
           </div>
           <div
@@ -168,26 +160,26 @@ export default {
             style="border-bottom: 1px solid #000; margin-bottom: 3px"
           >
             <div class="header">
-              <span>所属项目名称: {{ markeArr.projectName }}</span>
+              <span>所属项目名称: {{ data.projectName }}</span>
             </div>
             <div class="txt">
-              <span>测线名称：{{ markeArr.profileName }}</span>
+              <span>测线名称：{{ data.profileName }}</span>
             </div>
             <div class="txt">
-              <span>起点桩号：{{ markeArr.startNumber }}</span>
-              <span>终点桩号：{{ markeArr.endNumber }}</span>
+              <span>起点桩号：{{ data.startNumber }}</span>
+              <span>终点桩号：{{ data.endNumber }}</span>
             </div>
             <div class="txt">
-              <span>道间距（m）：{{ markeArr.trackPitch }}</span>
+              <span>道间距（m）：{{ data.trackPitch }}</span>
             </div>
             <div class="txt">
-              <span>测线长度（km）：{{ markeArr.lineNumber }}</span>
+              <span>测线长度（km）：{{ data.lineNumber }}</span>
             </div>
             <div class="txt">
-              <span>开工日期：{{ markeArr.dateOfCommence }}</span>
+              <span>开工日期：{{ data.dateOfCommence }}</span>
             </div>
             <div class="txt">
-              <span>竣工日期：{{ markeArr.completionDate }}</span>
+              <span>竣工日期：{{ data.completionDate }}</span>
             </div>
           </div>
           <div
@@ -195,41 +187,41 @@ export default {
             style="border-top: 1px solid #000"
           >
             <div class="header">
-              <span>分发方式: {{ markeArr.distributionMode }}</span>
+              <span>分发方式: {{ data.distributionMode }}</span>
             </div>
             <div class="txt">
-              <span>联系人：{{ markeArr.personToContact }}</span>
+              <span>联系人：{{ data.personToContact }}</span>
             </div>
             <div class="txt">
-              <span>联系方式：{{ markeArr.phoneNum }}</span>
+              <span>联系方式：{{ data.phoneNum }}</span>
             </div>
             <div class="txt">
-              <span>分发单位：{{ markeArr.distributionDepartment }}</span>
+              <span>分发单位：{{ data.distributionDepartment }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-if="title === '地震测深'">
+    <div v-if="props.title === '地震测深'">
       <div class="header1">
         <span>地震测深</span>
-        <i style="cursor: pointer" class="el-icon-close" @click="changShow" />
+        <i style="cursor: pointer" class="el-icon-close" @click="changeShow" />
       </div>
       <div>
         <div class="nav">
           <div class="title">
-            线名称：{{ markeArr.lineName }}
+            线名称：{{ data.lineName }}
           </div>
         </div>
 
         <div class="main">
           <div class="txtmain">
             <div class="header">
-              <span>目录名称：{{ markeArr.directoryName }}</span>
+              <span>目录名称：{{ data.directoryName }}</span>
             </div>
             <div class="txt">
-              <span>处理方式: {{ markeArr.processes }}</span>
+              <span>处理方式: {{ data.processes }}</span>
             </div>
           </div>
           <div
@@ -237,13 +229,13 @@ export default {
             style="border-bottom: 1px solid #000; margin-bottom: 3px"
           >
             <div class="header">
-              <span>地域: {{ markeArr.region }}</span>
+              <span>地域: {{ data.region }}</span>
             </div>
             <div class="txt">
-              <span>项目名称：{{ markeArr.projectName }}</span>
+              <span>项目名称：{{ data.projectName }}</span>
             </div>
             <div class="txt">
-              <span>观测日期：{{ markeArr.viewDate }}</span>
+              <span>观测日期：{{ data.viewDate }}</span>
             </div>
           </div>
           <div
@@ -251,19 +243,19 @@ export default {
             style="border-top: 1px solid #000"
           >
             <div class="header">
-              <span>分发单位: {{ markeArr.providerUnit }}</span>
+              <span>分发单位: {{ data.providerUnit }}</span>
             </div>
             <div class="txt">
-              <span>联系人：{{ markeArr.linkMan }}</span>
+              <span>联系人：{{ data.linkMan }}</span>
             </div>
             <div class="txt">
-              <span>联系方式：{{ markeArr.tel }}</span>
+              <span>联系方式：{{ data.tel }}</span>
             </div>
             <div class="txt">
-              <span>邮箱：{{ markeArr.email }}</span>
+              <span>邮箱：{{ data.email }}</span>
             </div>
             <div class="txt">
-              <span>分发方式：{{ markeArr.sendType }}</span>
+              <span>分发方式：{{ data.sendType }}</span>
             </div>
           </div>
         </div>
@@ -292,7 +284,7 @@ export default {
   .nav {
     font-size: 12px;
     border-bottom: 2px solid #000;
-    .title {
+    .props.title {
       margin: 5px 0;
       padding: 3px 5px;
       background-color: #529dde;

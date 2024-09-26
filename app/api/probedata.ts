@@ -1,7 +1,7 @@
 import { decode, encode } from '~/utils/base/dataEncry'
 import { useHttp } from '~/utils/useHttp'
 
-const apiPort = 9527
+const apiPort = 9540
 
 export function getRequestUrl(url: string, port?: number) {
   const config = useRuntimeConfig()

@@ -179,7 +179,6 @@ function toPath(url: string) {
     type = url.split(',')[1] as string
     name = url.split(',')[0] as string
   }
-  debugger
   switch (name) {
     case 'serviceSeismometry':// 测震
       name = 'service-seismometry'
@@ -192,6 +191,9 @@ function toPath(url: string) {
       break
     case 'precursorFlowMation': // 水准
       name = 'precursor-flowmation'
+      break
+    case 'precursorCatalogue': // 活断层探测
+      name = 'prevention-catalogue'
       break
     default:
       name = camelToKebab(name)

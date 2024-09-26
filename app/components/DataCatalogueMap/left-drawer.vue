@@ -7,16 +7,16 @@ const props = defineProps({
     },
   },
   loadNode: {
-    type: Function,
+    type: Function as PropType<any>,
   },
   filterNodeMethod: {
-    type: Function,
+    type: Function as PropType<any>,
     default: () => {
       return null
     },
   },
   nodeClick: {
-    type: Function,
+    type: Function as PropType<any>,
     default: () => {
       return null
     },
@@ -29,9 +29,11 @@ const props = defineProps({
   },
 })
 const filterText = ref('')
-const tree = ref(null)
+const treeRef = ref(null)
+
 function changeFilterText(event) {
   console.log(event)
+  treeRef.value!.filter(filterText.value)
 
   // tree.value.filter(val)
 }
@@ -44,17 +46,18 @@ const unfold = ref(true)
     :class="{ 'left--342px': !unfold, 'left-20px': unfold }"
     class="pos-absolute top-80px z-999 box-border min-h-500px w-342px flex flex-col rounded-6px bg-white p-20px transition-all"
   >
-    <el-input v-model="filterText" prefix-icon="el-icon-search" placeholder="输入关键字进行过滤" />
+    <el-input v-model="filterText" prefix-icon="el-icon-search" placeholder="输入关键字进行过滤" @input="changeFilterText" />
     <el-tree
-      ref="tree"
+      ref="treeRef"
       class="mt-16px flex-1 rounded-6px"
       border="1px solid #E5E5EA"
-      :props="props.prop"
-      :data="treeData"
       accordion
+      :data="treeData"
       :load="props.loadNode"
+      :props="props.prop"
       :filter-node-method="props.filterNodeMethod"
-      lazy
+      :lazy="props.loadNode ? true : false"
+
       @node-click="nodeClick"
     >
       <template #default="{ node }">

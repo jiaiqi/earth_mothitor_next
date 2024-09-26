@@ -34,7 +34,7 @@ const props = defineProps({
     default: false,
   },
 })
-const emit = defineEmits(['markerClick', 'update:activeMaker'])
+const emit = defineEmits(['markerClick', 'update:activeMaker', 'lists', 'highLine'])
 // const activeMaker = ref<any>()
 const center = ref<[number, number]>([30.7, 104])
 const zoom = ref(4)
@@ -47,7 +47,7 @@ const mapLayer = ref<any>()
 const textLayer = ref<any>()
 const showTextLayer = ref(true)
 const lineData = ref<any[]>([])
-const deformationlist = ref<any[]>([])
+const deformationList = ref<any[]>([])
 const layerMap = {
   sl: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/矢量底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/矢量中文注记_经纬度'],
   yx: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像中文注记_经纬度'],
@@ -163,24 +163,7 @@ const popupOptions = ref({
   // offset: [0, 75],
   minWidth: 350,
 })
-const pointList = computed<any[]>(() => {
-  if (props.list?.length) {
-    return props.list.map((item: any, index) => {
-      let icon: 'red' | 'blue' = 'blue'
-      if (item.id && item.id === activeMarkerId.value) {
-        icon = 'red'
-      }
-      return {
-        _item_index: index,
-        _icon: iconMap[icon],
-        latlng: [item.staLat, item.staLon],
-      }
-    })
-  }
-  else {
-    return []
-  }
-})
+
 const mc = ref<any>() // 保存markerCluster实例
 watch(() => props.list, (newVal) => {
   let list: any[] = []
@@ -195,7 +178,6 @@ watch(() => props.list, (newVal) => {
         name: item.staName,
         lat: item.staLat,
         lng: item.staLon,
-        // popup: `<h1>This is ${item.staName}</h1>`,
         options: {
           draggable: false,
           icon: iconMap[icon],
@@ -226,9 +208,11 @@ watch(() => props.list, (newVal) => {
     })
   }
 })
-watch(props.deformation, (newVal) => {
+watch(() => props.deformation, (newVal) => {
+  lineData.value = []
+  deformationList.value = []
   if (newVal) {
-    deformationlist.value = newVal
+    deformationList.value = newVal
     if (newVal[0].beginLongitude && newVal[0].beginLatitude) { // 地震测深数据
       setLine()
     }
@@ -239,39 +223,29 @@ watch(props.deformation, (newVal) => {
 })
 // 画线-地震测深数据
 function setLine() {
-  const num = deformationlist.value.length
-  for (let i = 0; i < num; i++) {
-    const deform = this.deformationlist[i]
-    const startMark = [deform.startLat, deform.startLon]
-    const endmark = [deform.endLat, deform.endLon]
-    const latlngs = [startMark, endmark]
-    lineData.value.push({
-      latlngs,
-      color: 'red',
+  if (deformationList.value.length) {
+    deformationList.value.forEach((item) => {
+      const startMark = [item.staLat, item.staLon]
+      const endmark = [item.endLat, item.endLon]
+      const latlngs = [startMark, endmark]
+      lineData.value.push({
+        ...item,
+        latlngs,
+        color: 'red',
+      })
     })
-    // const line = L.polyline(latlngs, { color: 'red' }).on('click', () => {
-    //   this.$emit('maplist', deform)
-    // })
-    // // this.map.fitBounds()  .getBounds()
-    // lines.push(line)
-    // this.line_group = new L.LayerGroup(lines).addTo(this.layerGroups)
   }
 }
 // 画线
 function setLine2() {
-  const lines = []
-  const line_map = {}
-  // for (let i = 0; i < this.deformationlist.length; i++) {
-  const Line = deformationlist.value[0]
-  // let txt = `测线名称：${Line.lineName}<br/>`  .bindPopup(txt, { className: 'popupLineClass' })
-  // .openPopup()
-  if (Line.latAndLon.length >= 2) {
-    const latlngs = Line.latAndLon
-    const lineData = {
+  const line = deformationList.value[0]
+  if (Array.isArray(line.latAndLon) && line.latAndLon.length >= 2) {
+    const latlngs = line.latAndLon
+    const data = {
       latlngs,
       color: 'red',
     }
-    lines.push(lineData)
+    lineData.value.push(data)
   }
   // }
 }
@@ -291,23 +265,41 @@ const lines = computed(() => {
   })
 })
 
-function highLine(Line) {
-  const lines = []
-
-  if (Line.latAndLon.length >= 2) {
-    const latlngs = Line.latAndLon
-    const lineData = {
-      latlngs,
-      color: 'blue',
-    }
-
-    lines.push(line)
-
-    mapInstance.value.flyToBounds(
-      [Line.latAndLon[0], Line.latAndLon[Line.latAndLon.length - 1]],
-      { maxZoom: 6 },
-    )
+function highLine(data, event) {
+  activeLine.value = data.id
+  if (data?.staLat && data?.staLon) {
+    // const centerValue = calculateMidpoint(data.staLat, data.staLon, data.endLat, data.endLon)
+    // center.value = [centerValue.latitude, centerValue.longitude]
+    // center.value = [data.staLat, data.staLon]
+    const { latlng } = event
+    center.value = [latlng.lat, latlng.lng]
+    mapInstance.value.setView(center.value, 7)
   }
+  popupInstance.value.setLatLng(center.value).openOn(mapInstance.value)
+  emit('highLine', data)
+}
+
+function calculateMidpoint(lat1, lon1, lat2, lon2) {
+  // 将经纬度转换为弧度
+  const rad = Math.PI / 180
+  const lat1Rad = lat1 * rad
+  const lat2Rad = lat2 * rad
+  const lon1Rad = lon1 * rad
+  const lon2Rad = lon2 * rad
+
+  // 计算中间点的纬度
+  let midLat = (lat1Rad + lat2Rad) / 2
+
+  // 计算中间点的经度
+  let midLon = (lon1Rad + lon2Rad) / 2
+  midLon = Math.atan2(Math.sin(lon1Rad - lon2Rad) * Math.cos(midLat), Math.cos(lat1Rad) * Math.sin(midLat)
+  - Math.sin(lat1Rad) * Math.cos(midLat) * Math.cos(lon1Rad - lon2Rad))
+
+  // 将弧度转换回经纬度
+  midLat = midLat * (180 / Math.PI)
+  midLon = midLon * (180 / Math.PI)
+
+  return { latitude: midLat, longitude: midLon }
 }
 </script>
 
@@ -340,29 +332,21 @@ function highLine(Line) {
           <slot name="marker-popup" />
         </LPopup>
         <LMarker v-if="activeMaker && activeMaker.latlng" :z-index-offset="999" :lat-lng="activeMarkerLatLng" :icon="getIcon(yy)" />
-        <!--
-        <LMarker v-for="(item, index) in pointList" v-show="!activeMaker || item.id !== activeMaker.id" :key="index" :lat-lng="item.latlng" :icon="item._icon" @click="onMarkerClick(item, $event)" /> -->
-        <!-- <LMarker v-for="(item, index) in pointList" :key="index" :lat-lng="item.latlng" :icon="item._icon" @click="onMarkerClick(item._item_index, $event)" /> -->
       </LFeatureGroup>
       <LControl position="bottomright">
         <ChangeLayer v-model:show-text-layer="showTextLayer" :layer-name="layerName" @change-base-layer="changeLayer" />
       </LControl>
       <LControlScale position="bottomleft" :imperial="true" :metric="true" />
       <LPolyline
-        v-for="(item, index) in lineData" :key="index"
+        v-for="(item, index) in lines" :key="index"
         :lat-lngs="item.latlngs"
         :color="item.color || 'green'"
+        @click="highLine(item, $event)"
       />
-      <!-- <LControlZoom position="bottomright" /> -->
     </LMap>
     <div class="pos-absolute right-70px top-15px z-999">
       {{ positionText || '' }}
     </div>
-    <!-- <LLayerGroup v-if="mapInstance">
-      <div>
-        <LMarker v-for="(item, index) in pointList" :key="index" :lat-lng="item" :icon="getIcon(bit)" />
-      </div>
-    </LLayerGroup> -->
   </div>
 </template>
 
