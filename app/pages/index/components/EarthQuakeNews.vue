@@ -3,7 +3,6 @@ import bg1 from 'public/img/bg1.jpg'
 import SortList from './SortList.vue'
 import NewsListContent from '~/components/NewsListContent.vue'
 import PublicTitle from '~/components/PublicTitle.vue'
-import type { NewsItem } from '~/composables/home'
 import { getList } from '~/api/catalogue'
 import { getFlagList } from '~/api/count'
 
@@ -68,24 +67,24 @@ const list3 = ref<any[]>([])
 const list4 = ref<any[]>([])
 const list5 = ref<any[]>([])
 function getMore() {
-  if (currentTab.value == 'first') {
+  if (currentTab.value === 'first') {
     navigateTo({
       path: `/earthlist`,
     })
-  }else{
+  }
+  else {
     navigateTo({
       path: `/listearth`,
     })
   }
 }
 function getHotMore() {
-    navigateTo({
-      path: `/hotMore`,
-      query: {
-          data: currentRightTab.value,
-      },
-    })
-   
+  navigateTo({
+    path: `/hotMore`,
+    query: {
+      data: currentRightTab.value,
+    },
+  })
 }
 function getTodayHistory() {
   const date = new Date()
@@ -94,7 +93,7 @@ function getTodayHistory() {
   const dayjs = useDayjs()
   const month = dayjs().format('MM')
   getList(pageNum, pageSize, month, date.getDate())
-    .then((res:any) => {
+    .then((res: any) => {
       const data = res.records || []
       todayList.value = data.slice(0, 10).map((item: any) => {
         return {
@@ -108,9 +107,9 @@ function getTodayHistory() {
     .catch(() => {
       text.value = '今日无历史地震'
     })
-  getFlagList('pageNum=1&pageSize=10').then((res:any) => {
+  getFlagList('pageNum=1&pageSize=10').then((res: any) => {
     const data = res.records || []
-    list3.value = data.map((item:any) => {
+    list3.value = data.map((item: any) => {
       return {
         ...item,
         title: item.keyName,
@@ -119,9 +118,9 @@ function getTodayHistory() {
       }
     })
   })
-  getFlagList('pageNum=1&pageSize=10&key=d').then((res:any) => {
+  getFlagList('pageNum=1&pageSize=10&key=d').then((res: any) => {
     const data = res.records || []
-    list5.value = data.map((item:any) => {
+    list5.value = data.map((item: any) => {
       return {
         ...item,
         title: item.keyName,
@@ -130,9 +129,9 @@ function getTodayHistory() {
       }
     })
   })
-  getFlagList('pageNum=1&pageSize=10&key=date').then((res:any) => {
+  getFlagList('pageNum=1&pageSize=10&key=date').then((res: any) => {
     const data = res.records || []
-    list4.value = data.map((item:any) => {
+    list4.value = data.map((item: any) => {
       return {
         ...item,
         title: item.keyName,
@@ -255,4 +254,5 @@ getTodayHistory()
       }
     }
   }
-}</style>
+}
+</style>

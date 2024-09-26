@@ -6,8 +6,8 @@ import mini3 from '~~/public/img/icon/mini3.png'
 import mini4 from '~~/public/img/icon/mini4.png'
 import mini5 from '~~/public/img/icon/mini5.png'
 import LeafletMap from '~/components/DataCatalogueMap/leaflet-map.vue'
-import { ElLoading } from '#imports'
 import { getHisList } from '~/api/shikuang'
+import { decode } from '~/utils/base/dataEncry'
 
 definePageMeta({
   layout: 'map-page',
@@ -201,6 +201,17 @@ function filterLevel(list) {
 }
 onMounted(() => {
   getList()
+  if (route.query.data) {
+    try {
+      const data = decode(route.query.data)
+      setTimeout(() => {
+        toLocation(data)
+      }, 200)
+    }
+    catch (error) {
+      console.log(error)
+    }
+  }
 })
 function toLocation(item) {
   activeLocation.value = item
@@ -370,6 +381,7 @@ function toThreeFloat(num) { // 保留三位小数
 
 <style scoped>
 .bottom-bg {
-  background-image: url('/img/bottom-bg.png');
+  background-image: url('/img/bottom-bg.jpg');
+  background-repeat: no-repeat;
 }
 </style>

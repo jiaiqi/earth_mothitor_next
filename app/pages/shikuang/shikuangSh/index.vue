@@ -189,6 +189,9 @@ function toLocation(item) {
   activeLocation.value = item
   mapRef.value?.toLocation(item)
 }
+function toHome() {
+  mapRef.value?.toHome?.()
+}
 function onFilter(val) {
   const list = JSON.parse(JSON.stringify(draw2.value))
   seldate.value = new Date()
@@ -334,7 +337,11 @@ function toThreeFloat(num) { // 保留三位小数
             </div>
           </template>
         </DataCatalogueMap>
-        <div class="bottom-bg h-60px w-full flex items-center bg-white px-32px" />
+        <div class="bottom-bg h-60px w-full flex items-center justify-end bg-white px-32px">
+          <div class="h-30px w-30px cursor-pointer rounded-lg bg-#327BCF text-center text-white line-height-30px" @click="toHome ">
+            <i class="i-ri:home-4-fill" />
+          </div>
+        </div>
       </div>
     </ClientOnly>
   </div>

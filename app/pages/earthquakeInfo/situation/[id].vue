@@ -1,16 +1,13 @@
 <script lang="ts" setup>
 import { getNoticeList } from '~/api/notice'
-import { decode , encode} from '~/utils/base/dataEncry'
-// const { id } = useRoute().params
-const id=ref()
+import { decode, encode } from '~/utils/base/dataEncry'
+
+const id = ref()
 const route = useRoute()
-const text =ref()
-const routePath = [{ name: '最新地震信息', path: `/earthquakeInfo/${id}` }, { name: '信息播报', path: '/earthquakeInfo/situation' }]
-const detailData = ref()
+const routePath = [{ name: '最新地震信息', path: `/earthquakeInfo/${id.value}` }, { name: '信息播报', path: '/earthquakeInfo/situation' }]
 const fileData = decode(route.query.data)
 const dayjs = useDayjs()
-console.log(fileData)
-id.value=fileData.id
+id.value = fileData.id
 // function getData(){
 //   getNoticeList(id.value).then(res=>{
 //     fileData=res.records[0]
@@ -19,12 +16,14 @@ id.value=fileData.id
 // getData()
 function toThreeFloat(num: any) {
   let number = null
-  if (num.toString().split('.').length != 1 && num.toString().split('.')[1].length < 3) {
-    number = parseFloat(num).toFixed(3)
-  } else if (num.toString().split('.').length == 1) {
-    number = num.toString() + '.000'
-  } else {
-    number = num.toString().substr(0, parseInt(num.toString().indexOf('.')) + 4)
+  if (num.toString().split('.').length !== 1 && num.toString().split('.')[1].length < 3) {
+    number = Number.parseFloat(num).toFixed(3)
+  }
+  else if (num.toString().split('.').length === 1) {
+    number = `${num.toString()}.000`
+  }
+  else {
+    number = num.toString().substr(0, Number.parseInt(num.toString().indexOf('.')) + 4)
   }
   return number
 }
@@ -57,7 +56,7 @@ function toThreeFloat(num: any) {
             <span v-if="parseInt(fileData.lat) == 0">（纬度</span>
             <span v-else>{{ parseInt(fileData.lat) > 0 ? '（北纬' : '（南纬' }}</span>
             {{
-              toThreeFloat(Math.abs(fileData.lat)) 
+              toThreeFloat(Math.abs(fileData.lat))
             }}度，
             <span v-if="parseInt(fileData.lon) == 0">经度</span>
             <span v-else>{{ parseInt(fileData.lon) > 0 ? '东经' : '西经' }}</span>

@@ -162,6 +162,7 @@ function toHome() {
     homeMarker.value = null
   }, 500)
   zoom.value = 3
+  mapInstance.value.setView(center.value, zoom.value)
 }
 function toLocation(data: any) {
   center.value = [data.lat, data.lon]
