@@ -33,11 +33,20 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  useLeafletPm: {
+    type: Boolean,
+    default: true,
+  },
+  activeLocation: Object as PropType<any>,
+  popupMinWidth: Number,
+  mapZoom: Number,
+  maxZoom: Number,
+
 })
 const emit = defineEmits(['markerClick', 'update:activeMaker', 'lists', 'highLine'])
 // const activeMaker = ref<any>()
 const center = ref<[number, number]>([30.7, 104])
-const zoom = ref(4)
+const zoom = ref(props.mapZoom || 4)
 const map = ref(null) as any
 const featureGroup = ref<any>()
 const mapInstance = ref<any>()
@@ -109,19 +118,23 @@ function onMapReady() {
   mapInstance.value.on('zoomend', (e: any) => {
     zoom.value = e.target.getZoom()
   })
-  mapInstance.value.pm.addControls({
-    position: 'topright',
-    drawPolygon: false,
-    drawMarker: false,
-    drawCircleMarker: false,
-    drawPolyline: false,
-    drawRectangle: true,
-    drawCircle: true,
-    editMode: false,
-    dragMode: false,
-    cutPolygon: true,
-    removalMode: true,
-  })
+  if (props.useLeafletPm !== false) {
+    // 绘制工具
+    mapInstance.value.pm.addControls({
+      position: 'topright',
+      drawPolygon: false,
+      drawMarker: false,
+      drawCircleMarker: false,
+      drawPolyline: false,
+      drawRectangle: true,
+      drawCircle: true,
+      editMode: false,
+      dragMode: false,
+      cutPolygon: true,
+      removalMode: true,
+    })
+  }
+
   mapInstance.value.on('mousemove', (e: any) => {
     const { latlng } = e
     positionText.value = `当前鼠标位置：${latlng.lat.toFixed(3)},${latlng.lng.toFixed(3)}`
@@ -140,6 +153,11 @@ function onMarkerClick(index: number, event: L.LeafletMouseEvent) {
   emit('update:activeMaker', data)
   emit('markerClick', { data, event, L })
 }
+function toLocation(data: any) {
+  center.value = [data.lat, data.lon]
+  mapInstance.value.setView(center.value, 6)
+  popupInstance.value.setLatLng(center.value).openOn(mapInstance.value)
+}
 function toMarker(data) {
   if (!data?.latlng && data?.staLat && data?.staLon) {
     data.latlng = [data.staLat, data.staLon]
@@ -151,7 +169,7 @@ function toMarker(data) {
   emit('markerClick', { data })
 }
 // 暴露toMarker方法
-defineExpose({ toMarker })
+defineExpose({ toMarker, toLocation })
 
 const iconMap = {
   red: getIcon(yy),
@@ -161,7 +179,7 @@ const activeMarkerId = computed(() => props.activeMaker?.id)
 const activeMarkerLatLng = computed(() => props.activeMaker?.latlng)
 const popupOptions = ref({
   // offset: [0, 75],
-  minWidth: 350,
+  minWidth: props.popupMinWidth || 350,
 })
 
 const mc = ref<any>() // 保存markerCluster实例
@@ -176,8 +194,8 @@ watch(() => props.list, (newVal) => {
       return {
         _item_index: index,
         name: item.staName,
-        lat: item.staLat,
-        lng: item.staLon,
+        lat: item.lat || item.staLat,
+        lng: item.lon || item.staLon,
         options: {
           draggable: false,
           icon: iconMap[icon],
@@ -307,8 +325,8 @@ function calculateMidpoint(lat1, lon1, lat2, lon2) {
   <div class="h-full w-full">
     <LMap
       ref="map"
-      :min-zoom="3"
-      :max-zoom="10"
+      :min-zoom="2"
+      :max-zoom="props.mapZoom || 12"
       :crs="L.CRS.EPSG4326"
       :zoom="zoom"
       :center="center"
@@ -332,6 +350,10 @@ function calculateMidpoint(lat1, lon1, lat2, lon2) {
           <slot name="marker-popup" />
         </LPopup>
         <LMarker v-if="activeMaker && activeMaker.latlng" :z-index-offset="999" :lat-lng="activeMarkerLatLng" :icon="getIcon(yy)" />
+        <LMarker
+          v-if="activeLocation && activeLocation.lat" :z-index-offset="9"
+          :lat-lng="[activeLocation.lat, activeLocation.lon]"
+        />
       </LFeatureGroup>
       <LControl position="bottomright">
         <ChangeLayer v-model:show-text-layer="showTextLayer" :layer-name="layerName" @change-base-layer="changeLayer" />

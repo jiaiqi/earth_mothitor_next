@@ -28,7 +28,7 @@ const navList = [
   },
   {
     name: '地震信息',
-    path: '/earthquakeInfo',
+    path: '/shikuang/shikuangSh',
   },
 ]
 
