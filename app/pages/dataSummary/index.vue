@@ -208,6 +208,42 @@ function toPath(url: string) {
 function camelToKebab(camelStr: string) {
   return camelStr.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()
 }
+function getImg(name) {
+  if (name === '测震') {
+    return '/img/cezCatalog.png'
+  }
+  if (name === '强震动') {
+    return '/img/qzdCatalog.png'
+  }
+  if (name === '地磁') {
+    return '/img/dicCatalog.png'
+  }
+  if (name === '定点形变') {
+    return '/img/ddxbCatalog.png'
+  }
+  if (name === 'GNSS') {
+    return '/img/gnssCatalog.png'
+  }
+  if (name === '水准') {
+    return '/img/shuizCatalog.png'
+  }
+  if (name === '重力') {
+    return '/img/zlCatalog.png'
+  }
+  if (name === '地震测深') {
+    return '/img/dzcsCatalog.png'
+  }
+  if (name === '活断层探测') {
+    return '/img/hdcCatalog.png'
+  }
+  if (name === '地电') {
+    return '/img/didCatalog.png'
+  }
+  if (name === '地下流体') {
+    return '/img/dxltCatalog.png'
+  }
+  return '/img/jianshezhong.jpg'
+}
 </script>
 
 <template>
@@ -232,7 +268,7 @@ function camelToKebab(camelStr: string) {
             border="1px dashed transparent b-#E2E8F2"
             @click="toPath(item.url)"
           >
-            <img src="/img/img2.jpg" class="h-80px w-120px md:h-158px md:w-240px">
+            <img :src="getImg(item.sname)" class="h-80px w-120px md:h-158px md:w-240px">
             <div class="w-[calc(100%_-_120px)] flex-1 px-20px text-#424242">
               <div class="title" flex="col md:row ~ justify-between">
                 <span

@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { getStandardList, getLawList } from '~/api/regulation'
-import { type SrvItem, useServiceStore } from '~/composables/home'
-import { encode, decode } from '~/utils/base/dataEncry'
+import { getLawList, getStandardList } from '~/api/regulation'
+import topBg from '~~/public/img/fagui.png'
+
+import { decode, encode } from '~/utils/base/dataEncry'
 
 const routePath = [{ name: '首页', path: '/' }, { name: '法规标准列表' }]
 const searchValue = ref('')
@@ -23,7 +24,7 @@ const filterList = reactive([
       { label: '地方标准', value: '2' },
       { label: '团体标准', value: '3' },
     ],
-  }
+  },
 ])
 
 const options1 = [
@@ -50,7 +51,8 @@ function onFilter(model: any) {
   searchType.value = model.classification
   if (dataType.value == '标准') {
     getList()
-  } else {
+  }
+  else {
     getList2()
   }
 }
@@ -86,7 +88,7 @@ function getList() {
     pageNum: queryParams.pageNum,
     pageSize: queryParams.pageSize,
     title: searchValue.value,
-    type: ''
+    type: '',
     // institution: filterModel.value.institution, // 联系单位
   }
 
@@ -94,17 +96,17 @@ function getList() {
   getStandardList(encode({ type: searchType.value })).then((res) => {
     console.log(decode(res))
     const list = decode(res)
-    //先按时间排序 
-    prodList.value = list.sort(function (a: any, b: any) {
+    // 先按时间排序
+    prodList.value = list.sort((a: any, b: any) => {
       // console.log(a.releaseTime)
       return b.releaseTime < a.releaseTime ? -1 : 1
     })
-    
+
     loading.value = false
   })
 }
 
-function toDetail(item:any) {
+function toDetail(item: any) {
   navigateTo({
     path: `/regulation/detail/${item.id}`,
     query: {
@@ -121,8 +123,6 @@ function getList2() {
   }
   procList2.value = []
   getDisProd()
-
-
 }
 // 获得法规特殊产品列表
 function getDisProd() {
@@ -135,36 +135,6 @@ function getDisProd() {
     console.log(res)
     procList2.value = res.records
   })
-  // getProList(par).then((response) => {
-  //   const list = response.records
-  //   if (list.length) {
-  //     list.forEach((item) => {
-  //       const subList = []
-  //       if (item.classification) {
-  //         subList.push(`产品分类：${item.classification}`)
-  //       }
-  //       if (item.institution) {
-  //         subList.push(`联系单位：${item.institution}`)
-  //       }
-  //       const tableTile = {
-  //         name: '标准名称',
-  //         type: '业务领域',
-  //         releaseData: '发布日期',
-  //         effectiveData: '实施日期',
-  //         operate: '操作'
-  //       }
-  //       const obj = {
-  //         ...item,
-  //         title: item.name,
-  //         subList,
-  //         tableTile
-
-  //       }
-  //       procList2.value.unshift(obj)
-  //       console.log(procList2.value)
-  //     })
-  //   }
-  // })
 }
 const dataType = ref<string>('标准')
 function changeDataType(type: string) {
@@ -183,36 +153,41 @@ function changeDataType(type: string) {
 }
 
 const listData = computed(() => {
-
   return dataType.value === '法规' ? procList2.value : prodList.value
 })
 </script>
 
 <template>
-  <CommonPageContainer :path="routePath" title="法规标准" desc="REGULATORY STANDARDS">
+  <CommonPageContainer :path="routePath" title="法规标准" desc="REGULATORY STANDARDS" :top-bg="topBg">
     <template #right>
       <div class="right w-40% flex items-center py-5px" border="1px solid #E5E5EA">
         <div class="px-16px text-center">
           <i class="i-ri:search-2-line text-20px text-black" />
         </div>
         <input v-model="inputVal" placeholder="请输入搜索信息" class="min-w-0 flex-1 indent-16px outline-none">
-        <i class="i-ri:close-circle-line cursor-pointer text-gray opacity-0" :class="{ 'opacity-100': inputVal }"
-          @click="clearInput" />
+        <i
+          class="i-ri:close-circle-line cursor-pointer text-gray opacity-0" :class="{ 'opacity-100': inputVal }"
+          @click="clearInput"
+        />
         <el-button type="primary" class="mx-10px md:w-96px" @click="onSearch">
           搜索
         </el-button>
       </div>
     </template>
-    <div class=" flex justify-around">
-      <div md="w-180px block"
+    <div class="flex justify-around">
+      <div
+        md="w-180px block"
         class="pos-relative mb-20px mr-20px flex cursor-pointer rounded-6px bg-white text-center text-#333 line-height-46px"
-        border="1px solid #E5E5EA">
-        <div md="h-50% w-full"
-          class="bg-gradient-blue-2 pos-absolute top-0 z--1 z-1 h-full w-50% flex items-center rounded-6px transition-all ease-in-out"
+        border="1px solid #E5E5EA"
+      >
+        <div
+          md="h-50% w-full"
+          class="pos-absolute top-0 z--1 z-1 h-full w-50% flex items-center rounded-6px transition-all ease-in-out bg-gradient-blue-2"
           :class="{
             'right-50% md:right-unset': dataType === '标准',
             'md:top-50% md:left-0 right-0 left-unset ': dataType === '法规',
-          }">
+          }"
+        >
           <img src="/img/icon/right.png" alt="">
         </div>
 
@@ -233,12 +208,11 @@ const listData = computed(() => {
     <div class="content" flex="~ col xl:row">
       <div class="min-h-300px w-full" flex="1">
         <div class="pos-relative items-start" flex="~ col md:row">
-
           <div class="flex-1">
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>
-            <PublicTable :list="listData" :type="searchType" :dataType="dataType" @click-item="toDetail">
+            <PublicTable :list="listData" :type="searchType" :data-type="dataType" @click-item="toDetail">
               <template #image>
                 <img src="/img/productcatalog.jpg" class="h-150px w-full">
               </template>

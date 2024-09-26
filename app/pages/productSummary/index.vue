@@ -4,8 +4,8 @@
 >
 import { hotDataAdd } from '~/api/count'
 import { getConditionsList, getProList } from '~/api/service'
-import { type SrvItem, useServiceStore } from '~/composables/home'
-import { decode, encode } from '~/utils/base/dataEncry'
+import { encode } from '~/utils/base/dataEncry'
+import topBg from '~~/public/img/chanpin.jpg'
 
 const routePath = [{ name: '首页', path: '/' }, { name: '产品目录列表' }]
 const searchValue = ref('')
@@ -278,7 +278,7 @@ function addHot(name, url) {
 </script>
 
 <template>
-  <CommonPageContainer :path="routePath" title="产品目录" desc="PRODUCT CATALOG">
+  <CommonPageContainer :path="routePath" title="产品目录" desc="PRODUCT CATALOG" :top-bg="topBg">
     <template #right>
       <div class="right w-40% flex items-center py-5px" border="1px solid #E5E5EA">
         <div class="px-16px text-center">

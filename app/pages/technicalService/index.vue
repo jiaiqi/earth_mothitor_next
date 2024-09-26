@@ -1,5 +1,7 @@
 <!-- 技术服务列表页面 -->
 <script lang="ts" setup>
+import topBg from '~~/public/img/技术服务.png'
+
 import { getServiceList } from '~/api/service'
 import { type SrvItem, useServiceStore } from '~/composables/home'
 import { encode } from '~/utils/base/dataEncry'
@@ -167,6 +169,7 @@ function toDetail(item: SrvItem) {
     :path="routePath"
     title="技术服务"
     desc="TECHNICAL SERVICE"
+    :top-bg="topBg"
   >
     <template #right>
       <div class="right w-40% flex items-center py-5px" border="1px solid #E5E5EA">

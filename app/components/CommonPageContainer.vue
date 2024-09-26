@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import defaultTopBg from '~/assets/images/top-bg.jpg'
+
 const props = defineProps<{
   title: string
   desc: string
   path: any[]
+  topBg?: string
 }>()
 const emit = defineEmits<{
   (e: 'navigate', index: number, text: string): void
@@ -14,7 +17,7 @@ function onNavigate(index: number, text: string) {
 
 <template>
   <div class="pos-relative bg-#F7F9FD pb-20px min-h-screen-260">
-    <div class="top-bg bg-url(~'/images/top-bg.png) pos-absolute left-0 top-0 z-0 h-310px w-full" />
+    <div class="top-bg pos-absolute left-0 top-0 z-0 h-310px w-full" :style="{ backgroundImage: `url(${props.topBg || defaultTopBg})` }" />
     <div class="m-auto min-h-220px container xl:max-w-1300px">
       <div class="page-title pos-relative z-2 pt-35px text-center text-size-28px text-white font-700 line-height-40px md:text-left">
         <div class="pos-relative mb-5px">
@@ -40,6 +43,7 @@ function onNavigate(index: number, text: string) {
 <style scoped lang="scss">
 .top-bg {
   background-image: url('~/assets/images/top-bg.jpg');
+  background-size: cover;
 }
 .line-bg {
   background-image: linear-gradient(
