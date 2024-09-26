@@ -153,6 +153,16 @@ function onMarkerClick(index: number, event: L.LeafletMouseEvent) {
   emit('update:activeMaker', data)
   emit('markerClick', { data, event, L })
 }
+const homeMarker = ref<any>()
+function toHome() {
+  const latlng: [number, number] = [35.560001, 100.000]
+  center.value = latlng
+  homeMarker.value = { lat: latlng[0], lon: latlng[1] }
+  setTimeout(() => {
+    homeMarker.value = null
+  }, 500)
+  zoom.value = 3
+}
 function toLocation(data: any) {
   center.value = [data.lat, data.lon]
   mapInstance.value.setView(center.value, 6)
@@ -169,7 +179,7 @@ function toMarker(data) {
   emit('markerClick', { data })
 }
 // 暴露toMarker方法
-defineExpose({ toMarker, toLocation })
+defineExpose({ toMarker, toLocation, toHome })
 
 const iconMap = {
   red: getIcon(yy),
@@ -296,29 +306,6 @@ function highLine(data, event) {
   popupInstance.value.setLatLng(center.value).openOn(mapInstance.value)
   emit('highLine', data)
 }
-
-function calculateMidpoint(lat1, lon1, lat2, lon2) {
-  // 将经纬度转换为弧度
-  const rad = Math.PI / 180
-  const lat1Rad = lat1 * rad
-  const lat2Rad = lat2 * rad
-  const lon1Rad = lon1 * rad
-  const lon2Rad = lon2 * rad
-
-  // 计算中间点的纬度
-  let midLat = (lat1Rad + lat2Rad) / 2
-
-  // 计算中间点的经度
-  let midLon = (lon1Rad + lon2Rad) / 2
-  midLon = Math.atan2(Math.sin(lon1Rad - lon2Rad) * Math.cos(midLat), Math.cos(lat1Rad) * Math.sin(midLat)
-  - Math.sin(lat1Rad) * Math.cos(midLat) * Math.cos(lon1Rad - lon2Rad))
-
-  // 将弧度转换回经纬度
-  midLat = midLat * (180 / Math.PI)
-  midLon = midLon * (180 / Math.PI)
-
-  return { latitude: midLat, longitude: midLon }
-}
 </script>
 
 <template>
@@ -326,7 +313,7 @@ function calculateMidpoint(lat1, lon1, lat2, lon2) {
     <LMap
       ref="map"
       :min-zoom="2"
-      :max-zoom="props.mapZoom || 12"
+      :max-zoom="props.maxZoom || 12"
       :crs="L.CRS.EPSG4326"
       :zoom="zoom"
       :center="center"
@@ -353,6 +340,10 @@ function calculateMidpoint(lat1, lon1, lat2, lon2) {
         <LMarker
           v-if="activeLocation && activeLocation.lat" :z-index-offset="9"
           :lat-lng="[activeLocation.lat, activeLocation.lon]"
+        />
+        <LMarker
+          v-if="homeMarker && homeMarker.lat" :z-index-offset="9"
+          :lat-lng="[homeMarker.lat, homeMarker.lon]"
         />
       </LFeatureGroup>
       <LControl position="bottomright">

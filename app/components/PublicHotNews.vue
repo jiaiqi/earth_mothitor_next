@@ -4,7 +4,7 @@ import { decode, encode } from '~/utils/base/dataEncry'
 
 const props = defineProps<{
   list: any[]
-  type?: any[]
+  type?: string
 }>()
 const list = ref([
   {
