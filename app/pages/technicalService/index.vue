@@ -114,6 +114,7 @@ const loading = ref(true)
 function getList() {
   const par = {
     sType: '',
+    sort: '',
     sClassification: '',
     cUnit: filterModel.value.cunit,
     sName: searchValue.value,
@@ -121,13 +122,18 @@ function getList() {
     pageSize: pageSize.value,
   }
   if (filterModel.value.ssort) {
-    par.sType = filterModel.value.ssort
+    par.sort = filterModel.value.ssort
   }
   // if (filterModel.value.cunit) {
   //   par.cUnit = filterModel.value.cunit
   // }
   loading.value = true
   getServiceList(par).then((res) => {
+    if (res?.code === 500) {
+      ElMessage.error(`请求失败`)
+      console.error('请求失败:', error)
+      return
+    }
     loading.value = false
     total.value = res.total ?? total.value
     pageSize.value = res.size ?? pageSize.value
