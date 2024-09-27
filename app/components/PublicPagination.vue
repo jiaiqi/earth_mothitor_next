@@ -18,6 +18,7 @@ function onChange(currentPage: number, pageSize: number) {
   <div class="m-y-40px">
     <el-pagination
       background
+      :hide-on-single-page="true"
       layout="prev, pager, next"
       :page-size="props.pageSize"
       :total="props.total" @change="onChange"

@@ -34,6 +34,11 @@ export function getServiceList(data: SrvListParams): Promise<SrvResponse> {
   }
   return useHttp.get(getRequestUrl(str))
 }
+// 查找技术服务带查询条件
+export function getServiceByQuery(data: any) {
+  const url = `/prodSer/list`
+  return useHttp.post(getRequestUrl(url), encode(data)).then(res => decode(res))
+}
 
 // 查询单个服务的富文本
 export function getHtml(id: any) {
@@ -139,6 +144,6 @@ export function getProdSerList(data) {
 }
 // 科普预览
 export function preView(data: any) {
-  const url = '/prodSer/downloadImage/?filename='+ data
+  const url = `/prodSer/downloadImage/?filename=${data}`
   return useHttp.get(getRequestUrl(url))
 }

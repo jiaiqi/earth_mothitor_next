@@ -2,13 +2,12 @@
 <script lang="ts" setup>
 import topBg from '~~/public/img/技术服务.png'
 
-import { getServiceList } from '~/api/service'
+import { getServiceByQuery, getServiceList } from '~/api/service'
 import { type SrvItem, useServiceStore } from '~/composables/home'
 import { encode } from '~/utils/base/dataEncry'
 
 const routePath = [{ name: '首页', path: '/' }, { name: '技术服务列表' }]
 const list = ref<any[]>([])
-const serveUnit = ref('')
 const searchValue = ref('')
 const inputVal = ref('')
 const pageSize = ref(5)
@@ -92,7 +91,11 @@ function onFilter(model: any) {
   console.log(model, 'onfilter')
   filterModel.value = model
   getList()
+  // getServiceByQuery(filterModel.value).then((res) => {
+  //   debugger
+  // })
 }
+
 // 搜索
 function onSearch() {
   searchValue.value = inputVal.value
@@ -113,7 +116,7 @@ function getList() {
   const par = {
     sType: '',
     sClassification: '',
-    cUnit: serveUnit.value,
+    cUnit: filterModel.value.cunit,
     sName: searchValue.value,
     pageNum: pageNum.value,
     pageSize: pageSize.value,
@@ -127,9 +130,9 @@ function getList() {
   loading.value = true
   getServiceList(par).then((res) => {
     loading.value = false
-    total.value = res.total
-    pageSize.value = res.size
-    pageNum.value = res.current
+    total.value = res.total || total.value
+    pageSize.value = res.size || pageSize.value
+    pageNum.value = res.current || pageNum.value
     list.value = res.records.map((item) => {
       return {
         ...item,

@@ -1,9 +1,10 @@
+import { encode } from '~/utils/base/dataEncry'
 import { useHttp } from '~/utils/useHttp'
 
 // 拼接请求地址
-export function getRequestUrl(url: string) {
+export function getRequestUrl(url: string, port) {
   const config = useRuntimeConfig()
-  const PORT = config.public.cataPort
+  const PORT = port || config.public.cataPort
   const baseApi = config.public.apiBase
   return `${baseApi}:${PORT}${url}`
 }
@@ -27,4 +28,11 @@ export function industry(data: any) {
 // 获取速报列表
 export function getNoticeList(id: any) {
   return useHttp.get(getRequestUrl('/infoserver/sb/pageList'), { id })
+}
+
+// 子站接口
+export function childSpotList() {
+  const port = 9546
+  const url = getRequestUrl('/replyserver/substation/pageList', port)
+  return useHttp.post(url, encode({ pageNum: 1, pageSize: 50 }))
 }

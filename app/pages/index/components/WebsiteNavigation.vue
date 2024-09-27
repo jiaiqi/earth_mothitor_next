@@ -1,8 +1,14 @@
 <script lang="ts" setup>
 import { sites } from '~~/public/data/siteList'
+import { childSpotList } from '~/api/notice'
 
 const activeTab = ref('省级地震局')
-const list2 = ref([])
+const list2 = ref<any[]>([])
+childSpotList().then((res) => {
+  if (res?.records) {
+    list2.value = [...res.records]
+  }
+})
 </script>
 
 <template>
@@ -26,6 +32,11 @@ const list2 = ref([])
       <li v-for="site in tab.children" :key="site.name" class="list-decorate mr-30px inline-block min-w-75px line-height-60px">
         <a :href="site.href" target="_blank">{{ site.name }}</a>
       </li>
+      <template v-if="activeTab === '3' && list2.length">
+        <li v-for="site in list2" :key="site.name" class="list-decorate mr-30px inline-block min-w-75px line-height-60px">
+          <a :href="site.href" target="_blank">{{ site.name }}</a>
+        </li>
+      </template>
     </ul>
     <!--
       <ul v-if="isActive === '3'" style="color: rgb(51, 51, 51); display: block;">
