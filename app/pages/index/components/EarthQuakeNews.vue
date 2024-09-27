@@ -12,19 +12,8 @@ const currentRightTab = ref('first')
 // 最新地震动态
 const homeStore = useNewsStore()
 const newsList = computed(() => homeStore?.getNewsList?.()?.slice(0, 10) || [])
-// const newsList = ref<NewsItem[]>([])
-// const homeStore = useNewsStore()
-// if (homeStore.getNewsList) {
-//   newsList.value = homeStore.getNewsList().slice(0, 10)
-// }
-// else {
-//   newsList.value = [{
-//     id: 1,
-//     title: '地震动态',
-//     date: '2023-03-01',
-//   }]
-// }
 const text = ref('')
+const loading = ref(false)
 const todayList = ref<any[]>([])
 const province = [
   '新疆',
@@ -63,8 +52,11 @@ const province = [
   '澳门',
 ]
 // 历史上的今天
+const loading3 = ref(false)
 const list3 = ref<any[]>([])
+const loading4 = ref(false)
 const list4 = ref<any[]>([])
+const loading5 = ref(false)
 const list5 = ref<any[]>([])
 function getMore() {
   if (currentTab.value === 'first') {
@@ -92,8 +84,10 @@ function getTodayHistory() {
   const pageSize = 20
   const dayjs = useDayjs()
   const month = dayjs().format('MM')
+  loading.value = true
   getList(pageNum, pageSize, month, date.getDate())
     .then((res: any) => {
+      loading.value = false
       const data = res.records || []
       todayList.value = data.slice(0, 10).map((item: any) => {
         return {
@@ -107,8 +101,10 @@ function getTodayHistory() {
     .catch(() => {
       text.value = '今日无历史地震'
     })
+  loading3.value = true
   getFlagList('pageNum=1&pageSize=10').then((res: any) => {
     const data = res.records || []
+    loading3.value = false
     list3.value = data.map((item: any) => {
       return {
         ...item,
@@ -159,12 +155,12 @@ getTodayHistory()
             <el-tab-pane label="最新地震动态" name="first">
               <NewsListContent :news-list="newsList" :show-date="false" type="最新地震动态" />
             </el-tab-pane>
-            <el-tab-pane label="历史上的今天" name="second">
+            <el-tab-pane v-loading="loading" label="历史上的今天" name="second">
               <NewsListContent :news-list="todayList" :show-date="false" type="历史上的今天" />
             </el-tab-pane>
           </el-tabs>
         </div>
-        <div class="relative flex-1 rounded-20px bg-white px-16px py-10px">
+        <div v-loading="loading3" class="relative flex-1 rounded-20px bg-white px-16px py-10px">
           <div class="absolute right-20px top-18px z-1 flex cursor-pointer items-center font-500" @click="getHotMore()">
             更多 <i class="i-ri:arrow-right-double-fill" />
           </div>
