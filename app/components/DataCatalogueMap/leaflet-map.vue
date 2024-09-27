@@ -106,10 +106,10 @@ watch(() => showTextLayer.value, () => {
   changeTextLayer()
 })
 
-function getIcon(url: string) {
+function getIcon(url: string, size: number = 14) {
   return L.icon({
     iconUrl: url,
-    iconSize: [14, 14],
+    iconSize: [size, size],
     iconAnchor: [7, 7],
     popupAnchor: [-3, -76],
   })
@@ -162,6 +162,21 @@ function onMarkerClick(index: number, event: L.LeafletMouseEvent) {
   emit('update:activeMaker', data)
   emit('markerClick', { data, event, L })
 }
+function clear() {
+  // 关闭弹窗
+  if (popupInstance.value?.close) {
+    popupInstance.value.close()
+  }
+  // 清空点
+  if (mc?.value?.clearLayers) {
+    mc.value.clearLayers()
+  }
+  // 初始缩放倍数、中心点
+  if (mapInstance.value) {
+    center.value = [30.7, 104]
+    mapInstance.value.setView(center.value, props.mapZoom || 4)
+  }
+}
 const homeMarker = ref<any>()
 function toHome() {
   const latlng: [number, number] = [35.560001, 100.000]
@@ -189,24 +204,24 @@ function toMarker(data) {
   emit('markerClick', { data })
 }
 // 暴露toMarker方法
-defineExpose({ toMarker, toLocation, toHome })
+defineExpose({ toMarker, toLocation, toHome, clear })
 
 const iconMap = {
   red: getIcon(yy),
   blue: getIcon(bit),
 }
+
 const activeMarkerId = computed(() => props.activeMaker?.id)
 const activeMarkerLatLng = computed(() => props.activeMaker?.latlng)
 const popupOptions = ref({
-  // offset: [0, 75],
   minWidth: props.popupMinWidth || 350,
 })
 
 const mc = ref<any>() // 保存markerCluster实例
-watch(() => props.list, (newVal) => {
+function setMarkerCluster(newVal: any[]) {
   let list: any[] = []
   if (newVal.length) {
-    list = newVal.map((item, index) => {
+    list = newVal.filter(item => (item.lat || item.staLat) && (item.lon || item.staLon)).map((item, index) => {
       let icon: 'red' | 'blue' = 'blue'
       if (item.id && item.id === activeMarkerId.value) {
         icon = 'red'
@@ -218,33 +233,39 @@ watch(() => props.list, (newVal) => {
         lng: item.lon || item.staLon,
         options: {
           draggable: false,
-          icon: iconMap[icon],
+          icon: item.icon?.icon ? getIcon(item.icon.icon, item.icon.size) : iconMap[icon],
         },
       }
     })
-  }
-  if (mapInstance.value) {
-    if (mc.value?.clearLayers) {
-      mc.value.clearLayers()
-    }
-    const lMarkerCluster = useLMarkerCluster({
-      leafletObject: mapInstance.value,
-      markers: list,
-    })
-    lMarkerCluster.then(({ markerCluster, markers }) => {
-      mc.value = markerCluster
-      // markerCluster.on('clusterclick', (event) => {
-      //   console.log('Cluster clicked')
-      // })
-      if (markers?.length) {
-        markers.forEach((marker, index) => {
-          marker.on('click', (event) => {
-            onMarkerClick(index, event)
-          })
-        })
+    if (mapInstance.value) {
+      if (mc.value?.clearLayers) {
+        mc.value.clearLayers()
       }
-    })
+      const lMarkerCluster = useLMarkerCluster({
+        leafletObject: mapInstance.value,
+        markers: list,
+      })
+      lMarkerCluster.then(({ markerCluster, markers }) => {
+        mc.value = markerCluster
+        // markerCluster.on('clusterclick', (event) => {
+        //   console.log('Cluster clicked')
+        // })
+        if (markers?.length) {
+          markers.forEach((marker, index) => {
+            marker.on('click', (event) => {
+              onMarkerClick(index, event)
+            })
+          })
+        }
+      })
+    }
   }
+  else if (mc.value?.clearLayers) {
+    mc.value.clearLayers()
+  }
+}
+watch(() => props.list, (newVal) => {
+  setMarkerCluster(newVal)
 })
 watch(() => props.deformation, (newVal) => {
   lineData.value = []
@@ -335,13 +356,6 @@ function highLine(data, event) {
       :use-global-leaflet="true"
       @ready="onMapReady"
     >
-      <!-- <LTileLayer
-      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      attribution="&amp;copy; <a href=&quot;https://www.openstreetmap.org/&quot;>OpenStreetMap</a> contributors"
-      layer-type="base"
-      name="OpenStreetMap"
-    /> -->
-
       <LFeatureGroup ref="featureGroup" @ready="onFeatureGroupReady">
         <LPopup :options="popupOptions" :lat-lng="activeMarkerLatLng" @ready="onPopupReady">
           <slot name="marker-popup" />

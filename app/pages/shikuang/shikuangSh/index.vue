@@ -12,6 +12,7 @@ import { encode } from '~/utils/base/dataEncry'
 
 definePageMeta({
   layout: 'map-page',
+  navName: '地震信息',
 })
 
 const routePath = [{ name: '首页', path: '/' }, { name: '地震信息', path: '' }]
@@ -25,132 +26,38 @@ const activeLocation = ref<any>()
 const mapRef = ref<any>()
 seldate.value = new Date().setDate(new Date().getDate() - 30)
 
-function showDraw() {}
-function loadPointIcon(day, size, L) {
-  let Icon = null
+function setIcon(item) {
+  const day = item.day
+  let icon = null
   if (day <= 1) {
-    Icon = new L.Icon({
-      iconUrl: mini, // 图标路径
-      iconSize: size,
-    })
+    icon = mini
   }
   else if (day <= 7) {
-    Icon = new L.Icon({
-      iconUrl: mini2, // 图标路径
-      iconSize: size,
-    })
+    icon = mini2
   }
   else if (day <= 30) {
-    Icon = new L.Icon({
-      iconUrl: mini3, // 图标路径
-      iconSize: size,
-    })
+    icon = mini3
   }
   else if (day <= 365) {
-    Icon = new L.Icon({
-      iconUrl: mini4, // 图标路径
-      iconSize: size,
-    })
+    icon = mini4
   }
   else {
-    Icon = new L.Icon({
-      iconUrl: mini5, // 图标路径
-      iconSize: size,
-    })
+    icon = mini5
   }
-  return Icon
-}
-function drawList() {
-  showDraw()
-  const drawList = draw.value.length
-  const circles = []
-  const circle_map = {}
-  for (let i = 0; i < drawList; i++) {
-    const num = draw.value[i].m
-    const txt = `
-        <h4>发震时间:<span>${new Date(draw.value[i].oTime).toLocaleString()}</span></h4><br>
-        <h4>震级：<span>${draw.value[i].m}</span></h4><br>
-        <h4>经度：<span>${toThreeFloat(draw.value[i].lat)}</span></h4><br>
-        <h4>纬度：<span>${toThreeFloat(draw.value[i].lon)}</span></h4><br>
-        <h4>深度：<span>${draw.value[i].depth}KM</span></h4><br>
-        <h4>位置：<span> ${draw.value[i].localName}</span></h4><br>
-      `
-    if (num >= 7) {
-      let Icon = null
-      let zindex = 350
-      Icon = loadPointIcon(draw.value[i].day, [25, 25])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else if (num >= 5) {
-      let Icon = null
-      let zindex = 320
-      Icon = loadPointIcon(draw.value[i].day, [19, 19])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else if (num >= 3) {
-      let Icon = null
-      let zindex = 290
-      Icon = loadPointIcon(draw.value[i].day, [12, 12])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else {
-      let Icon = null
-      let zindex = 260
-      Icon = loadPointIcon(draw.value[i].day, [7, 7])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    circle_group = new L.LayerGroup(circles).addTo(map)
-    circle_group2 = circle_group
+
+  const size = item.m === 6 ? 20 : (Number.parseInt(item.m) - 6) * 24
+  return {
+    icon,
+    size,
   }
 }
 
 const dayjs = useDayjs()
 function fetchData(flag: any) {
-  let str = 'pageSize=100&pageNum=1'
+  mapRef.value?.clear()
+  activeLocation.value = null
+  draw.value = []
+  let str = 'pageSize=1000&pageNum=1'
   if (selDg.value) {
     str += `&m=${selDg.value}`
   }
@@ -164,9 +71,10 @@ function fetchData(flag: any) {
     background: 'rgba(255, 255, 255, 0.9)',
   })
   getList(str).then((res) => {
-    draw.value = res.records.map((item) => {
+    draw.value = res.records.filter(item => item.lat && item.lon).map((item: any) => {
       item.oTime = new Date(item.otime).getTime()
       item.day = Math.floor((Number.parseInt(new Date().getTime()) - Number.parseInt(item.oTime)) / 1000 / 60 / 60 / 24)
+      item.icon = setIcon(item)
       return item
     })
     _loading.close()
@@ -205,11 +113,6 @@ function reSet() {
   selTime.value = 0
   selDg.value = ''
   draw.value = JSON.parse(JSON.stringify(draw2.value))
-}
-
-function goEarths(item) {
-  const { id } = item
-  navigateTo({ path: `/earthquakeInfo/situation/${id}`, query: { data: encode(item) } })
 }
 
 function clickMarker({ data }) {
@@ -277,7 +180,6 @@ function toThreeFloat(num) { // 保留三位小数
                 重置
               </el-button>
             </div>
-          <!-- <TopFilter :net-list="netList" :station-list="station" type="GNSS" @search="searchVal" @filter="filterVal" /> -->
           </template>
 
           <template #content>
@@ -312,13 +214,6 @@ function toThreeFloat(num) { // 保留三位小数
                     位置：<span> {{ activeLocation.localName }}</span>
                   </div>
                 </div>
-              <!-- <PopupContent
-                  :marke-arr="marker"
-                  :title="dratitle"
-                  :data-length="unitList.length"
-                  :begin-time="drawertitle.time"
-                  :days="drawertitle.num"
-                /> -->
               </template>
             </LeafletMap>
           </template>

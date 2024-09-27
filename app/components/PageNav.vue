@@ -43,6 +43,10 @@ const navList = [
 ]
 
 const menuHamburgerActive = ref(false)
+const navName = computed(() => route.meta?.navName)
+function isActive(item: any) {
+  return item.path === activeNav.value || (item.path !== '/' && activeNav.value.indexOf(item.path) === 0) || navName.value === item.name
+}
 </script>
 
 <template>
@@ -64,7 +68,7 @@ const menuHamburgerActive = ref(false)
         <NuxtLink
           v-for="nav in navList" :key="nav.name" :to="nav.path"
           class="nav-item pos-relative mx-10px px-10px"
-          :class="{ active: activeNav === nav.path || (nav.path !== '/' && activeNav.indexOf(nav.path) === 0) }"
+          :class="{ active: isActive(nav) }"
         >
           <span>
             {{ nav.name }}

@@ -11,156 +11,48 @@ import { decode } from '~/utils/base/dataEncry'
 
 definePageMeta({
   layout: 'map-page',
+  navName: '地震信息',
 })
 
 const routePath = [{ name: '首页', path: '/' }, { name: '历史上的今天', path: '' }]
 const route = useRoute()
-const id = ref(route.query.id)
 const loading = ref(false)
 const selTime = ref<number>()
 const selDg = ref<any>('')
-const draw = ref<any[]>([])
-const draw2 = ref<any[]>([])
+const listData = ref<any[]>([])
+const listBackup = ref<any[]>([])
 const seldate = ref<any>(null)
 const activeLocation = ref<any>()
 const month = ref<any>(new Date().getMonth() + 1)
 const day = ref<any>(new Date().getDate())
 const mapRef = ref<any>()
-const lookearth = ref<any[]>([])
 const province = ref<any[]>([])
 const dayjs = useDayjs()
 const currentDate = ref(new Date(dayjs().format('YYYY/MM/DD')))
 
 seldate.value = new Date().setDate(new Date().getDate() - 30)
 
-function showDraw() {}
-function loadPointIcon(day, size, L) {
-  let Icon = null
-  if (day <= 1) {
-    Icon = new L.Icon({
-      iconUrl: mini, // 图标路径
-      iconSize: size,
-    })
+function setIcon(item) {
+  const level = item.m
+  let icon = null
+  if (level >= 7) {
+    icon = mini
   }
-  else if (day <= 7) {
-    Icon = new L.Icon({
-      iconUrl: mini2, // 图标路径
-      iconSize: size,
-    })
+  else if (level >= 5) {
+    icon = mini2
   }
-  else if (day <= 30) {
-    Icon = new L.Icon({
-      iconUrl: mini3, // 图标路径
-      iconSize: size,
-    })
+  else if (level >= 3) {
+    icon = mini3
   }
-  else if (day <= 365) {
-    Icon = new L.Icon({
-      iconUrl: mini4, // 图标路径
-      iconSize: size,
-    })
+  else if (level < 3) {
+    icon = mini4
   }
-  else {
-    Icon = new L.Icon({
-      iconUrl: mini5, // 图标路径
-      iconSize: size,
-    })
+
+  const size = item.m === 6 ? 16 : (Number.parseInt(item.m) - 6) * 20
+  return {
+    icon,
+    size,
   }
-  return Icon
-}
-function drawList() {
-  showDraw()
-  const drawList = draw.value.length
-  const circles = []
-  const circle_map = {}
-  for (let i = 0; i < drawList; i++) {
-    const num = draw.value[i].m
-    const txt = `
-        <h4>发震时间:<span>${new Date(draw.value[i].oTime).toLocaleString()}</span></h4><br>
-        <h4>震级：<span>${draw.value[i].m}</span></h4><br>
-        <h4>经度：<span>${toThreeFloat(draw.value[i].lat)}</span></h4><br>
-        <h4>纬度：<span>${toThreeFloat(draw.value[i].lon)}</span></h4><br>
-        <h4>深度：<span>${draw.value[i].depth}KM</span></h4><br>
-        <h4>位置：<span> ${draw.value[i].localName}</span></h4><br>
-      `
-    if (num >= 7) {
-      let Icon = null
-      let zindex = 350
-      Icon = loadPointIcon(draw.value[i].day, [25, 25])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else if (num >= 5) {
-      let Icon = null
-      let zindex = 320
-      Icon = loadPointIcon(draw.value[i].day, [19, 19])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else if (num >= 3) {
-      let Icon = null
-      let zindex = 290
-      Icon = loadPointIcon(draw.value[i].day, [12, 12])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    else {
-      let Icon = null
-      let zindex = 260
-      Icon = loadPointIcon(draw.value[i].day, [7, 7])
-      if (draw.value[i].day <= 1) {
-        zindex = 999
-      }
-      const circle = L.marker([draw.value[i].lat, draw.value[i].lon], {
-        icon: Icon,
-        riseOnHover: true,
-      })
-        .bindPopup(txt)
-        .openPopup()
-        .setZIndexOffset(zindex)
-      circles.push(circle)
-      circle_map[i] = circle
-    }
-    circle_group = new L.LayerGroup(circles).addTo(map)
-    circle_group2 = circle_group
-  }
-}
-function formatDateTime(date: any) {
-  const dateTime = new Date(date)
-  const Y = `${dateTime.getFullYear()}-`
-  const M = `${dateTime.getMonth() + 1 < 10 ? `0${dateTime.getMonth() + 1}` : dateTime.getMonth() + 1}-`
-  const D = (dateTime.getDate() < 10 ? `0${dateTime.getDate()}` : dateTime.getDate())
-  return Y + M + D
 }
 
 function getList() {
@@ -174,12 +66,15 @@ function getList() {
   if (day.value) {
     d = day.value > 9 ? `${day.value}` : `0${day.value}`
   }
-  getHisList(pageNum, pageSize, m, d)
-    .then((res) => {
-      const list = res.records
-      lookearth.value = filterLevel(list)
-      draw.value = lookearth.value
+  getHisList(pageNum, pageSize, m, d).then((res) => {
+    const list = res.records.filter(item => item.lat && item.lon).map((item) => {
+      item.icon = setIcon(item)
+      return item
     })
+    listBackup.value = JSON.parse(JSON.stringify(list))
+    // lookearth.value = filterLevel(list)
+    listData.value = list
+  })
 }
 function filterLevel(list) {
   const arr: any[] = []
@@ -218,36 +113,42 @@ function toLocation(item) {
   mapRef.value?.toLocation(item)
 }
 function onFilter(num: any) {
-  draw2.value = JSON.parse(JSON.stringify(draw.value))
-  const list = JSON.parse(JSON.stringify(draw.value))
-  if (selDg.value === 6) { // 6级以上地震
-    draw.value = list.filter((item: any) => item.m >= 6)
+  if (['+1', '-1'].includes(num)) {
+    if (num === '+1') { // 下一天
+      const date = dayjs(currentDate.value).add(1, 'day')
+      day.value = date.date()
+      month.value = date.month() + 1
+      currentDate.value = new Date(date.format('YYYY-MM-DD'))
+    }
+    if (num === '-1') { // 上一天
+      const date = dayjs(currentDate.value).add(-1, 'day')
+      day.value = date.date()
+      month.value = date.month() + 1
+      currentDate.value = new Date(date.format('YYYY-MM-DD'))
+    }
+    getList()
   }
-  if (selDg.value === 6.5) { // 6.5级以上地震
-    draw.value = list.filter((item: any) => item.m >= 6.5)
+  else {
+    const list = JSON.parse(JSON.stringify(listBackup.value))
+    if (selDg.value === 6) { // 6级以上地震
+      listData.value = list.filter((item: any) => item.m >= 6)
+    }
+    if (selDg.value === 6.5) { // 6.5级以上地震
+      listData.value = list.filter((item: any) => item.m >= 6.5)
+    }
+    if (selDg.value === 7) { // 7级以上地震
+      listData.value = list.filter((item: any) => item.m >= 7)
+    }
+    if (selDg.value === 0) {
+      listData.value = list
+    }
   }
-  if (selDg.value === 7) { // 7级以上地震
-    draw.value = list.filter((item: any) => item.m >= 7)
-  }
-  if (num === '+1') { // 下一天
-    const date = dayjs(currentDate.value).add(1, 'day')
-    day.value = date.date()
-    month.value = date.month() + 1
-    currentDate.value = new Date(date.format('YYYY-MM-DD'))
-  }
-  if (num === '-1') { // 上一天
-    const date = dayjs(currentDate.value).add(-1, 'day')
-    day.value = date.date()
-    month.value = date.month() + 1
-    currentDate.value = new Date(date.format('YYYY-MM-DD'))
-  }
-  getList()
 }
 
 function reSet() {
   selTime.value = 0
   selDg.value = ''
-  draw.value = JSON.parse(JSON.stringify(draw2.value))
+  listData.value = JSON.parse(JSON.stringify(listBackup.value))
 }
 
 function goEarths(item) {
@@ -294,6 +195,9 @@ function toThreeFloat(num) { // 保留三位小数
                 <el-radio-button :value="6.0">
                   6.0级以上地震
                 </el-radio-button>
+                <el-radio-button :value="0">
+                  全部
+                </el-radio-button>
               </el-radio-group>
               <span class="ml-10px">按日期：</span>
               <el-input v-model="month" maxlength="2" style="width: 52px;" @input="getList" />&nbsp;&nbsp;月&nbsp;
@@ -310,7 +214,6 @@ function toThreeFloat(num) { // 保留三位小数
                 重置
               </el-button>
             </div>
-          <!-- <TopFilter :net-list="netList" :station-list="station" type="GNSS" @search="searchVal" @filter="filterVal" /> -->
           </template>
 
           <template #content>
@@ -321,7 +224,7 @@ function toThreeFloat(num) { // 保留三位小数
               :popup-min-width="250"
               :map-zoom="2.5"
               :active-location="activeLocation"
-              :list="draw"
+              :list="listData"
               @marker-click="clickMarker"
             >
               <template #marker-popup>
@@ -358,10 +261,10 @@ function toThreeFloat(num) { // 保留三位小数
             <div flex="~ col" class="pos-absolute bottom-20px right-0 top-20px z-999 w-430px overflow-hidden bg-white py-18px">
               <div class="flex-1 overflow-hidden">
                 <el-scrollbar>
-                  <ListItem v-for="(item, index) in draw.slice(0, 10)" :key="index" :data="item" @click="toLocation(item)" />
+                  <ListItem v-for="(item, index) in listData.slice(0, 10)" :key="index" :data="item" @click="toLocation(item)" />
                 </el-scrollbar>
               </div>
-              <div class="mt-10px flex items-center justify-center">
+              <div v-if="listData.length > 10" class="mt-10px flex items-center justify-center">
                 <NuxtLink :to="{ path: '/earthlist', query: { type: 2, data: new Date().toLocaleDateString() } }">
                   更多 <i class="i-ri:arrow-right-double-line ml-5px" />
                 </NuxtLink>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import ListItem from '../components/list-item.vue'
-import mini from '~~/public/img/icon/mini.png'
-import mini2 from '~~/public/img/icon/mini2.png'
-import mini3 from '~~/public/img/icon/mini3.png'
-import mini4 from '~~/public/img/icon/mini4.png'
-import mini5 from '~~/public/img/icon/mini5.png'
+import iconRed from '~~/public/img/icon/red.png'
+import iconOrange from '~~/public/img/icon/orange.png'
+import iconYellow from '~~/public/img/icon/yellow.png'
+import iconGreen from '~~/public/img/icon/green.png'
+import iconWhite from '~~/public/img/icon/gray.png'
 import LeafletMap from '~/components/DataCatalogueMap/leaflet-map.vue'
 import { getProdList } from '~/api/shikuang'
 import { decode } from '~/utils/base/dataEncry'
@@ -13,6 +13,7 @@ definePageMeta({
   path: '/monitor/bigEath',
   name: 'product-catalogue-big-earth',
   layout: 'map-page',
+  navName: '地震信息',
 })
 
 const route = useRoute()
@@ -20,57 +21,14 @@ const type = ref(route.query.type)
 const m = ref(route.query.m)
 
 const loading = ref(false)
-const selTime = ref<number>()
-const selDg = ref<any>('')
 const draw = ref<any[]>([])
-const draw2 = ref<any[]>([])
 const activeLocation = ref<any>()
 const mapRef = ref<any>()
 const dayjs = useDayjs()
-const page = reactive({
-  pageSize: 10,
-  total: 0,
-  pageNum: 1,
-})
-
-function loadPointIcon(day, size, L) {
-  let Icon = null
-  if (day <= 1) {
-    Icon = new L.Icon({
-      iconUrl: mini, // 图标路径
-      iconSize: size,
-    })
-  }
-  else if (day <= 7) {
-    Icon = new L.Icon({
-      iconUrl: mini2, // 图标路径
-      iconSize: size,
-    })
-  }
-  else if (day <= 30) {
-    Icon = new L.Icon({
-      iconUrl: mini3, // 图标路径
-      iconSize: size,
-    })
-  }
-  else if (day <= 365) {
-    Icon = new L.Icon({
-      iconUrl: mini4, // 图标路径
-      iconSize: size,
-    })
-  }
-  else {
-    Icon = new L.Icon({
-      iconUrl: mini5, // 图标路径
-      iconSize: size,
-    })
-  }
-  return Icon
-}
 
 const search = reactive({
   dateRange: ['2012-01-01', dayjs().format('YYYY-MM-DD')],
-  level1: '7',
+  level1: m.value || '',
   level2: '',
   place: '',
   lat1: '',
@@ -78,33 +36,39 @@ const search = reactive({
   lon1: '',
   lon2: '',
 })
-function getList() {
+function buildQueryParams(onFilter = false) {
   let par = {}
-  if (type.value === '1') {
+  if (type.value === '1' && onFilter !== true) {
     // search.dateRange = ['2017-01-01', '2018-01-01']
     search.level1 = search.level1 || '2'
     search.level2 = search.level2 || '3'
   }
   else {
-    if (m.value === '7') {
+    if (m.value === '7' && onFilter !== true) {
       search.level1 = search.level1 || '7'
     }
     else {
       // search.dateRange = ['2015-01-01', '2023-01-01']
     }
   }
-  const syear = dayjs(search.dateRange[0]).format('YYYY')
-  const eyear = dayjs(search.dateRange[1]).format('YYYY')
-  const sdm = dayjs(search.dateRange[0]).format('MM-DD')
-  const edm = dayjs(search.dateRange[1]).format('MM-DD')
+  let syear = ''
+  let eyear = ''
+  let sdm = ''
+  let edm = ''
+  if (Array.isArray(search.dateRange) && search.dateRange.length > 0 && search.dateRange[0]) {
+    syear = dayjs(search.dateRange[0]).format('YYYY')
+    sdm = dayjs(search.dateRange[0]).format('MM-DD')
+  }
+  if (Array.isArray(search.dateRange) && search.dateRange.length > 1 && search.dateRange[1]) {
+    eyear = dayjs(search.dateRange[1]).format('YYYY')
+    edm = dayjs(search.dateRange[1]).format('MM-DD')
+  }
   par = {
     type: type.value,
     year: syear,
     betyear: eyear,
     dm: sdm,
     betDM: edm,
-    pageNum: 1,
-    pageSize: 99999,
     slon: search.lon1,
     elon: search.lon2,
     slat: search.lat1,
@@ -113,14 +77,46 @@ function getList() {
     betm: search.level2,
     localname: search.place,
   }
+  return par
+}
+const page = reactive({
+  pageSize: 10,
+  total: 0,
+  pageNum: 1,
+})
+const list = ref<any[]>([])
+function setIcon(item) {
+  const icon = (Number.parseInt(item.m) - 7) * 15 < 6 ? iconOrange : iconRed
+  const size = item.m < 7 ? 20 : (Number.parseInt(item.m) - 6) * 20
+  return {
+    icon,
+    size,
+  }
+}
+function getList(onFilter = false) {
+  activeLocation.value = null
+  mapRef?.value?.clear()
+  const par = { ...buildQueryParams(onFilter), pageNum: 1, pageSize: 99999 }
+  loading.value = true
   getProdList(par).then((res) => {
+    loading.value = false
     draw.value = res.records.map((item) => {
       item.oTime = formatDateTime(item.year, item.monday, item.hour, item.min, item.second)
+      // item.icon = loadPointIcon(dayjs().diff(dayjs(item.oTime), 'day'), [30, 30], L)
+      item.icon = setIcon(item)
       return item
     })
+    list.value = draw.value.slice(0, 10)
     page.total = res.total
-    draw2.value = draw.value.slice(0, 10)
+    page.pageNum = 1
+  }).catch(() => {
+    loading.value = false
   })
+}
+
+function onPageChange(num) {
+  page.pageNum = num
+  list.value = draw.value.slice((page.pageNum - 1) * page.pageSize, page.pageNum * page.pageSize)
 }
 
 onMounted(() => {
@@ -142,13 +138,10 @@ function toLocation(item) {
   mapRef.value?.toLocation(item)
 }
 function onFilter() {
-  getList()
+  getList(true)
 }
 
 function reSet() {
-  selTime.value = 0
-  selDg.value = ''
-  draw.value = JSON.parse(JSON.stringify(draw2.value))
   Object.keys(search).forEach((key) => {
     if (key === 'dateRange') {
       search[key] = ['2012-01-01', dayjs().format('YYYY-MM-DD')]
@@ -157,11 +150,6 @@ function reSet() {
       search[key] = ''
     }
   })
-}
-
-function goEarths(item) {
-  const { id } = item
-  navigateTo({ path: '/earthlist', query: { id } })
 }
 
 function clickMarker({ data }) {
@@ -212,25 +200,25 @@ const unfold = ref(true)
               </div>
               <div class="" flex="~ items-center ">
                 <span class="pr-10px text-right">震级</span>
-                <el-input v-model="search.level1" />
+                <el-input v-model="search.level1" clearable />
                 <span class="px-10px">--</span>
-                <el-input v-model="search.level2" />
+                <el-input v-model="search.level2" clearable />
               </div>
               <div class="" flex="~ items-center">
                 <span class="pr-10px text-right">地点</span>
-                <el-input v-model="search.place" style="width: 200px;" />
+                <el-input v-model="search.place" clearable style="width: 200px;" />
               </div>
               <div class="" flex="~ items-center">
                 <span class="pr-10px text-right">经度(范围)</span>
-                <el-input v-model="search.lat1" />
+                <el-input v-model="search.lat1" clearable />
                 <span class="px-10px">--</span>
-                <el-input v-model="search.lat2" />
+                <el-input v-model="search.lat2" clearable />
               </div>
               <div class="" flex="~ items-center">
                 <span class="pr-10px text-right">纬度(范围)</span>
-                <el-input v-model="search.lon1" />
+                <el-input v-model="search.lon1" clearable />
                 <span class="px-10px">--</span>
-                <el-input v-model="search.lon2" />
+                <el-input v-model="search.lon2" clearable />
               </div>
               <div>
                 <el-button class="ml-10px" @click="reSet">
@@ -303,18 +291,22 @@ const unfold = ref(true)
           </template>
           <template #right>
             <div flex="~ col" class="pos-absolute bottom-20px right-0 top-80px z-999">
-              <div class="h-full overflow-hidden bg-white py-18px transition-width" :class="{ 'w-430px': unfold, 'w-0': !unfold }">
-                <div class="h-[calc(100%_-_40px)] w-full flex-1 overflow-hidden">
+              <div class="h-full overflow-hidden bg-white pt-18px transition-width" :class="{ 'w-430px': unfold, 'w-0': !unfold }">
+                <div class="h-[calc(100%_-_50px)] w-full flex-1 overflow-hidden">
                   <el-scrollbar>
-                    <ListItem v-for="(item, index) in draw.slice(0, 10)" :key="index" :data="item" @click="toLocation(item)" />
+                    <ListItem v-for="(item, index) in list" :key="index" :data="item" @click="toLocation(item)" />
+                    <el-empty v-if="list.length === 0" :image-size="200" />
                   </el-scrollbar>
                 </div>
-                <div class="mt-10px flex items-center justify-center">
-                  <el-pagination background layout="prev, pager, next" :total="page.total" />
+                <div class="flex items-center justify-center shadow-inner">
+                  <div class="py-10px">
+                    <el-pagination class="w-full" hide-on-single-page :pager-count="5" background layout="prev, pager, next" :total="page.total" @current-change="onPageChange" />
+                  </div>
                 </div>
               </div>
-              <div class="right-icon pos-absolute left-0 top-50% h-60px w-35px flex items-center" @click="unfold = !unfold">
-                <img src="/img/icon/right.png" alt="" class="cursor-pointer transition" :class="{ 'rotate-0': unfold, 'rotate-180': !unfold }">
+              <div class="right-icon pos-absolute left-0 top-50% w-35px flex flex-col cursor-pointer items-center justify-center py-20px" @click="unfold = !unfold">
+                <img src="/img/icon/right.png" alt="" class="transition" :class="{ 'rotate-0': unfold, 'rotate-180': !unfold }">
+                <span class="mx-5px mt-5px w-14px text-12px text-white line-height-18px">{{ unfold ? '收起' : '查看' }}列表</span>
               </div>
             </div>
           </template>
