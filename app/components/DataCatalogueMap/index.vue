@@ -8,6 +8,10 @@ const props = defineProps({
     type: String,
     default: 'calc(100vh - 120px)',
   },
+  showPath: {
+    type: Boolean,
+    default: true,
+  },
 })
 interface PathItem {
   name: string
@@ -17,8 +21,11 @@ interface PathItem {
 
 <template>
   <div class="pos-relative bg-blue-100">
-    <div class="header pos-absolute left-0 z-999 flex p-20px">
+    <div v-if="props.showPath !== false" class="header pos-absolute left-0 z-999 flex p-20px">
       <PublicBreadcrumbNavigation :path="props.routePath" class="mr-40px rounded-6px bg-white" />
+      <slot name="header" />
+    </div>
+    <div v-else>
       <slot name="header" />
     </div>
     <slot name="left" />

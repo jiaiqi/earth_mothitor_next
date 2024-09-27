@@ -41,9 +41,22 @@ const props = defineProps({
   popupMinWidth: Number,
   mapZoom: Number,
   maxZoom: Number,
-
+  showMousePosition: {
+    type: Boolean,
+    default: true,
+  },
+  showChangeLayer: {
+    type: Boolean,
+    default: true,
+  },
+  layerName: String as PropType<LayerType>,
 })
 const emit = defineEmits(['markerClick', 'update:activeMaker', 'lists', 'highLine'])
+enum LayerType {
+  矢量 = 'sl',
+  影像 = 'yx',
+  地形 = 'dx',
+}
 // const activeMaker = ref<any>()
 const center = ref<[number, number]>([30.7, 104])
 const zoom = ref(props.mapZoom || 4)
@@ -62,12 +75,8 @@ const layerMap = {
   yx: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/影像中文注记_经纬度'],
   dx: ['http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/地形底图_经纬度', 'http://www.earthquake.ac.cn/iserver/services/map-tianditu/rest/maps/地形中文注记_经纬度'],
 }
-enum LayerType {
-  sl = 'sl',
-  yx = 'yx',
-  dx = 'dx',
-}
-const layerName = ref<LayerType>(LayerType.sl)
+
+const layerName = ref<LayerType>(props.layerName || LayerType['矢量'])
 const tiandituMap = computed(() => layerMap[layerName.value][0])
 const tiandituText = computed(() => layerMap[layerName.value][1])
 function changeLayer(e: LayerType) {
@@ -347,7 +356,7 @@ function highLine(data, event) {
           :lat-lng="[homeMarker.lat, homeMarker.lon]"
         />
       </LFeatureGroup>
-      <LControl position="bottomright">
+      <LControl v-if="showChangeLayer !== false" position="bottomright">
         <ChangeLayer v-model:show-text-layer="showTextLayer" :layer-name="layerName" @change-base-layer="changeLayer" />
       </LControl>
       <LControlScale position="bottomleft" :imperial="true" :metric="true" />
@@ -358,7 +367,7 @@ function highLine(data, event) {
         @click="highLine(item, $event)"
       />
     </LMap>
-    <div class="pos-absolute right-70px top-15px z-999">
+    <div v-if="showMousePosition !== false" class="pos-absolute right-70px top-15px z-999">
       {{ positionText || '' }}
     </div>
   </div>

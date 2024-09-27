@@ -235,20 +235,46 @@ const listData = computed(() => {
   return dataType.value === '震害防御' ? prodList2.value : prodList.value
 })
 
-function toDetail(item: any) {
-  if (['统一编目目录', '震源机制解目录1', '速报目录', '震源机制解目录2'].includes(item.name)) {
-    const typeMap = {
-      统一编目目录: 'cata',
-      震源机制解目录1: 'sms',
-      震源机制解目录2: 'smsxgp',
-      速报目录: 'soon',
-    }
-    navigateTo({ path: '/productSummary/earthCataList', query: { type: typeMap[item.name] } })
+interface detailItem {
+  id: string | number
+  name: string
+  subList?: string[]
+  linkUrl?: string
+  cunit?: string
+}
+function toDetail(item: detailItem) {
+  const bigEarthQueryMap = {
+    全球5级以上地震目录: { type: 0 },
+    全球7级以上地震目录: { type: 0, m: 7 },
+    小震精定位目录: { type: 1 },
+  }
+  const cateTypeMap = {
+    统一编目目录: 'cata',
+    震源机制解目录1: 'sms',
+    震源机制解目录2: 'smsxgp',
+    速报目录: 'soon',
+  }
+  if (item.name in cateTypeMap) {
+    navigateTo({ path: '/productSummary/earthCataList', query: { type: cateTypeMap[item.name] } })
+  }
+  else if (item.name in bigEarthQueryMap) {
+    // [{type: 0},{type: 0,m:7},{type: 1}]
+    const query = bigEarthQueryMap[item.name]
+    navigateTo({ path: '/monitor/bigEath', query })
+    addHot(item.name, `/monitor/bigEath?${new URLSearchParams(Object.entries(query)).toString()}`)
   }
   else if (item.linkUrl) {
-    if (confirm('您访问的链接即将离开公服网站，是否继续？')) {
-      window.open(item.linkUrl)
-    }
+    ElMessageBox.confirm('您访问的链接即将离开公服网站，是否继续？', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+    }).then(() => {
+      navigateTo(item.linkUrl, {
+        external: true,
+        open: {
+          target: '_blank',
+        },
+      })
+    })
   }
   else {
     navigateTo({
@@ -257,7 +283,7 @@ function toDetail(item: any) {
         data: encode(item),
       },
     })
-    addHot(name, `/monitor/productInfo?id=${item.id}`)
+    addHot(item.name, `/monitor/productInfo?id=${item.id}`)
   }
 
   // navigateTo({

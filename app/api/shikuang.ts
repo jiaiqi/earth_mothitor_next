@@ -55,3 +55,23 @@ export function getCatalogPage(data: any) {
   const url = getRequestUrl(`/infoserver/sp/catalog/pageList?pageNum=${data.pageNum}&pageSize=${data.pageSize}&spid=${data.spid}&catalog=${data.catalog}&title=${data.title}`)
   return useHttp.get(url)
 }
+
+// 产品成果
+export function getProdList(data: any) {
+  const keys = ['pageNum', 'pageSize', 'type', 'year', 'betyear', 'm', 'betm', 'dm', 'betDM', 'slon', 'elon', 'slat', 'elat', 'localname']
+  let url = `/infoserver/sp/major/pageList?`
+  keys.forEach((key, index) => {
+    if (data[key]) {
+      const connector = index === 0 ? '' : '&'
+      url += `${connector}${key}=${data[key]}`
+    }
+  })
+  url = getRequestUrl(url)
+  return useHttp.get(url)
+}
+
+// 产品成果(非分页)
+export function getProdList2(data: any) {
+  const url = getRequestUrl(`/infoserver/sp/major/getList`)
+  return useHttp.post(url, data)
+}
