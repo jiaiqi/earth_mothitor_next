@@ -257,10 +257,11 @@ function getImg(name) {
       class="content"
       flex="~ col xl:row"
     >
-      <div class="min-h-300px w-full" flex="1">
-        <div v-if="loading" class="h-500px text-center line-height-500px">
+      <div v-loading="loading" class="min-h-300px w-full" flex="1">
+        <!-- <div v-if="loading" class="h-500px text-center line-height-500px">
           <LoaderL1 />
-        </div>
+        </div> -->
+        <el-empty v-if="!loading && !list?.length" />
         <div class="w-full flex flex-col gap-y-30px overflow-hidden pr-30px">
           <div
             v-for="item in list" :key="item.id" flex="~"

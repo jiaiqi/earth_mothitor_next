@@ -88,7 +88,6 @@ const filterModel = ref<any>({
   cunit: '',
 })
 function onFilter(model: any) {
-  console.log(model, 'onfilter')
   filterModel.value = model
   getList()
   // getServiceByQuery(filterModel.value).then((res) => {
@@ -130,9 +129,9 @@ function getList() {
   loading.value = true
   getServiceList(par).then((res) => {
     loading.value = false
-    total.value = res.total || total.value
-    pageSize.value = res.size || pageSize.value
-    pageNum.value = res.current || pageNum.value
+    total.value = res.total ?? total.value
+    pageSize.value = res.size ?? pageSize.value
+    pageNum.value = res.current ?? pageNum.value
     list.value = res.records.map((item) => {
       return {
         ...item,
@@ -143,6 +142,8 @@ function getList() {
     })
   }).catch((error) => {
     console.error('获取 HTML 数据失败:', error)
+    list.value = []
+    total.value = 0
     loading.value = false
   })
 }
@@ -203,6 +204,7 @@ function toDetail(item: SrvItem) {
         <div v-if="loading" class="h-500px text-center line-height-500px">
           <LoaderL1 />
         </div>
+        <el-empty v-else-if="!list?.length" />
         <PublicList :list="list" @click-item="toDetail" />
         <PublicPagination v-if="total" :page-size="pageSize" :page-num="pageNum" :total="total" @change="onPageChange" />
         <slot />

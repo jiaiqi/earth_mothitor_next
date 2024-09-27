@@ -106,7 +106,6 @@ const prodList = ref<any[]>([])
 
 // 震害防御
 const loading2 = ref(true)
-const noData2 = ref(false)
 const queryParams2 = reactive(
   {
     pageSize: 9,
@@ -178,7 +177,7 @@ function getList2() {
     const list = response.records
     queryParams2.pageSize = response.size
     queryParams2.pageNum = response.current
-    total2.value = response.total
+    // total2.value = response.total
     if (list.length) {
       list.forEach((item) => {
         const subList = []
@@ -204,6 +203,10 @@ function getList2() {
   }
   getConditionsList(par2).then((response) => {
     if (response.records.length) {
+      queryParams2.pageSize = response.size
+      queryParams2.pageNum = response.current
+      total2.value = response.total
+
       response.records.forEach((item) => {
         const obj = { ...item, title: item.name }
         const subList = []
@@ -323,7 +326,7 @@ function addHot(name, url) {
 
     <PublicFilter :filter-list="filterList" @change="onFilter" />
     <div v-if="searchValue" class="my-24px">
-      找到<span class="px-10px text-#1684FC font-700">{{ total }}</span>条记录
+      找到<span class="px-10px text-#1684FC font-700">{{ dataType === '地震监测' ? total : total2 }}</span>条记录
     </div>
 
     <div class="content" flex="~ col xl:row">
@@ -362,6 +365,7 @@ function addHot(name, url) {
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>
+            <el-empty v-else-if="!listData.length" />
             <PublicList :list="listData" type="上图下文" @click-item="toDetail">
               <template #image>
                 <img src="/img/productcatalog.jpg" class="h-150px w-full">
@@ -376,6 +380,7 @@ function addHot(name, url) {
             <div v-if="loading" class="h-500px text-center line-height-500px">
               <LoaderL1 />
             </div>
+            <el-empty v-else-if="!listData.length" />
             <PublicList :list="listData" type="上图下文" @click-item="toDetail">
               <template #image>
                 <img src="/img/productcatalog.jpg" class="h-150px w-full">
