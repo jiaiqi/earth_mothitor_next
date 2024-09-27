@@ -2,18 +2,26 @@
 interface PathItem {
   name: string
   path?: string
+  type?: string
 }
 
 const props = defineProps<{ path?: PathItem[] }>()
 // 初始化默认值
-const defaultPath = [
+const defaultPath: PathItem[] = [
   {
     name: '首页',
     path: '/',
   },
 ]
 // 创建一个新的变量来存储默认值或传入的值
-const currentPath = props.path.length > 0 ? props.path : defaultPath
+const currentPath = computed<PathItem[]>(() => props?.path && props.path.length > 0 ? props.path : defaultPath)
+const router = useRouter()
+function goBack() {
+  router.back()
+}
+function goHome() {
+  router.push('/')
+}
 </script>
 
 <template>
@@ -24,11 +32,17 @@ const currentPath = props.path.length > 0 ? props.path : defaultPath
         <i class="i-ri:home-4-fill" />
       </div>
       <div class="left-text pos-relative left--10px min-w-200px flex pl-20px line-height-34px">
-        <div v-for="(item, index) in currentPath" :key="index" :class="{ 'cursor-pointer hover:text-#3682DA': item.path }" class="flex items-center">
-          <span v-if="!item.path">{{ item.name }}</span>
-          <NuxtLink v-else :to="item.path">
+        <div v-for="(item, index) in currentPath" :key="index" :class="{ 'cursor-pointer hover:text-#3682DA': item.path || item.type }" class="flex items-center">
+          <NuxtLink v-if="item.type && item.type === 'back'" :to="item.path" @click.prevent="goBack">
             {{ item.name }}
           </NuxtLink>
+          <NuxtLink v-if="item.type && item.type === 'home'" :to="item.path || '/'" @click.prevent="goHome">
+            {{ item.name }}
+          </NuxtLink>
+          <NuxtLink v-else-if="item.path" :to="item.path">
+            {{ item.name }}
+          </NuxtLink>
+          <span v-else>{{ item.name }}</span>
           <img
             v-if="currentPath.length && currentPath.length - 1 > index "
             src="~/assets/images/icons/right-icon.png"

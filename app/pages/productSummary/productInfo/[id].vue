@@ -7,7 +7,7 @@ import { ElNotification } from '#imports'
 import { dictionaryList, getFileList, getLinkFile } from '~/api/service'
 
 const route = useRoute()
-const routePath = [{ name: '首页', path: '/' }, { name: '产品目录', path: '/productSummary' }, { name: '产品目录详情' }]
+const routePath = [{ name: '首页', path: '/', type: 'home' }, { name: '产品目录', type: 'back', path: '/productSummary' }, { name: '产品目录详情' }]
 const form = decode(route.query.data)
 form.directoryName = form.directoryName || form.description || form.nameProduct || form.classification
 if (form.directoryName === '地下流体') {
